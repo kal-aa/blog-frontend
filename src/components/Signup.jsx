@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { FaCheck } from "react-icons/fa";
+import { FaCheck, FaLock } from "react-icons/fa";
 import ClipLoader from "react-spinners/ClipLoader";
 import { NavLink } from "react-router-dom";
 
@@ -81,7 +81,7 @@ const Signup = ({ signupSubmit }) => {
             value={formData.email}
             onChange={handleChange}
             required
-            placeholder="sadkalshayee@gmail.com"
+            placeholder="E.g. sadkalshayee@gmail.com"
             className="inputStyle"
           />
 
@@ -100,36 +100,44 @@ const Signup = ({ signupSubmit }) => {
             value={formData.name}
             onChange={handleChange}
             required
-            placeholder="Kalab Sisay"
+            placeholder="E.g. Kalab Sisay"
             className="inputStyle"
           />
 
           <label htmlFor="password">Password:</label>
-          <input
-            type="password"
-            name="password"
-            id="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            className="inputStyle"
-          />
-          <label htmlFor="confirm-password">
+          <div className="relative">
+            <input
+              type="password"
+              name="password"
+              id="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              placeholder="Enter password"
+              className="inputStyle"
+            />
+            <FaLock className="lockStyle" />
+          </div>
+          <label htmlFor="confirmPassword">
             Confirm Password:{" "}
             {isPasswordConfirmed && <FaCheck className="inline mb-0.5" />}
             <p className="text-red-600 text-sm inline-block">
               {passwordMatched}
             </p>
           </label>
-          <input
-            type="password"
-            name="confirmPassword"
-            id="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            required
-            className="inputStyle"
-          />
+          <div className="relative">
+            <input
+              type="password"
+              name="confirmPassword"
+              id="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              required
+              placeholder="Enter password"
+              className="inputStyle"
+            />
+            <FaLock className="lockStyle" />
+          </div>
           <button
             disabled={isSigning}
             className={`w-full rounded-md bg-black text-white py-2 mt-2 ${
@@ -142,12 +150,14 @@ const Signup = ({ signupSubmit }) => {
             )}
           </button>
         </form>
-      <div className="w-full flex items-center justify-center mt-6">
-        <span className="flex-grow border-t border-black mx-4"></span>
-        <span>OR</span>
-        <span className="flex-grow border-t border-black mx-4"></span>
-      </div>
-      <NavLink to="/log-in" className="hover:underline">Log in</NavLink>
+        <div className="w-full flex items-center justify-center mt-6">
+          <span className="flex-grow border-t border-black mx-4"></span>
+          <span className="text-sm">OR</span>
+          <span className="flex-grow border-t border-black mx-4"></span>
+        </div>
+        <NavLink to="/log-in" className="hover:underline">
+          Log in
+        </NavLink>
       </div>
     </>
   );

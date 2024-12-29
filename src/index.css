@@ -13,5 +13,9 @@ body {
 
 /* sign-up page */
 .inputStyle {
-  @apply block border border-red-500 rounded-lg w-full outline-none px-2 py-2 md:py-3 focus:bg-slate-100 mb-1 hover:border-red-900
+  @apply block border border-red-500 rounded-lg w-full outline-none px-10 py-2 md:py-3 focus:bg-slate-100 mb-1 hover:border-red-900
+}
+
+.lockStyle {
+  @apply absolute top-3 left-2 text-slate-500 md:top-4
 }
