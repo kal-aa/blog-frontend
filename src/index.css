@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: mono
+}
+
+/* landing page */
+.btnStyle {
+  @apply bg-red-500 px-3 py-2 rounded-md text-white text-xs md:text-sm font-bold hover:bg-red-600;
+}
+
+/* sign-up page */
+.inputStyle {
+  @apply block border border-red-500 rounded-lg w-full outline-none px-2 py-2 md:py-3 focus:bg-slate-100 mb-1 hover:border-red-900
+}
