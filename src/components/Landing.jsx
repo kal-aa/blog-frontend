@@ -3,15 +3,15 @@ import { NavLink } from "react-router-dom";
 const Landing = () => {
   return (
     <>
-      <div className="z-10 relative h-screen">
+      <div className="z-10 relative h-screen -mt-28">
         <div
           className="absolute inset-0 bg-cover bg-center filter blur-xl brightness-50 -mt-3"
-          style={{ backgroundImage: "url(/assets/bg-blog.jpeg)" }}
+          style={{ backgroundImage: "url(/assets/images/bg-blog.jpeg)" }}
         ></div>
         <div className="z-10 relative ">
           <div className="flex justify-between md:justify-around mt-3 mr-5">
             <img
-              src="/assets/blog.jpeg"
+              src="/assets/images/blog.jpeg"
               alt="Blog.jpeg"
               className="w-16 -mt-3"
             />

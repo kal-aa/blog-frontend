@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import Signup from "../components/SignUp";
+import { useRef } from "react";
 
 const SignupPage = () => {
   const navigate = useNavigate();
+  const errRef = useRef(null);
 
   const signupSubmit = (formData, setError, setIsSigning) => {
     setIsSigning(true);
@@ -20,6 +22,15 @@ const SignupPage = () => {
         if (!res.ok) {
           return res.json().then((error) => {
             setError(error.mssg);
+            if (errRef.current) {
+              clearTimeout(errRef.current);
+            }
+            errRef.current = setTimeout(() => {
+              setError("");
+            }, 5000);
+            setTimeout(() => {
+              setError("");
+            }, 5000);
             throw new Error(error.mssg);
           });
         }
@@ -27,7 +38,6 @@ const SignupPage = () => {
         return res.json();
       })
       .then((data) => {
-        console.log(data);
         setIsSigning(false);
         navigate(`/home/${data.insertedId}`);
       })

@@ -33,7 +33,8 @@ const Login = ({ loginSubmit }) => {
 
   return (
     <>
-      <div className="flex flex-col justify-center items-center h-screen px-[10%] sm:px-[20%] md:px-[25%] lg:px-[30%] mt-10">
+      <div className="flex flex-col justify-center items-center min-h-screen px-[10%] sm:px-[20%] md:px-[25%] lg:px-[30%] -mt-20">
+        <h1 className="text-3xl font-bold">Welcome Back</h1>
         <div
           className={
             error &&

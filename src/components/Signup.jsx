@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { FaCheck, FaLock } from "react-icons/fa";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -16,6 +16,7 @@ const Signup = ({ signupSubmit }) => {
   const [isItFullName, setisIsFullName] = useState(true);
   const [error, setError] = useState("");
   const [isSigning, setIsSigning] = useState(false);
+  const fullnameRef = useRef(null);
 
   const handleChange = (e) => {
     const { value, name } = e.target;
@@ -40,6 +41,7 @@ const Signup = ({ signupSubmit }) => {
     const fullName = name.trim().split(" ");
 
     if (fullName.length !== 2) {
+      fullnameRef.current.click();
       setisIsFullName(false);
       setTimeout(() => {
         setisIsFullName(true);
@@ -63,7 +65,9 @@ const Signup = ({ signupSubmit }) => {
 
   return (
     <>
-      <div className="flex flex-col justify-center items-center h-screen px-[10%] sm:px-[20%] md:px-[25%] lg:px-[30%] mt-10">
+      <div className="flex flex-col justify-center items-center h-screen px-[10%] sm:px-[20%] md:px-[25%] lg:px-[30%] -mt-20">
+        <h1 className="text-3xl font-bold">Welcome</h1>
+
         <div
           className={
             error &&
@@ -85,7 +89,7 @@ const Signup = ({ signupSubmit }) => {
             className="inputStyle"
           />
 
-          <label htmlFor="name">
+          <label ref={fullnameRef} htmlFor="name">
             Full-name:
             {!isItFullName && (
               <p className="text-red-600 text-sm inline-block">
@@ -119,7 +123,7 @@ const Signup = ({ signupSubmit }) => {
             <FaLock className="lockStyle" />
           </div>
           <label htmlFor="confirmPassword">
-            Confirm Password:{" "}
+            Confirm Password:
             {isPasswordConfirmed && <FaCheck className="inline mb-0.5" />}
             <p className="text-red-600 text-sm inline-block">
               {passwordMatched}
