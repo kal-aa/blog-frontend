@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
-import { FaCheck, FaLock } from "react-icons/fa";
+import { useState } from "react";
+import { FaCheck, FaLock, FaPlus } from "react-icons/fa";
 
 const ManageYourAcc = ({
   formData,
@@ -7,7 +8,11 @@ const ManageYourAcc = ({
   manageProps,
   isFullName,
   fullNameRef,
+  handleImageUpload,
+  data,
 }) => {
+  const [preview, setPreview] = useState("");
+
   const { password, setPassword, passwordError, isPasswordConfirmed } =
     passwordProps;
 
@@ -26,6 +31,8 @@ const ManageYourAcc = ({
   } else {
     matched = false;
   }
+
+  console.log(formData.image);
 
   return (
     <div className="flex items-center justify-center relative">
@@ -71,9 +78,39 @@ const ManageYourAcc = ({
         }
       >
         <fieldset disabled={!isPasswordConfirmed}>
-          <p className="text-red-600 max-w-60 break-words text-center leading-4 mt-2 md:max-w-80 md:px-2 md:ml-10">
+          <p className="text-red-600 max-w-60 break-words text-center leading-4 mb-2 md:max-w-80 md:px-2 md:ml-10">
             {badManageRequest || "\u00A0"}
           </p>
+          <div className="flex justify-center items-center">
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              id="fileInput"
+              onChange={(e) => handleImageUpload(e, setPreview)}
+            />
+            <label
+              htmlFor="fileInput"
+              className="relative cursor-pointer"
+              title="Change Your Profile Picture"
+            >
+              <img
+                src={
+                  preview
+                    ? preview
+                    : formData.image
+                    ? formData.image
+                    : // ? `data:${data.mimetype};base64,${data.buffer}`
+                      "/assets/images/unknown-user.jpg"
+                }
+                alt="user"
+                className="w-16 h-16 mb-2 rounded-lg"
+              />
+              {!preview && !data.buffer && (
+                <FaPlus className="absolute bottom-2 opacity-3 text-6xl opacity-25 text-white" />
+              )}
+            </label>
+          </div>
           <div>
             <label htmlFor="name" ref={fullNameRef}>
               Full Name:
@@ -138,7 +175,9 @@ const ManageYourAcc = ({
               }`}
             />
           </div>
-          <p className="text-xs text-red-500 md:ml-[148px]">{passwordError || "\u00A0"}</p>
+          <p className="text-xs text-red-500 md:ml-[148px]">
+            {passwordError || "\u00A0"}
+          </p>
           <div className=" flex flex-col items-center justify-center space-y-3 md:flex-row-reverse md:space-y-0">
             <button
               type="submit"
@@ -183,6 +222,8 @@ ManageYourAcc.propTypes = {
   }).isRequired,
   isFullName: PropTypes.bool.isRequired,
   fullNameRef: PropTypes.any,
+  handleImageUpload: PropTypes.func.isRequired,
+  data: PropTypes.object.isRequired,
 };
 
 export default ManageYourAcc;

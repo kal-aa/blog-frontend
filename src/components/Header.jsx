@@ -21,18 +21,22 @@ const Header = () => {
     undefined;
 
   const isActive = ({ isActive }) =>
-    isActive ? "header-hover text-black hover:text-black bg-blue-300 py-1 px-2" : "header-hover py-1 px-2";
+    isActive
+      ? "header-hover text-black hover:text-black bg-blue-300 py-1 px-2"
+      : "header-hover py-1 px-2";
 
   return (
     <>
       <header className="fixed bg-blue-900 text-slate-300 top-0 left-0 right-0 h-24 flex justify-around items-center text-sm md:text-base font-bold z-20">
         {/* Lef section of the header */}
         <div className="flex items-center ml-1">
-          <img
-            src={"/assets/images/blog.jpeg"}
-            alt="blog.jpeg"
-            className="w-16"
-          />
+          <NavLink to="/sign-up">
+            <img
+              src={"/assets/images/blog.jpeg"}
+              alt="blog.jpeg"
+              className="w-16"
+            />
+          </NavLink>
           <FaEllipsisV
             onClick={() => {
               setElipsisClicked((prev) => !prev);

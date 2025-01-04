@@ -30,7 +30,7 @@ const Footer = () => {
           <div className="flex flex-col items-center space-y-2">
             <NavLink
               to={`/manage-your-acc/${id}`}
-              className="hover:text-blue-900 sm:hidden"
+              className="hover:text-blue-400 sm:hidden"
             >
               Manage your account
             </NavLink>

@@ -10,6 +10,7 @@ const ManageYourAccPage = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    image: null,
   });
   const [data, setData] = useState({});
   const [password, setPassword] = useState(""); // the mini authentication's password
@@ -29,6 +30,23 @@ const ManageYourAccPage = () => {
       ...formData,
       [name]: value,
     });
+  };
+
+  const handleImageUpload = (e, setPreview) => {
+    const image = e.target.files[0];
+    setFormdata((prevFormData) => ({
+      ...prevFormData,
+      image,
+    }));
+    if (image) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setPreview(reader.result);
+      };
+      reader.readAsDataURL(image);
+    } else {
+      setPreview("/assets/images/unknown-user.jpg");
+    }
   };
 
   //  for the mini Authentication
@@ -70,12 +88,19 @@ const ManageYourAccPage = () => {
 
   //  fill the form
   useEffect(() => {
+    console.log(data.buffer);
     if (data) {
+      const image =
+        data.buffer && data.mimetype
+          ? `data:${data.mimetype};base64,${data.buffer}`
+          : "";
+      console.log(image);
       setFormdata({
         name: data.name || "",
         email: data.email || "",
         password: data.password || "",
         confirmPassword: data.password || "",
+        image,
       });
     }
   }, [data]);
@@ -140,11 +165,19 @@ const ManageYourAccPage = () => {
         password: formData.password,
       };
 
+      const submissionDataWithFile = new FormData();
+      Object.keys(updateData).map((key) => {
+        submissionDataWithFile.append(key, updateData[key]);
+      });
+
+      if (formData.image !== `data:${data.mimetype};base64,${data.buffer}`) {
+        submissionDataWithFile.append("image", formData.image);
+      }
+
       setIsUpdating(true);
       fetch(updateUrl, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updateData),
+        body: submissionDataWithFile,
       })
         .then((res) => {
           if (!res.ok) {
@@ -169,7 +202,7 @@ const ManageYourAccPage = () => {
 
           setIsUpdating(false);
           toast("Updated successfully!");
-          console.log("Client data updated successfully");
+          navigate(`/home/${id}`);
         })
         .catch((error) => {
           setIsUpdating(false);
@@ -196,9 +229,12 @@ const ManageYourAccPage = () => {
           handleChange,
           handlePasswordSubmit,
           handleManageSubmit,
+          data,
         }}
+        data={data}
         isFullName={isFullName}
         fullNameRef={fullNameRef}
+        handleImageUpload={handleImageUpload}
       />
     </>
   );

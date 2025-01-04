@@ -1,50 +1,44 @@
 import { useNavigate } from "react-router-dom";
-import Signup from "../components/SignUp";
-import { useRef } from "react";
+import Signup from "../components/Signup";
 
 const SignupPage = () => {
   const navigate = useNavigate();
-  const errRef = useRef(null);
 
-  const signupSubmit = (formData, setError, setIsSigning) => {
+  const signupSubmit = async (formData, setError, setIsSigning) => {
+    const { confirmPassword, image, ...submissionData } = formData;
+    console.log(confirmPassword, " removed");
+
+    const submissionDataWithFile = new FormData();
+    Object.keys(submissionData).forEach((key) => {
+      submissionDataWithFile.append(key, formData[key]);
+    });
+
+    if (image) {
+      submissionDataWithFile.append("image", image);
+    }
+
     setIsSigning(true);
-
-    const data = { ...formData };
-    delete data.confirmPassword;
-
-    const url = "http://localhost:5000/sign-up";
-    fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          return res.json().then((error) => {
-            setError(error.mssg);
-            if (errRef.current) {
-              clearTimeout(errRef.current);
-            }
-            errRef.current = setTimeout(() => {
-              setError("");
-            }, 5000);
-            setTimeout(() => {
-              setError("");
-            }, 5000);
-            throw new Error(error.mssg);
-          });
-        }
-
-        return res.json();
-      })
-      .then((data) => {
-        setIsSigning(false);
-        navigate(`/home/${data.insertedId}`);
-      })
-      .catch((error) => {
-        setIsSigning(false);
-        console.error("Could not sign-up", error);
+    try {
+      const url = "http://localhost:5000/sign-up";
+      const res = await fetch(url, {
+        method: "POST",
+        body: submissionDataWithFile,
       });
+
+      if (!res.ok) {
+        const error = await res.json();
+        setError(error.mssg || "Signup failed");
+      } else {
+        const data = await res.json();
+        setIsSigning(false);
+        navigate(`/home/${data.insertedId}/?signupName=${data.firstName}`);
+      }
+    } catch (error) {
+      console.error("An unexpected error occured", error);
+      setError("An unexpected error occurred. Please try again later.");
+    } finally {
+      setIsSigning && setIsSigning(false);
+    }
   };
 
   return (

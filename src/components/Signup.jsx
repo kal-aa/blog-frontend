@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import PropTypes from "prop-types";
-import { FaCheck, FaLock } from "react-icons/fa";
+import { FaCheck, FaLock, FaPlus } from "react-icons/fa";
 import ClipLoader from "react-spinners/ClipLoader";
 import { NavLink } from "react-router-dom";
+import PropTypes from "prop-types";
 
 const Signup = ({ signupSubmit }) => {
   const [formData, setFormData] = useState({
@@ -10,17 +10,36 @@ const Signup = ({ signupSubmit }) => {
     name: "",
     password: "",
     confirmPassword: "",
+    image: null,
   });
   const [passwordMatched, setPasswordMatched] = useState("");
   const [isPasswordConfirmed, setIsPasswordConfirmed] = useState(false);
   const [isItFullName, setisIsFullName] = useState(true);
   const [error, setError] = useState("");
   const [isSigning, setIsSigning] = useState(false);
+  const [preview, setPreview] = useState("");
   const fullnameRef = useRef(null);
 
   const handleChange = (e) => {
     const { value, name } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleImageUpload = (e, setFormData, setPreview) => {
+    const image = e.target.files[0];
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      image,
+    }));
+    if (image) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setPreview(reader.result);
+      };
+      reader.readAsDataURL(image);
+    } else {
+      setPreview("/assets/images/unknown-user.jpg");
+    }
   };
 
   useEffect(() => {
@@ -37,6 +56,7 @@ const Signup = ({ signupSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     const name = formData.name;
     const fullName = name.trim().split(" ");
 
@@ -66,8 +86,6 @@ const Signup = ({ signupSubmit }) => {
   return (
     <>
       <div className="flex flex-col justify-center items-center h-screen px-[10%] sm:px-[20%] md:px-[25%] lg:px-[30%] -mt-20">
-        <h1 className="text-3xl font-bold">Welcome</h1>
-
         <div
           className={
             error &&
@@ -76,7 +94,28 @@ const Signup = ({ signupSubmit }) => {
         >
           {error}
         </div>
+        <h1 className="text-3xl font-bold">Welcome</h1>
         <form onSubmit={handleSubmit} className="w-full">
+          <div className="flex justify-center items-center">
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              id="fileInput"
+              onChange={(e) => handleImageUpload(e, setFormData, setPreview)}
+            />
+            <label htmlFor="fileInput" className="relative">
+              <img
+                src={preview || "/assets/images/unknown-user.jpg"}
+                alt="user"
+                className="inline w-20 h-20 border border-red-300 rounded-full cursor-pointer"
+                title="Click to upload image"
+              />
+              {!preview && (
+                <FaPlus className="absolute right-3 bottom-3 opacity-25 text-6xl text-red-500" />
+              )}
+            </label>
+          </div>
           <label htmlFor="email">Email:</label>
           <input
             type="email"
@@ -92,7 +131,7 @@ const Signup = ({ signupSubmit }) => {
           <label ref={fullnameRef} htmlFor="name">
             Full-name:
             {!isItFullName && (
-              <p className="text-red-600 text-sm inline-block">
+              <p className="text-red-600 text-sm inline-block ml-1">
                 Insert first and last name
               </p>
             )}

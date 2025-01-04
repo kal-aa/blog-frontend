@@ -30,7 +30,7 @@ const LoginPage = () => {
       })
       .then((data) => {
         setIsLogging(false);
-        navigate(`/home/${data.id}`);
+        navigate(`/home/${data.id}?loginName=${data.name}`); 
       })
       .catch((error) => {
         setIsLogging(false);
