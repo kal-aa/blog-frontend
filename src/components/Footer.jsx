@@ -24,8 +24,8 @@ const Footer = () => {
   };
 
   return (
-    <footer>
-      <div className="bg-blue-800 text-slate-300 h-[135px] mt-5 font-serif">
+    <footer className="z-20">
+      <div className="bg-blue-800 text-slate-300 h-[135px] mt-10 font-serif">
         <div className="flex items-center justify-around md:py-4 text-sm font-bold md:flex-row-reverse relative">
           <div className="flex flex-col items-center space-y-2">
             <NavLink
