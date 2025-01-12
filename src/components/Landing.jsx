@@ -81,6 +81,7 @@ const Landing = () => {
                 <FaRegEdit
                   onClick={() => setEditTitlePen((prev) => !prev)}
                   size={13}
+                  color="blue"
                   className="mb-1"
                 />
               </div>
@@ -102,6 +103,7 @@ const Landing = () => {
           <FaRegEdit
             onClick={() => setEditBodyPen((prev) => !prev)}
             size={13}
+            color="blue"
             className="inline mb-1 ml-1"
           />
 
