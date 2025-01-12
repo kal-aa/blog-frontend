@@ -21,6 +21,8 @@ const App = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-200">
       {!noFooterRoutes.includes(location.pathname) && <Header />}
+
+      {/* Routes */}
       <div className="flex-grow mt-28">
         <Routes>
           <Route path="/" element={<LandingPage />} />
@@ -34,8 +36,9 @@ const App = () => {
           <Route path="/about-us/:id" element={<AboutUsPage />} />
         </Routes>
       </div>
+
       {!noFooterRoutes.includes(location.pathname) && <Footer />}
-      <ToastContainer/>
+      <ToastContainer />
     </div>
   );
 };

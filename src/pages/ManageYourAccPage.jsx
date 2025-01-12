@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import Header from "../components/Header";
 import ManageYourAcc from "../components/ManageYourAcc";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -13,7 +12,7 @@ const ManageYourAccPage = () => {
     image: null,
   });
   const [data, setData] = useState({});
-  const [password, setPassword] = useState(""); // the mini authentication's password
+  const [password, setPassword] = useState(""); // password from the mini authunticatin form
   const [isFullName, setIsFullName] = useState(true);
   const [isPasswordConfirmed, setIsPasswordConfirmed] = useState(false); // The mini authentication's confirm
   const [passwordError, setPasswordError] = useState("");
@@ -32,6 +31,7 @@ const ManageYourAccPage = () => {
     });
   };
 
+  // hanlde the input img
   const handleImageUpload = (e, setPreview) => {
     const image = e.target.files[0];
     setFormdata((prevFormData) => ({
@@ -45,7 +45,9 @@ const ManageYourAccPage = () => {
       };
       reader.readAsDataURL(image);
     } else {
-      setPreview("/assets/images/unknown-user.jpg");
+      setPreview(
+        import.meta.env.VITE_PUBLIC_URL + "assets/images/unknown-user.jpg"
+      );
     }
   };
 
@@ -61,7 +63,7 @@ const ManageYourAccPage = () => {
       return;
     }
 
-    const url = `http://localhost:5000/manage-account-password/${id}?password=${encodeURIComponent(
+    const url = `https://blog-backend-sandy-three.vercel.app/manage-account-password/${id}?password=${encodeURIComponent(
       password
     )}`;
     fetch(url)
@@ -86,15 +88,13 @@ const ManageYourAccPage = () => {
       });
   };
 
-  //  fill the form
+  //  fill the form with the data from db
   useEffect(() => {
-    console.log(data.buffer);
     if (data) {
       const image =
         data.buffer && data.mimetype
           ? `data:${data.mimetype};base64,${data.buffer}`
           : "";
-      console.log(image);
       setFormdata({
         name: data.name || "",
         email: data.email || "",
@@ -108,14 +108,15 @@ const ManageYourAccPage = () => {
   //  update and delete
   const handleManageSubmit = (e) => {
     e.preventDefault();
-
     const actionType = e.nativeEvent.submitter.name;
+
+    // Delete
     if (actionType === "delete") {
       const confirm = window.confirm(
         "Are you sure you want to delete your user data?"
       );
 
-      const url = `http://localhost:5000/manage-account-delete/${id}`;
+      const url = `https://blog-backend-sandy-three.vercel.app/manage-account-delete/${id}`;
       if (confirm) {
         setIsDeleting(true);
         fetch(url, { method: "DELETE" })
@@ -139,7 +140,10 @@ const ManageYourAccPage = () => {
             console.error("Error deleting client", error);
           });
       }
-    } else if (actionType === "update") {
+    }
+
+    // Update
+    if (actionType === "update") {
       const checkFullName = formData.name.trim().split(" ");
       if (checkFullName.length !== 2) {
         setIsFullName(false);
@@ -158,7 +162,7 @@ const ManageYourAccPage = () => {
         return;
       }
 
-      const updateUrl = `http://localhost:5000/manage-account-update/${id}`;
+      const updateUrl = `https://blog-backend-sandy-three.vercel.app/manage-account-update/${id}`;
       const updateData = {
         name: formData.name,
         email: formData.email,
@@ -212,31 +216,28 @@ const ManageYourAccPage = () => {
   };
 
   return (
-    <>
-      <Header />
-      <ManageYourAcc
-        formData={formData}
-        passwordProps={{
-          password,
-          setPassword,
-          passwordError,
-          isPasswordConfirmed,
-        }}
-        manageProps={{
-          isUpdating,
-          isDeleting,
-          badManageRequest,
-          handleChange,
-          handlePasswordSubmit,
-          handleManageSubmit,
-          data,
-        }}
-        data={data}
-        isFullName={isFullName}
-        fullNameRef={fullNameRef}
-        handleImageUpload={handleImageUpload}
-      />
-    </>
+    <ManageYourAcc
+      formData={formData}
+      passwordProps={{
+        password,
+        setPassword,
+        passwordError,
+        isPasswordConfirmed,
+      }}
+      manageProps={{
+        isUpdating,
+        isDeleting,
+        badManageRequest,
+        handleChange,
+        handlePasswordSubmit,
+        handleManageSubmit,
+        data,
+      }}
+      data={data}
+      isFullName={isFullName}
+      fullNameRef={fullNameRef}
+      handleImageUpload={handleImageUpload}
+    />
   );
 };
 

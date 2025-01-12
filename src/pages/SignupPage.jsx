@@ -6,7 +6,7 @@ const SignupPage = () => {
 
   const signupSubmit = async (formData, setError, setIsSigning) => {
     const { confirmPassword, image, ...submissionData } = formData;
-    console.log(confirmPassword, " removed");
+    console.log(confirmPassword, "?.?.");
 
     const submissionDataWithFile = new FormData();
     Object.keys(submissionData).forEach((key) => {
@@ -19,7 +19,7 @@ const SignupPage = () => {
 
     setIsSigning(true);
     try {
-      const url = "http://localhost:5000/sign-up";
+      const url = "https://blog-backend-sandy-three.vercel.app/sign-up";
       const res = await fetch(url, {
         method: "POST",
         body: submissionDataWithFile,
@@ -41,11 +41,7 @@ const SignupPage = () => {
     }
   };
 
-  return (
-    <>
-      <Signup signupSubmit={signupSubmit} />
-    </>
-  );
+  return <Signup signupSubmit={signupSubmit} />;
 };
 
 export default SignupPage;

@@ -15,7 +15,6 @@ const ManageYourAcc = ({
 
   const { password, setPassword, passwordError, isPasswordConfirmed } =
     passwordProps;
-
   const {
     isUpdating,
     isDeleting,
@@ -32,10 +31,9 @@ const ManageYourAcc = ({
     matched = false;
   }
 
-  console.log(formData.image);
-
   return (
     <div className="flex items-center justify-center relative">
+      {/* The mini password authuntication form */}
       <form
         onSubmit={handlePasswordSubmit}
         className={isPasswordConfirmed ? "hidden" : " absolute z-10"}
@@ -69,6 +67,8 @@ const ManageYourAcc = ({
           </div>
         </div>
       </form>
+
+      {/* update || delete form */}
       <form
         onSubmit={handleManageSubmit}
         className={
@@ -101,7 +101,8 @@ const ManageYourAcc = ({
                     : formData.image
                     ? formData.image
                     : // ? `data:${data.mimetype};base64,${data.buffer}`
-                      "/assets/images/unknown-user.jpg"
+                      import.meta.env.VITE_PUBLIC_URL +
+                      "assets/images/unknown-user.jpg"
                 }
                 alt="user"
                 className="w-16 h-16 mb-2 rounded-lg"

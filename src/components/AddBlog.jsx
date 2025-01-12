@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import ClipLoader from "react-spinners/ClipLoader";
+import { BeatLoader } from "react-spinners";
 import { AiOutlineCheck } from "react-icons/ai";
 import PropTypes from "prop-types";
 
@@ -38,16 +38,8 @@ const AddBlog = ({ postBlog }) => {
   };
 
   return (
-    <>
-      <div className="flex flex-col justify-center items-center min-h-screen px-[10%] sm:px-[20%] md:px-[25%] lg:px-[30%] -mt-20">
-        <div
-          className={
-            error &&
-            "flex justify-center items-center text-center border-l-8 border-red-500 px-2 rounded-xl text-red-600 border w-full h-20"
-          }
-        >
-          {error}
-        </div>
+      <div className="signupContainer">
+        <div className={error && "errorStyle"}>{error}</div>
         <h1 className="text-3xl font-bold">Share your ideas</h1>
 
         <form onSubmit={handleSubmit} className="w-full">
@@ -87,14 +79,17 @@ const AddBlog = ({ postBlog }) => {
               !isPosting && "hover:scale-95"
             } transition-all duration-200 ease-out`}
           >
-            {isPosting ? "Post..." : "Post"}
-            {isPosting && (
-              <ClipLoader color="white" size={10} className="ml-1" />
+            {isPosting ? (
+              <div className="flex justify-center items-end">
+                <span>post</span>
+                <BeatLoader size={5} color="white" className="mb-1 w-5" />
+              </div>
+            ) : (
+              "Post"
             )}
           </button>
         </form>
       </div>
-    </>
   );
 };
 

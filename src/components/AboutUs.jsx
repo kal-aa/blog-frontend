@@ -35,7 +35,7 @@ const AboutUs = () => {
         <div className="flex flex-col gap-y-5 sm:flex-row sm:gap-x-10">
           <div className="flex flex-col items-center">
             <img
-              src="/assets/images/kalab.jpg"
+              src={import.meta.env.VITE_PUBLIC_URL + "assets/images/kalab.jpg"}
               alt="kalab CEO"
               className="rounded-full w-24 "
             />
@@ -44,7 +44,7 @@ const AboutUs = () => {
           </div>
           <div className="flex flex-col items-center">
             <img
-              src="/assets/images/khalid.jpg"
+              src={import.meta.env.VITE_PUBLIC_URL + "assets/images/khalid.jpg"}
               alt="khalid CTO"
               className="rounded-full w-24 "
             />

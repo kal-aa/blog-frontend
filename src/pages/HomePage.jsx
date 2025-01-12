@@ -24,7 +24,7 @@ const HomePage = () => {
   const loginName = queryParams.get("loginName");
   const signupName = queryParams.get("signupName");
 
-  //  Welcome
+  //  Welcome toast
   useEffect(() => {
     if (loginName && !hasShownLoginToast.current) {
       toast(`Welcome back, ${loginName}`);
@@ -41,12 +41,12 @@ const HomePage = () => {
     }
   }, [loginName, signupName, location.search, navigate, queryParams]);
 
-  //  data
+  //  fetch data
   useEffect(() => {
     async function fetchBlogs() {
       try {
         setIsFetchingBlogs(true);
-        const url = `http://localhost:5000/all-blogs/${id}?page=${limit}`;
+        const url = `https://blog-backend-sandy-three.vercel.app/all-blogs/${id}?page=${limit}`;
 
         const beData = await fetch(url);
 
@@ -66,6 +66,7 @@ const HomePage = () => {
 
   return (
     <div>
+      {/* Check fetching status and give response */}
       {isFetchingBlogs ? (
         <div className="flex flex-col justify-center items-center text-blue-800 min-h-[50vh]">
           <RingLoader color="darkBlue" size={100} speedMultiplier={1.5} />
@@ -85,6 +86,8 @@ const HomePage = () => {
           </p>
         )
       )}
+
+      {/* Pass the datas to the main component */}
       <div className="flex flex-col mx-[10%] sm:mx-[15%] md:mx-[20%] lg:mx-[25%] 2xl:mx-[30%] space-y-14 my-5">
         {data &&
           data.length > 0 &&
@@ -97,6 +100,8 @@ const HomePage = () => {
             />
           ))}
       </div>
+
+      {/* Pagination */}
       {data && data.length > 0 && (
         <div className="flex justify-center space-x-[25%] md:space-x-[20%]">
           <FaArrowLeft

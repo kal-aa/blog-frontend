@@ -1,51 +1,164 @@
+import { useState } from "react";
+import { FaHeart, FaHeartBroken, FaRegHeart } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 
 const Landing = () => {
+  const [thumbsUp, setThumbsUp] = useState(true);
+  const [thumbsDown, setThumbsDown] = useState(false);
+  const [dislikeCount, setDislikeCount] = useState(999);
+
+  const formatNumber = (x) => {
+    if (x > 1_000_000_000) {
+      return (x / 1_000_000_000).toFixed(1) + "B";
+    } else if (x >= 1_000_000) {
+      return (x / 1_000_000).toFixed(1) + "M";
+    } else if (x >= 1_000) {
+      return (x / 1_000).toFixed(1) + "K";
+    }
+    return x;
+  };
+
   return (
-    <>
-      <div className="z-10 relative h-screen -mt-28">
-        <div
-          className="absolute inset-0 bg-cover bg-center filter blur-xl brightness-50 -mt-3"
-          style={{ backgroundImage: "url(/assets/images/bg-blog.jpeg)" }}
-        ></div>
-        <div className="z-10 relative ">
-          <div className="flex justify-between md:justify-around mt-3 mr-5">
-            <img
-              src="/assets/images/blog.jpeg"
-              alt="Blog.jpeg"
-              className="w-16 -mt-3"
-            />
-            <div className="space-x-5">
-              <NavLink to="/log-in" className={"btnStyle"}>
-                Log in
-              </NavLink>
-              <NavLink to="/sign-up" className={"btnStyle"}>
-                Sign up
-              </NavLink>
+    <section className="landingContainer">
+      <div className="flex justify-between pt-8 mr-5 px-[5%] md:px-[15%] lg-[20%]">
+        <img
+          src={import.meta.env.VITE_PUBLIC_URL + "assets/images/blog.jpeg"}
+          alt="Blog.jpeg"
+          className="w-16 -mt-3"
+        />
+        <div className="space-x-5">
+          <NavLink to="/log-in" className="btnStyle">
+            Log in
+          </NavLink>
+          <NavLink to="/sign-up" className="btnStyle">
+            Sign up
+          </NavLink>
+        </div>
+      </div>
+
+      <div className="px-[10%] md:px-[20%] lg-[25%]">
+        <p className="bg-gradient-to-tr from-red-200 via-slate-400 to-stone-500 py-[8%] px-[10%] indent-1 font-bold text-sm rounded-[25%] md:text-base md:rounded-full">
+          Welcome to BlogSphere, your go-to platform for sharing ideas, stories,
+          and creativity with the world! Whether you&apos;re a seasoned writer
+          or just getting started, our user-friendly tools make it easy to
+          create, edit, and publish your content. Connect with a community of
+          readers and writers, engage through comments and discussions, and
+          explore a diverse range of topics. Start your blogging journey today
+          and let your voice be heard!
+        </p>
+
+        <div className="relative pr-2 p-6 mt-10 bg-gray-400 rounded-2xl overflow-hidden">
+          <img
+            src={
+              import.meta.env.VITE_PUBLIC_URL + "assets/images/unknown-user.jpg"
+            }
+            alt="user"
+            className="absolute top-0 left-0 w-10 h-10 rounded-br-2xl"
+          />
+
+          <div className="flex justify-between ml-5 mx-3">
+            <div className="flex flex-col capitalize">
+              <p className="capitalize text-xs md:text-sm ml-0.5">
+                by: Kalab Sisay
+              </p>
+              <div className="flex items-center space-x-1">
+                <h3 className="text-xl font-bold">Lorem</h3>
+              </div>
+            </div>
+            <p className="date-style">2 months ago</p>
+          </div>
+
+          <div className="my-2 px-3 ">
+            <p className="inline indent-1 break-words leading-4">
+              Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores
+              in nostrum possimus vero eius totam deleniti a suscipit vel,
+              voluptatibus molestiae velit aliquam distinctio, delectus nihil
+              repudiandae architecto ipsam natus!
+            </p>
+          </div>
+
+          <div className="flex justify-around items-center">
+            {/* Like */}
+            <div className="flex items-center">
+              {thumbsUp ? (
+                <FaHeart
+                  className="hover:text-blue-900 cursor-pointer"
+                  onClick={() => setThumbsUp(false)}
+                />
+              ) : (
+                <FaRegHeart
+                  className="hover:text-blue-900 cursor-pointer"
+                  onClick={() => {
+                    if (thumbsDown) {
+                      setThumbsDown(false);
+                      setDislikeCount((prev) => prev - 1);
+                    }
+                    setThumbsUp(true);
+                  }}
+                />
+              )}
+              <p className="ml-2">{formatNumber(2_119_998)}</p>
+            </div>
+
+            {/* Dislike */}
+            <div className="flex items-center">
+              {thumbsDown ? (
+                <FaHeartBroken
+                  className="hover:text-blue-900 cursor-pointer"
+                  onClick={() => {
+                    setDislikeCount((prev) => prev - 1);
+                    setThumbsDown(false);
+                  }}
+                />
+              ) : (
+                <FaHeartBroken
+                  className="hover:stroke-blue-900 stroke-[45px] stroke-black fill-transparent cursor-pointer"
+                  onClick={() => {
+                    setThumbsUp(false);
+                    setDislikeCount((prev) => prev + 1);
+                    setThumbsDown(true);
+                  }}
+                />
+              )}
+              <p className="ml-2">{formatNumber(dislikeCount)}</p>
             </div>
           </div>
 
-          <div>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Eveniet
-            est asperiores eum itaque? Temporibus autem dolore rerum libero
-            incidunt impedit architecto saepe? Quis ipsam, asperiores labore
-            quibusdam repudiandae vero consequatur?Lorem ipsum dolor, sit amet
-            consectetur adipisicing elit. Corporis ullam doloremque omnis
-            sapiente nostrum dignissimos placeat nesciunt? Tempora sint in quas,
-            ab impedit eum. Neque eum atque quaerat deserunt consectetur.
-          </div>
-
-          <div className="text-center">
+          {/* Comment form section */}
+          <div className="flex flex-col items-center pt-5 md:pt-10 my-2 mx-[10%] bg-gray-400 rounded-xl">
+            <form className="w-full flex justify-around">
+              <input
+                type="text"
+                placeholder="comment"
+                className="w-3/6 py-1 px-2 rounded-lg outline-none focus:ring-2 hover:ring-1 ring-white"
+              />
+              <NavLink
+                to="/sign-up"
+                type="submit"
+                className="bg-black text-white px-4 rounded-lg hover:bg-gray-900"
+              >
+                post
+              </NavLink>
+            </form>
             <NavLink
-              to="/log-in"
-              className="bg-yellow-200 font-semibold px-3 py-2 rounded-xl transform hover:bg-yellow-100"
+              to="/sign-up"
+              className="my-2 hover:underline underline-offset-2 cursor-pointer"
             >
-              Get Started
+              {formatNumber(2_222_999) + " Comments"}
             </NavLink>
           </div>
         </div>
       </div>
-    </>
+
+      <div className="text-center mt-16">
+        <NavLink
+          to="/log-in"
+          className="bg-red-500 text-white hover:bg-red-600 px-4 py-3 rounded-md"
+        >
+          Get Started
+        </NavLink>
+      </div>
+    </section>
   );
 };
 

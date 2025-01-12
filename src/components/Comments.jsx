@@ -6,12 +6,21 @@ import {
   FaThumbsDown,
   FaThumbsUp,
   FaReply,
+  FaTrashAlt,
 } from "react-icons/fa";
 import PropTypes from "prop-types";
 import { useParams } from "react-router-dom";
 import Replies from "./Replies";
+import { BeatLoader } from "react-spinners";
 
-const CommentsComp = ({ comment, setTrigger, relativeTime, formatNumber }) => {
+const CommentsComp = ({
+  comment,
+  setTrigger,
+  relativeTime,
+  formatNumber,
+  setCommentCount,
+  isHome,
+}) => {
   const [isReplying, setIsReplying] = useState(false);
   const [thumbsUp, setThumbsUp] = useState(false);
   const [thumbsDown, setThumbsDown] = useState(false);
@@ -20,6 +29,8 @@ const CommentsComp = ({ comment, setTrigger, relativeTime, formatNumber }) => {
   const [replyValue, setReplyValue] = useState("");
   const [replyCount, setReplyCount] = useState(comment.replies.length);
   const [showReplies, setShowReplies] = useState(false);
+  const [isDeletingComment, setIsDeletingComment] = useState(false);
+  const [isSendingReply, setIsSendingReply] = useState(false);
   const { id } = useParams();
 
   // for the like and dislike icons
@@ -31,7 +42,7 @@ const CommentsComp = ({ comment, setTrigger, relativeTime, formatNumber }) => {
     setThumbsDown(disliked);
   }, [comment, id]);
 
-  const url = `http://localhost:5000/likeDislike/${comment._id}`;
+  const url = `https://blog-backend-sandy-three.vercel.app/likeDislike/${comment._id}`;
   const handleRegThumbUpClick = async () => {
     setThumbsUp(true);
     setLikeCount((prev) => prev + 1);
@@ -112,16 +123,36 @@ const CommentsComp = ({ comment, setTrigger, relativeTime, formatNumber }) => {
   const handleSendReply = async (e) => {
     e.preventDefault();
     try {
+      setIsSendingReply(true);
       await axios.patch(url, {
         action: "reply",
         userId: id,
         reply: replyValue,
       });
+
+      setIsSendingReply(false);
       setReplyValue("");
       setReplyCount((prev) => prev + 1);
       setTrigger((prev) => !prev);
     } catch (error) {
+      setIsSendingReply(false);
       console.error("Error comming", error);
+    }
+  };
+
+  const handleDeleteComment = async () => {
+    const delUrl = `https://blog-backend-sandy-three.vercel.app/delete-comment/${encodeURIComponent(
+      comment._id
+    )}`;
+    setIsDeletingComment(true);
+    try {
+      await axios.delete(delUrl);
+      setIsDeletingComment(false);
+      setTrigger((prev) => !prev);
+      setCommentCount((prev) => prev - 1);
+    } catch (error) {
+      setIsDeletingComment(false);
+      console.error("Error deleting comment", error);
     }
   };
 
@@ -134,7 +165,8 @@ const CommentsComp = ({ comment, setTrigger, relativeTime, formatNumber }) => {
               src={
                 comment.buffer && comment.mimetype
                   ? `data:${comment.mimetype};base64,${comment.buffer}`
-                  : "/assets/images/unknown-user.jpg"
+                  : import.meta.env.VITE_PUBLIC_URL +
+                    "assets/images/unknown-user.jpg"
               }
               alt="user"
               className="w-5 h-5 rounded-full"
@@ -151,7 +183,9 @@ const CommentsComp = ({ comment, setTrigger, relativeTime, formatNumber }) => {
             {relativeTime(comment.timeStamp)}
           </p>
         </div>
-        <div className="flex justify-around items-center w-1/2 md:w-1/3">
+
+        {/* like dislike reply icons */}
+        <div className="flex justify-around items-center w-1/2 md:w-2/3">
           {thumbsUp ? (
             <FaThumbsUp
               size={12}
@@ -189,10 +223,23 @@ const CommentsComp = ({ comment, setTrigger, relativeTime, formatNumber }) => {
             onClick={() => setShowReplies((prev) => !prev)}
             className="-ml-3 hover:text-blue-400 cursor-pointer"
           >
-            {!isReplying && formatNumber(replyCount)}
+            {!isReplying && replyCount < 0
+              ? setReplyCount(0)
+              : formatNumber(replyCount)}
           </p>
+          {!isHome && (
+            <FaTrashAlt
+              size={12}
+              className={`hover:animate-pulse ${
+                isDeletingComment && "animate-spin"
+              }`}
+              onClick={handleDeleteComment}
+            />
+          )}
         </div>
       </div>
+
+      {/* Reply form section */}
       {isReplying && (
         <div className="flex flex-col items-center mx-[10%]">
           <form
@@ -209,16 +256,26 @@ const CommentsComp = ({ comment, setTrigger, relativeTime, formatNumber }) => {
             />
             <button
               type="submit"
+              disabled={isSendingReply}
               className="bg-blue-900 px-2 rounded-lg hover:bg-blue-800"
             >
-              reply
+              {isSendingReply ? (
+                <div className="flex items-end">
+                  <span>reply</span>
+                  <BeatLoader size={2} color="white" className="mb-1" />
+                </div>
+              ) : (
+                "reply"
+              )}
             </button>
           </form>
           <p
             onClick={() => setShowReplies((prev) => !prev)}
             className="my-2 hover:underline underline-offset-2 cursor-pointer"
           >
-            {replyCount !== 1
+            {replyCount < 0
+              ? setReplyCount(0)
+              : replyCount !== 1
               ? formatNumber(replyCount) + " Replies"
               : formatNumber(replyCount) + " Reply"}
           </p>
@@ -229,7 +286,7 @@ const CommentsComp = ({ comment, setTrigger, relativeTime, formatNumber }) => {
       <div className="flex flex-col items-center space-y-3">
         {showReplies ? (
           comment.replies.length === 0 ? (
-            <div className="text-sm text-red-300 text-center">No replies</div>
+            <p className="text-sm text-red-300 text-center">No replies</p>
           ) : (
             comment.replies.map(
               (reply) => (
@@ -240,6 +297,9 @@ const CommentsComp = ({ comment, setTrigger, relativeTime, formatNumber }) => {
                     reply={reply}
                     relativeTime={relativeTime}
                     isReplying={isReplying}
+                    setReplyCount={setReplyCount}
+                    setTrigger={setTrigger}
+                    isHome={isHome}
                   />
                 )
               )
@@ -258,6 +318,8 @@ CommentsComp.propTypes = {
   setTrigger: PropTypes.func,
   relativeTime: PropTypes.func,
   formatNumber: PropTypes.func,
+  setCommentCount: PropTypes.func,
+  isHome: PropTypes.bool,
 };
 
 export default CommentsComp;

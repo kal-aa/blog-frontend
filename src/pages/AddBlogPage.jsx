@@ -6,7 +6,7 @@ const AddBlogPage = () => {
   const navigage = useNavigate();
 
   const postBlog = async (formData, setIsPosting, setError) => {
-    const url = `http://localhost:5000/add-blog/${id}`;
+    const url = `https://blog-backend-sandy-three.vercel.app/add-blog/${id}`;
 
     setIsPosting(true);
     try {
@@ -30,12 +30,7 @@ const AddBlogPage = () => {
     }
   };
 
-  return (
-    <>
-   
-      <AddBlog postBlog={postBlog} />
-    </>
-  );
+  return <AddBlog postBlog={postBlog} />;
 };
 
 export default AddBlogPage;

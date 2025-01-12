@@ -8,7 +8,7 @@ const LoginPage = () => {
 
   const loginSubmit = (formData, setError, setIsLogging) => {
     setIsLogging(true);
-    const url = `http://localhost:5000/log-in?email=${encodeURIComponent(
+    const url = `https://blog-backend-sandy-three.vercel.app/log-in?email=${encodeURIComponent(
       formData.email
     )}&password=${encodeURIComponent(formData.password)}`;
 
@@ -30,7 +30,7 @@ const LoginPage = () => {
       })
       .then((data) => {
         setIsLogging(false);
-        navigate(`/home/${data.id}?loginName=${data.name}`); 
+        navigate(`/home/${data.id}?loginName=${data.name}`);
       })
       .catch((error) => {
         setIsLogging(false);
@@ -38,11 +38,7 @@ const LoginPage = () => {
       });
   };
 
-  return (
-    <>
-      <Login loginSubmit={loginSubmit} />
-    </>
-  );
+  return <Login loginSubmit={loginSubmit} />;
 };
 
 export default LoginPage;

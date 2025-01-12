@@ -1,9 +1,10 @@
 import { FaEllipsisV } from "react-icons/fa";
-import { NavLink, useMatch } from "react-router-dom";
+import { NavLink, useMatch, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 const Header = () => {
   const [elipsisClicked, setElipsisClicked] = useState(true);
+  const navigate = useNavigate();
   const matchHome = useMatch("/home/:id");
   const matchAddBlog = useMatch("/add-blog/:id");
   const matchYourBlogs = useMatch("/your-blogs/:id");
@@ -20,6 +21,15 @@ const Header = () => {
     matchContactUs?.params.id ||
     undefined;
 
+  const handleImgClick = () => {
+    const confirm = window.confirm(
+      "You are about to navigate to the signup page"
+    );
+    if (confirm) {
+      navigate("/sign-up");
+    }
+  };
+
   const isActive = ({ isActive }) =>
     isActive
       ? "header-hover text-black hover:text-black bg-blue-300 py-1 px-2"
@@ -27,16 +37,15 @@ const Header = () => {
 
   return (
     <>
-      <header className="fixed bg-blue-900 text-slate-300 top-0 left-0 right-0 h-24 flex justify-around items-center text-sm md:text-base font-bold z-20">
+      <header className="headerContainer">
         {/* Lef section of the header */}
         <div className="flex items-center ml-1">
-          <NavLink to="/sign-up">
-            <img
-              src={"/assets/images/blog.jpeg"}
-              alt="blog.jpeg"
-              className="w-16"
-            />
-          </NavLink>
+          <img
+            onClick={handleImgClick}
+            src={import.meta.env.VITE_PUBLIC_URL + "assets/images/blog.jpeg"}
+            alt="blog.jpeg"
+            className="w-16"
+          />
           <FaEllipsisV
             onClick={() => {
               setElipsisClicked((prev) => !prev);
