@@ -41,8 +41,8 @@ const Main = ({
   const [editTitleValue, setEditTitleValue] = useState(blog.title || "");
   const [editBodyValue, setEditBodyValue] = useState(blog.body || "");
   const [editTitlePen, setEditTitlePen] = useState(false);
-  const [readyToUpdate, setReadyToUpdate] = useState(false);
   const [editBodyPen, setEditBodyPen] = useState(false);
+  const [readyToUpdate, setReadyToUpdate] = useState(false);
   //
   const commentsRef = useRef(null);
   const pTagRef = useRef(null);

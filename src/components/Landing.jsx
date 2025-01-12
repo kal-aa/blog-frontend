@@ -1,11 +1,17 @@
 import { useState } from "react";
-import { FaHeart, FaHeartBroken, FaRegHeart } from "react-icons/fa";
+import { FaHeart, FaHeartBroken, FaRegEdit, FaRegHeart } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 
 const Landing = () => {
   const [thumbsUp, setThumbsUp] = useState(true);
   const [thumbsDown, setThumbsDown] = useState(false);
   const [dislikeCount, setDislikeCount] = useState(999);
+  const [editTitlePen, setEditTitlePen] = useState(false);
+  const [editBodyPen, setEditBodyPen] = useState(false);
+  const [title, setTitle] = useState("Lorem");
+  const [body, setBody] = useState(
+    "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores in nostrum possimus vero eius totam deleniti a suscipit vel, voluptatibus molestiae velit aliquam distinctio, delectus nihil repudiandae architecto ipsam natus!"
+  );
 
   const formatNumber = (x) => {
     if (x > 1_000_000_000) {
@@ -61,21 +67,43 @@ const Landing = () => {
               <p className="capitalize text-xs md:text-sm ml-0.5">
                 by: Kalab Sisay
               </p>
-              <div className="flex items-center space-x-1">
-                <h3 className="text-xl font-bold">Lorem</h3>
+              <div className="flex items-end space-x-1">
+                {editTitlePen ? (
+                  <input
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Title"
+                    className="w-1/3 p-1 rounded-lg ring-2 focus:bg-slate-300"
+                  />
+                ) : (
+                  <h3 className="text-xl font-bold">{title}</h3>
+                )}
+                <FaRegEdit
+                  onClick={() => setEditTitlePen((prev) => !prev)}
+                  size={13}
+                  className="mb-1"
+                />
               </div>
             </div>
             <p className="date-style">2 months ago</p>
           </div>
 
-          <div className="my-2 px-3 ">
-            <p className="inline indent-1 break-words leading-4">
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores
-              in nostrum possimus vero eius totam deleniti a suscipit vel,
-              voluptatibus molestiae velit aliquam distinctio, delectus nihil
-              repudiandae architecto ipsam natus!
-            </p>
-          </div>
+          {editBodyPen ? (
+            <textarea
+              rows={6}
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              placeholder="Your blog description"
+              className="inline w-3/4 p-2 mt-2 rounded-lg ring-4 focus:bg-slate-300"
+            />
+          ) : (
+            <h3 className="inline ml-2 indent-1">{body}</h3>
+          )}
+          <FaRegEdit
+            onClick={() => setEditBodyPen((prev) => !prev)}
+            size={13}
+            className="inline mb-1 ml-1"
+          />
 
           <div className="flex justify-around items-center">
             {/* Like */}
