@@ -182,7 +182,7 @@ const Landing = () => {
 
       <div className="text-center mt-16">
         <NavLink
-          to="/log-in"
+          to="/sign-up"
           className="bg-red-500 text-white hover:bg-red-600 px-4 py-3 rounded-md"
         >
           Get Started
