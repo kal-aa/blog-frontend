@@ -107,7 +107,7 @@ const HomePage = () => {
           <FaArrowLeft
             aria-label="Previous page"
             title="Previous page"
-            className={limit < 1 && "text-gray-500 pointer-events-none"}
+            className={limit < 1 && "text-gray-300 pointer-events-none"}
             onClick={() => {
               if (limit > 0) {
                 setLimit((prev) => prev - 1);
@@ -121,7 +121,7 @@ const HomePage = () => {
             aria-label="Next page"
             title="Next page"
             className={`${
-              limit >= totalPages - 1 && "text-gray-500 pointer-events-none"
+              limit >= totalPages - 1 && "text-gray-300 pointer-events-none"
             }`}
             onClick={() => {
               if (limit < totalPages - 1) {
