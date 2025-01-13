@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
 import { FaCheck, FaLock, FaPlus } from "react-icons/fa";
+import { BeatLoader } from "react-spinners";
 
 const ManageYourAcc = ({
   formData,
@@ -12,6 +13,7 @@ const ManageYourAcc = ({
   data,
 }) => {
   const [preview, setPreview] = useState("");
+  const [isCheckingPassword, setIsCheckingPassword] = useState(false);
 
   const { password, setPassword, passwordError, isPasswordConfirmed } =
     passwordProps;
@@ -35,7 +37,7 @@ const ManageYourAcc = ({
     <div className="flex items-center justify-center relative">
       {/* The mini password authuntication form */}
       <form
-        onSubmit={handlePasswordSubmit}
+        onSubmit={(e) => handlePasswordSubmit(e, setIsCheckingPassword)}
         className={isPasswordConfirmed ? "hidden" : " absolute z-10"}
       >
         <div className="bg-black p-10 shadow-black drop-shadow-xl rounded-xl -mt-32">
@@ -60,9 +62,21 @@ const ManageYourAcc = ({
           <div className="text-center">
             <button
               type="submit"
+              disabled={isCheckingPassword}
               className="bg-blue-900 text-white px-5 py-1 mt-2 rounded-lg hover:scale-105"
             >
-              Go
+              {isCheckingPassword ? (
+                <div className="flex items-end">
+                  <span>go</span>
+                  <BeatLoader
+                    size={5}
+                    color="white"
+                    className="w-4 mb-0.5 ml-0.5"
+                  />
+                </div>
+              ) : (
+                "Go"
+              )}
             </button>
           </div>
         </div>
@@ -179,14 +193,25 @@ const ManageYourAcc = ({
           <p className="text-xs text-red-500 md:ml-[148px]">
             {passwordError || "\u00A0"}
           </p>
-          <div className=" flex flex-col items-center justify-center space-y-3 md:flex-row-reverse md:space-y-0">
+          <div className="flex flex-col items-center justify-center space-y-3 md:flex-row-reverse md:space-y-0">
             <button
               type="submit"
               name="update"
               className="manage-acc-btn"
               disabled={isUpdating}
             >
-              {isUpdating ? "Updating..." : "Update"}
+              {isUpdating ? (
+                <div className="flex items-end justify-center">
+                  <span>update</span>
+                  <BeatLoader
+                    size={8}
+                    color="white"
+                    className="w-4 mb-0.5 ml-0.5"
+                  />
+                </div>
+              ) : (
+                "Update"
+              )}
             </button>
             <button
               type="submit"
@@ -194,7 +219,18 @@ const ManageYourAcc = ({
               className="manage-acc-btn md:mr-5"
               disabled={isDeleting}
             >
-              {isDeleting ? "Deleting..." : "Delete"}
+              {isDeleting ? (
+                <div className="flex items-end justify-center">
+                  <span>delete</span>
+                  <BeatLoader
+                    size={8}
+                    color="white"
+                    className="w-4 mb-0.5 ml-0.5"
+                  />
+                </div>
+              ) : (
+                "Delete"
+              )}
             </button>
           </div>
         </fieldset>

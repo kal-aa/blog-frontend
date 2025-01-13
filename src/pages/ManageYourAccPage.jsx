@@ -52,7 +52,7 @@ const ManageYourAccPage = () => {
   };
 
   //  for the mini Authentication
-  const handlePasswordSubmit = (e) => {
+  const handlePasswordSubmit = (e, setIsCheckingPassword) => {
     e.preventDefault();
 
     if (password.length < 8) {
@@ -66,6 +66,7 @@ const ManageYourAccPage = () => {
     const url = `https://blog-backend-sandy-three.vercel.app/manage-account-password/${id}?password=${encodeURIComponent(
       password
     )}`;
+    setIsCheckingPassword(true);
     fetch(url)
       .then((res) => {
         if (!res.ok) {
@@ -81,9 +82,11 @@ const ManageYourAccPage = () => {
         return res.json();
       })
       .then((data) => {
+        setIsCheckingPassword(false);
         setData(data);
       })
       .catch((error) => {
+        setIsCheckingPassword(false);
         console.error("Error comparing password", error);
       });
   };
@@ -206,7 +209,7 @@ const ManageYourAccPage = () => {
 
           setIsUpdating(false);
           toast("Updated successfully!");
-          navigate(`/home/${id}`);
+          // navigate(`/home/${id}`);
         })
         .catch((error) => {
           setIsUpdating(false);
