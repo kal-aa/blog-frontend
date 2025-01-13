@@ -190,12 +190,12 @@ const Main = ({
   const handleSeeMore = async () => {
     setExpand(true);
     if (!blog.views.includes(id)) {
-      setViewCount((prev) => prev + 1);
       try {
         await axios.patch(url, {
           action: "addView",
           userId: id,
         });
+        setViewCount((prev) => prev + 1);
         setTrigger((prev) => !prev);
       } catch (error) {
         console.error("Error adding view:", error);
