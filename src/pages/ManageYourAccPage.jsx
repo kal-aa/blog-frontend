@@ -209,7 +209,7 @@ const ManageYourAccPage = () => {
 
           setIsUpdating(false);
           toast("Updated successfully!");
-          // navigate(`/home/${id}`);
+          navigate(`/home/${id}`);
         })
         .catch((error) => {
           setIsUpdating(false);

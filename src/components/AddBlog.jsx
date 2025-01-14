@@ -30,6 +30,7 @@ const AddBlog = ({ postBlog }) => {
     formData.title = formData.title.replace(/\s+/g, " ").trim();
     if (formData.body.length < 100) {
       setBodyError(true);
+      return;
     } else {
       setBodyError(false);
     }
@@ -38,58 +39,58 @@ const AddBlog = ({ postBlog }) => {
   };
 
   return (
-      <div className="signupContainer">
-        <div className={error && "errorStyle"}>{error}</div>
-        <h1 className="text-3xl font-bold">Share your ideas</h1>
+    <div className="signupContainer">
+      <div className={error && "errorStyle"}>{error}</div>
+      <h1 className="text-3xl font-bold">Share your ideas</h1>
 
-        <form onSubmit={handleSubmit} className="w-full">
-          <label htmlFor="title">Title:</label>
-          <input
-            type="title"
-            name="title"
-            id="title"
-            value={formData.title}
+      <form onSubmit={handleSubmit} className="w-full">
+        <label htmlFor="title">Title:</label>
+        <input
+          type="title"
+          name="title"
+          id="title"
+          value={formData.title}
+          onChange={handleChange}
+          required
+          placeholder="Your blog title"
+          className="inputStyle bg-slate-100"
+        />
+        <label htmlFor="body">
+          Body: {passCheck && <AiOutlineCheck className="inline mb-1" />}
+          {bodyError && (
+            <span className="text-red-500 ml-2">100 characters or more</span>
+          )}
+        </label>
+        <div className="relative">
+          <textarea
+            rows="5"
+            type="body"
+            name="body"
+            id="body"
+            value={formData.body}
             onChange={handleChange}
             required
-            placeholder="Your blog title"
+            placeholder="Write a description for your blog (100 characters or more)"
             className="inputStyle bg-slate-100"
           />
-          <label htmlFor="body">
-            Body: {passCheck && <AiOutlineCheck className="inline mb-1" />}
-            {bodyError && (
-              <span className="text-red-500 ml-2">100 characters or more</span>
-            )}
-          </label>
-          <div className="relative">
-            <textarea
-              rows="5"
-              type="body"
-              name="body"
-              id="body"
-              value={formData.body}
-              onChange={handleChange}
-              required
-              placeholder="Write a description for your blog (100 characters or more)"
-              className="inputStyle bg-slate-100"
-            />
-          </div>
-          <button
-            disabled={isPosting}
-            className={`w-full rounded-md bg-black text-white py-2 mt-2 ${
-              !isPosting && "hover:scale-95"
-            } transition-all duration-200 ease-out`}
-          >
-            {isPosting ? (
-              <div className="flex justify-center items-end">
-                <span>post</span>
-                <BeatLoader size={5} color="white" className="mb-1 w-5" />
-              </div>
-            ) : (
-              "Post"
-            )}
-          </button>
-        </form>
-      </div>
+        </div>
+        <button
+          disabled={isPosting}
+          className={`w-full rounded-md bg-black text-white py-2 mt-2 ${
+            !isPosting && "hover:scale-95"
+          } transition-all duration-200 ease-out`}
+        >
+          {isPosting ? (
+            <div className="flex justify-center items-end">
+              <span>post</span>
+              <BeatLoader size={5} color="white" className="mb-1 w-5" />
+            </div>
+          ) : (
+            "Post"
+          )}
+        </button>
+      </form>
+    </div>
   );
 };
 
