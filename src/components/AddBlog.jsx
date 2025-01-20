@@ -9,6 +9,7 @@ const AddBlog = ({ postBlog }) => {
   const [passCheck, setPassCheck] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({ title: "", body: "" });
+  const [isOnline, setIsOnline] = useState(true);
 
   useEffect(() => {
     if (formData.body.replace(/\s+/g, " ").trim().length >= 100) {
@@ -25,6 +26,15 @@ const AddBlog = ({ postBlog }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!navigator.onLine) {
+      setIsOnline(false);
+      setTimeout(() => {
+        setIsOnline(true);
+      }, 3000);
+      return;
+    } else {
+      setIsOnline(true);
+    }
 
     formData.body = formData.body.replace(/\s+/g, " ").trim();
     formData.title = formData.title.replace(/\s+/g, " ").trim();
@@ -40,7 +50,10 @@ const AddBlog = ({ postBlog }) => {
 
   return (
     <div className="signupContainer">
-      <div className={error && "errorStyle"}>{error}</div>
+      {!isOnline && (
+        <p className="noConnection mx-[10%]">No internet connection</p>
+      )}
+      <div className={isOnline && error && "errorStyle"}>{error}</div>
       <h1 className="text-3xl font-bold">Share your ideas</h1>
 
       <form onSubmit={handleSubmit} className="w-full">

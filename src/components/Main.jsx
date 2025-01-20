@@ -22,8 +22,6 @@ const Main = ({
   isHome = true,
   handleDelete,
   handleUpdate,
-  isUpdating,
-  isDeleting,
   updateError,
 }) => {
   const [commentValue, setCommentValue] = useState("");
@@ -43,6 +41,8 @@ const Main = ({
   const [editTitlePen, setEditTitlePen] = useState(false);
   const [editBodyPen, setEditBodyPen] = useState(false);
   const [readyToUpdate, setReadyToUpdate] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   //
   const commentsRef = useRef(null);
   const pTagRef = useRef(null);
@@ -494,7 +494,12 @@ const Main = ({
           <div className="flex justify-around mt-5">
             <button
               onClick={() =>
-                handleUpdate(blog, setEditTitlePen, setEditBodyPen)
+                handleUpdate(
+                  blog,
+                  setEditTitlePen,
+                  setEditBodyPen,
+                  setIsUpdating
+                )
               }
               disabled={!readyToUpdate || isUpdating}
               className={`text-white px-3 py-1 rounded-lg ${
@@ -515,7 +520,7 @@ const Main = ({
               )}
             </button>
             <button
-              onClick={() => handleDelete(blog._id)}
+              onClick={() => handleDelete(blog._id, setIsDeleting)}
               disabled={isDeleting}
               className="text-white px-3 py-1 rounded-lg bg-gray-600 hover:bg-gray-800"
             >

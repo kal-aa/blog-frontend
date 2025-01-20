@@ -62,3 +62,7 @@ body {
 .date-style {
   @apply border-black -mt-6 -mr-5 mb-4 py-4 px-5 min-w-28 bg-black text-white text-sm font-black rounded-bl-3xl
 }
+
+.noConnection {
+  @apply border border-b-4 border-l-4 border-black p-2 rounded-full text-center
+}

@@ -7,13 +7,19 @@ const YourBlogsPage = () => {
   const [trigger, setTrigger] = useState(false);
   const [isFetchingBlogs, setIsFetchingBlogs] = useState(true);
   const [data, setData] = useState([]);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
   const [updateError, setUpdateError] = useState("");
+  const [isOnline, setIsOnline] = useState(true);
   const { id } = useParams();
 
   //  fetch blogs(your blogs)
   useEffect(() => {
+    if (!navigator.onLine) {
+      setIsOnline(false);
+      return;
+    } else {
+      setIsOnline(true);
+    }
+
     const fetchBlogs = async () => {
       try {
         setIsFetchingBlogs(true);
@@ -33,7 +39,7 @@ const YourBlogsPage = () => {
   }, [id, trigger]);
 
   // Delete
-  const handleDelete = async (blogId) => {
+  const handleDelete = async (blogId, setIsDeleting) => {
     const confirm = window.confirm(
       "Are you sure you want to delete this blog?"
     );
@@ -55,7 +61,12 @@ const YourBlogsPage = () => {
   };
 
   // Update
-  const handleUpdate = async (blog, setEditTitlePen, setEditBodyPen) => {
+  const handleUpdate = async (
+    blog,
+    setEditTitlePen,
+    setEditBodyPen,
+    setIsUpdating
+  ) => {
     const updateData = {
       blogId: blog._id,
       title: blog.editTitleValue,
@@ -91,13 +102,17 @@ const YourBlogsPage = () => {
 
   return (
     <div>
+      {!isOnline && (
+        <p className="noConnection mx-[10%]">No internet connection</p>
+      )}
       {/* Check the fetching status and give info accordingly */}
-      {isFetchingBlogs ? (
+      {isOnline && isFetchingBlogs ? (
         <div className="flex flex-col justify-center items-center text-blue-800 min-h-[50vh]">
           <RingLoader color="darkBlue" size={100} speedMultiplier={1.5} />
           <p>please wait...</p>
         </div>
       ) : (
+        isOnline &&
         data.length === 0 && (
           <p className="text-center text-xl">
             Add your
@@ -125,8 +140,6 @@ const YourBlogsPage = () => {
               isHome={false}
               handleDelete={handleDelete}
               handleUpdate={handleUpdate}
-              isUpdating={isUpdating}
-              isDeleting={isDeleting}
               updateError={updateError}
             />
           ))}

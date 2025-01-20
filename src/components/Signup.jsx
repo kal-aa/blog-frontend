@@ -18,6 +18,7 @@ const Signup = ({ signupSubmit }) => {
   const [error, setError] = useState("");
   const [isSigning, setIsSigning] = useState(false);
   const [preview, setPreview] = useState("");
+  const [isOnline, setIsOnline] = useState(true);
   const fullnameRef = useRef(null);
 
   const handleChange = (e) => {
@@ -58,6 +59,15 @@ const Signup = ({ signupSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!navigator.onLine) {
+      setIsOnline(false);
+      setTimeout(() => {
+        setIsOnline(true);
+      }, 3000);
+      return;
+    } else {
+      setIsOnline(true);
+    }
 
     const name = formData.name;
     const fullName = name.trim().split(" ");
@@ -86,8 +96,9 @@ const Signup = ({ signupSubmit }) => {
   };
 
   return (
-    <div className="signupContainer">
-      <div className={error && "errorStyle"}>{error}</div>
+    <div className="signupContainer relative">
+      {!isOnline && <p className="noConnection">No internet connection</p>}
+      <div className={isOnline && error && "errorStyle"}>{error}</div>
       <h1 className="text-3xl font-bold">Welcome</h1>
 
       {/* signup form */}

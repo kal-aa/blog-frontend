@@ -12,6 +12,7 @@ const Login = ({ loginSubmit }) => {
     email: "",
     password: "",
   });
+  const [isOnline, setIsOnline] = useState(true);
 
   const handleChange = (e) => {
     const { value, name } = e.target;
@@ -20,6 +21,15 @@ const Login = ({ loginSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!navigator.onLine) {
+      setIsOnline(false);
+      setTimeout(() => {
+        setIsOnline(true);
+      }, 3000);
+      return;
+    } else {
+      setIsOnline(true);
+    }
 
     if (formData.password.length < 8) {
       setPasswordShould("Password must be greater than 8 characters");
@@ -33,8 +43,9 @@ const Login = ({ loginSubmit }) => {
 
   return (
     <div className="signupContainer">
+      {!isOnline && <p className="noConnection">No internet connection</p>}
       <h1 className="text-3xl font-bold">Welcome Back</h1>
-      <div className={error && "errorStyle"}>{error}</div>
+      <div className={isOnline && error && "errorStyle"}>{error}</div>
 
       {/* login form */}
       <form onSubmit={handleSubmit} className="w-full">

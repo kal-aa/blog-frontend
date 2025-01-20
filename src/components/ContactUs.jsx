@@ -20,6 +20,8 @@ const ContactUs = () => {
           methods below.
         </p>
       </div>
+
+      {/* Phone no. */}
       <section className="border-b-4 pb-2 my-6 md:inline-block md:mr-[3%]">
         <h2 className="text-xl md:mr-2">Phone:</h2>
         <a href="tel: +251968350741">
@@ -28,6 +30,8 @@ const ContactUs = () => {
         </a>
         <p>Availabel: Monday to Monday, 9:00 AM - 5:00 PM</p>
       </section>
+
+      {/* Email address */}
       <section className="border-b-4 pb-2 md:inline-block md:ml-[3%]">
         <div>
           <h2 className="text-xl md:mr-2">Email:</h2>
@@ -40,6 +44,8 @@ const ContactUs = () => {
           <p>We aim to respond within 24 hours</p>
         </div>
       </section>
+
+      {/* Address */}
       <section className="my-6 border-b-4 pb-2">
         <h2 className="text-xl">Address:</h2>
         <FaMapMarker className="inline mr-2 mb-1 text-red-500" />
@@ -47,23 +53,25 @@ const ContactUs = () => {
           Ethiopia, Qobo<span className="text-xs">(for the time being)</span>
         </p>
       </section>
+
+      {/* Other social medias */}
       <section>
         <h2 className="text-xl">Social Media</h2>
         <p>Follow us on social media for the latest updates</p>
         <div className="flex flex-col gap-1 mt-2 pl-5 md:items-center">
-          <a href="">
+          <a>
             <p className={socailMediaStyle}>Instagram</p>
             <FaInstagram className="inline text-purple-900 ml-1" />
           </a>
-          <a href="">
+          <a>
             <p className={socailMediaStyle}>Facebook</p>
             <FaFacebook className="inline text-blue-800 mb-1 ml-1" />
           </a>
-          <a href="">
+          <a>
             <p className={socailMediaStyle}>Twitter</p>
             <FaTwitter className="inline text-blue-900 mb-1 ml-1" />
           </a>
-          <a href="">
+          <a>
             <p className={socailMediaStyle}>Linkedin </p>
             <FaLinkedin className="inline text-blue-600 mb-1" />
           </a>

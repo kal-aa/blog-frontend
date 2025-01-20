@@ -88,7 +88,7 @@ const ManageYourAcc = ({
         className={
           isPasswordConfirmed
             ? "mt-5 max-w-xl signup-form bg-stone-50 p-10 rounded-md drop-shadow-2xl"
-            : "mt-5 max-w-xl signup-form bg-stone-50 p-10 rounded-md drop-shadow-2xl filter blur-sm"
+            : "mt-5 max-w-xl signup-form bg-stone-50 p-10 rounded-md drop-shadow-2xl filter blur-sm pointer-events-none"
         }
       >
         <fieldset disabled={!isPasswordConfirmed}>

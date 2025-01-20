@@ -11,6 +11,7 @@ const HomePage = () => {
   const [trigger, setTrigger] = useState(false);
   const [limit, setLimit] = useState(0);
   const [totalPages, setTotalPages] = useState(Number);
+  const [isOnline, setIsOnline] = useState(true);
   const hasShownLoginToast = useRef(false);
   const hasShownSignupToast = useRef(false);
   const location = useLocation();
@@ -43,6 +44,13 @@ const HomePage = () => {
 
   //  fetch data
   useEffect(() => {
+    if (!navigator.onLine) {
+      setIsOnline(false);
+      return;
+    } else {
+      setIsOnline(true);
+    }
+
     async function fetchBlogs() {
       try {
         setIsFetchingBlogs(true);
@@ -66,13 +74,18 @@ const HomePage = () => {
 
   return (
     <div>
+      {!isOnline && (
+        <p className="noConnection mx-[10%]">No internet connection</p>
+      )}
+
       {/* Check fetching status and give response */}
-      {isFetchingBlogs ? (
+      {isOnline && isFetchingBlogs ? (
         <div className="flex flex-col justify-center items-center text-blue-800 min-h-[50vh]">
           <RingLoader color="darkBlue" size={100} speedMultiplier={1.5} />
           <p>please wait...</p>
         </div>
       ) : (
+        isOnline &&
         data.length === 0 && (
           <p className="text-center text-xl">
             No Blogs Available, be the
