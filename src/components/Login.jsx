@@ -23,9 +23,6 @@ const Login = ({ loginSubmit }) => {
     e.preventDefault();
     if (!navigator.onLine) {
       setIsOnline(false);
-      setTimeout(() => {
-        setIsOnline(true);
-      }, 3000);
       return;
     } else {
       setIsOnline(true);
@@ -45,7 +42,7 @@ const Login = ({ loginSubmit }) => {
     <div className="signupContainer">
       {!isOnline && <p className="noConnection">No internet connection</p>}
       <h1 className="text-3xl font-bold">Welcome Back</h1>
-      <div className={isOnline && error && "errorStyle"}>{error}</div>
+      <div className={error ? "errorStyle" : undefined}>{error}</div>
 
       {/* login form */}
       <form onSubmit={handleSubmit} className="w-full">

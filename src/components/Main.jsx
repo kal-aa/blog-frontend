@@ -10,7 +10,7 @@ import {
 } from "react-icons/fa";
 import { MdExpandLess, MdExpandMore } from "react-icons/md";
 import { formatDistanceToNow } from "date-fns";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CommentsComp from "./Comments";
 import PropTypes from "prop-types";
 import { BeatLoader } from "react-spinners";
@@ -19,6 +19,7 @@ const Main = ({
   blog,
   comments,
   setTrigger,
+  setUserOfInterest,
   isHome = true,
   handleDelete,
   handleUpdate,
@@ -46,6 +47,7 @@ const Main = ({
   //
   const commentsRef = useRef(null);
   const pTagRef = useRef(null);
+  const navigate = useNavigate();
   const { id } = useParams();
 
   const relativeTime = (x) => {
@@ -230,6 +232,15 @@ const Main = ({
       {/* profile pic */}
       {isHome && (
         <img
+          onClick={() => {
+            // navigate to the clicked user's blogs
+            if (id !== blog.authorId) {
+              setUserOfInterest(blog.authorId);
+              setTrigger((prev) => !prev);
+            } else {
+              navigate(`/your-blogs/${id}`);
+            }
+          }}
           src={
             blog.buffer && blog.mimetype
               ? `data:${blog.mimetype};base64,${blog.buffer}`
@@ -237,12 +248,12 @@ const Main = ({
                 "assets/images/unknown-user.jpg"
           }
           alt="user"
-          className="absolute top-0 left-0 w-10 h-10  rounded-br-2xl"
+          className="absolute top-0 left-0 w-10 h-10  rounded-br-2xl cursor-pointer"
         />
       )}
 
       <div className="flex justify-between ml-5 mx-3">
-        {/* Right section */}
+        {/* Top Right section */}
         <div className="flex flex-col capitalize">
           {isHome && !expand && (
             <p className="capitalize text-xs md:text-sm ml-0.5">
@@ -284,7 +295,7 @@ const Main = ({
           )}
         </div>
 
-        {/* Left section */}
+        {/* Top Left section */}
         <p className="date-style">{relativeTime(blog.createdAt)}</p>
       </div>
 
@@ -380,6 +391,7 @@ const Main = ({
                           relativeTime={relativeTime}
                           formatNumber={formatNumber}
                           setCommentCount={setCommentCount}
+                          setUserOfInterest={setUserOfInterest}
                           isHome={isHome}
                         />
                       )
@@ -452,13 +464,13 @@ const Main = ({
         <div className="mt-2">
           <span
             onClick={() => setExpand(false)}
-            className="inline text-blue-800 hover:text-blue-600 ml-3"
+            className="inline text-blue-800 hover:text-blue-600 ml-3 cursor-pointer"
           >
             {expand && "Less"}
           </span>
           <span
             onClick={handleSeeMore}
-            className="text-blue-800 hover:text-blue-600"
+            className="text-blue-800 hover:text-blue-600 cursor-pointer"
           >
             {!expand && "See more"}
           </span>
@@ -554,6 +566,7 @@ Main.propTypes = {
   blog: PropTypes.object,
   comments: PropTypes.array,
   setTrigger: PropTypes.func,
+  setUserOfInterest: PropTypes.func,
   isHome: PropTypes.bool,
   handleDelete: PropTypes.func,
   handleUpdate: PropTypes.func,

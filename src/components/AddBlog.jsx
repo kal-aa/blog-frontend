@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { AiOutlineCheck } from "react-icons/ai";
 import PropTypes from "prop-types";
+import IsOnline from "./IsOnline";
 
 const AddBlog = ({ postBlog }) => {
   const [isPosting, setIsPosting] = useState(false);
@@ -9,7 +10,7 @@ const AddBlog = ({ postBlog }) => {
   const [passCheck, setPassCheck] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({ title: "", body: "" });
-  const [isOnline, setIsOnline] = useState(true);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   useEffect(() => {
     if (formData.body.replace(/\s+/g, " ").trim().length >= 100) {
@@ -26,20 +27,13 @@ const AddBlog = ({ postBlog }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!navigator.onLine) {
-      setIsOnline(false);
-      setTimeout(() => {
-        setIsOnline(true);
-      }, 3000);
-      return;
-    } else {
-      setIsOnline(true);
-    }
 
     formData.body = formData.body.replace(/\s+/g, " ").trim();
     formData.title = formData.title.replace(/\s+/g, " ").trim();
     if (formData.body.length < 100) {
       setBodyError(true);
+      return;
+    } else if (!isOnline) {
       return;
     } else {
       setBodyError(false);
@@ -50,12 +44,15 @@ const AddBlog = ({ postBlog }) => {
 
   return (
     <div className="signupContainer">
-      {!isOnline && (
-        <p className="noConnection mx-[10%]">No internet connection</p>
-      )}
-      <div className={isOnline && error && "errorStyle"}>{error}</div>
-      <h1 className="text-3xl font-bold">Share your ideas</h1>
+      {/* check whether user is online */}
+      <IsOnline isOnline={isOnline} setIsOnline={setIsOnline} />
 
+      {/* show Error */}
+      <div className={error ? "errorStyle" : undefined}>
+        {error}
+      </div>
+      
+      <h1 className="text-3xl font-bold">Share your ideas</h1>
       <form onSubmit={handleSubmit} className="w-full">
         <label htmlFor="title">Title:</label>
         <input
@@ -88,6 +85,7 @@ const AddBlog = ({ postBlog }) => {
           />
         </div>
         <button
+          type="submit"
           disabled={isPosting}
           className={`w-full rounded-md bg-black text-white py-2 mt-2 ${
             !isPosting && "hover:scale-95"

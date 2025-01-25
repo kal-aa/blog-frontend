@@ -51,7 +51,7 @@ const ManageYourAccPage = () => {
     }
   };
 
-  //  for the mini Authentication
+  //  check the mini Authentication's password and fetch the data
   const handlePasswordSubmit = (e, setIsCheckingPassword) => {
     e.preventDefault();
 
@@ -157,7 +157,13 @@ const ManageYourAccPage = () => {
         return;
       }
 
-      if (formData.password !== formData.confirmPassword) {
+      if (formData.password.length < 8) {
+        setPasswordError("Should be > 8 characters");
+        setTimeout(() => {
+          setPasswordError("");
+        }, 3000);
+        return;
+      } else if (formData.password !== formData.confirmPassword) {
         setPasswordError("password does not match");
         setTimeout(() => {
           setPasswordError("");
@@ -169,7 +175,8 @@ const ManageYourAccPage = () => {
       const updateData = {
         name: formData.name,
         email: formData.email,
-        password: formData.password,
+        newPassword: formData.password,
+        Oldpassword: password,
       };
 
       const submissionDataWithFile = new FormData();

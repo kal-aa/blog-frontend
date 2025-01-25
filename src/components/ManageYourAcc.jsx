@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
 import { FaCheck, FaLock, FaPlus } from "react-icons/fa";
-import { BeatLoader } from "react-spinners";
+import { BeatLoader, ClipLoader } from "react-spinners";
 
 const ManageYourAcc = ({
   formData,
@@ -95,6 +95,12 @@ const ManageYourAcc = ({
           <p className="text-red-600 max-w-60 break-words text-center leading-4 mb-2 md:max-w-80 md:px-2 md:ml-10">
             {badManageRequest || "\u00A0"}
           </p>
+
+          {/* loader while the password is checked and data is fetched */}
+          {isCheckingPassword && (
+            <ClipLoader className="absolute top-[40%] left-[40%]" />
+          )}
+
           <div className="flex justify-center items-center">
             <input
               type="file"

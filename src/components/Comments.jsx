@@ -9,7 +9,7 @@ import {
   FaTrashAlt,
 } from "react-icons/fa";
 import PropTypes from "prop-types";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Replies from "./Replies";
 import { BeatLoader } from "react-spinners";
 
@@ -19,6 +19,7 @@ const CommentsComp = ({
   relativeTime,
   formatNumber,
   setCommentCount,
+  setUserOfInterest,
   isHome,
 }) => {
   const [isReplying, setIsReplying] = useState(false);
@@ -28,9 +29,12 @@ const CommentsComp = ({
   const [dislikeCount, setDislikeCount] = useState(comment.dislikes.length);
   const [replyValue, setReplyValue] = useState("");
   const [replyCount, setReplyCount] = useState(comment.replies.length);
+  const [commentValue] = useState(comment.comment);
+  const [isFullComment, setIsFullComment] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
   const [isDeletingComment, setIsDeletingComment] = useState(false);
   const [isSendingReply, setIsSendingReply] = useState(false);
+  const navigate = useNavigate();
   const { id } = useParams();
 
   // for the like and dislike icons
@@ -162,6 +166,12 @@ const CommentsComp = ({
         <div className="md:w-2/3">
           <div className="flex items-center space-x-1">
             <img
+              onClick={() => {
+                // navigate to the clicked user's blogs
+                if (id === comment.commenterId) {
+                  navigate(`/your-blogs/${id}`);
+                } else setUserOfInterest(comment.commenterId);
+              }}
               src={
                 comment.buffer && comment.mimetype
                   ? `data:${comment.mimetype};base64,${comment.buffer}`
@@ -169,7 +179,7 @@ const CommentsComp = ({
                     "assets/images/unknown-user.jpg"
               }
               alt="user"
-              className="w-5 h-5 rounded-full"
+              className="w-5 h-5 rounded-full cursor-pointer"
             />
             <p className="text-xs text-red-200">
               {comment.authorId === comment.commenterId
@@ -178,7 +188,16 @@ const CommentsComp = ({
             </p>
           </div>
 
-          <p className="text-sm">{comment.comment}</p>
+          {/* make the comment shorter (...) */}
+          <p
+            onClick={() => setIsFullComment((prev) => !prev)}
+            className="text-sm indent-1"
+          >
+            {isFullComment ? commentValue : commentValue.slice(0, 15) + "..."}
+            <span className="ml-1 text-blue-300 text-xs hover:text-blue-400 cursor-pointer">
+              {!isFullComment && "-see more-"}
+            </span>
+          </p>
           <p className="text-xs text-red-300">
             {relativeTime(comment.timeStamp)}
           </p>
@@ -299,6 +318,7 @@ const CommentsComp = ({
                     isReplying={isReplying}
                     setReplyCount={setReplyCount}
                     setTrigger={setTrigger}
+                    setUserOfInterest={setUserOfInterest}
                     isHome={isHome}
                   />
                 )
@@ -319,6 +339,7 @@ CommentsComp.propTypes = {
   relativeTime: PropTypes.func,
   formatNumber: PropTypes.func,
   setCommentCount: PropTypes.func,
+  setUserOfInterest: PropTypes.func,
   isHome: PropTypes.bool,
 };
 

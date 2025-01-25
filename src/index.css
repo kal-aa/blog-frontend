@@ -64,5 +64,5 @@ body {
 }
 
 .noConnection {
-  @apply border border-b-4 border-l-4 border-black p-2 rounded-full text-center
+  @apply border-b-4 border-black p-2  text-center mx-[20%] font-bold
 }

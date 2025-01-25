@@ -2,24 +2,18 @@ import { useEffect, useState } from "react";
 import { NavLink, useParams } from "react-router-dom";
 import { RingLoader } from "react-spinners";
 import Main from "../components/Main";
+import IsOnline from "../components/IsOnline";
 
 const YourBlogsPage = () => {
   const [trigger, setTrigger] = useState(false);
   const [isFetchingBlogs, setIsFetchingBlogs] = useState(true);
   const [data, setData] = useState([]);
   const [updateError, setUpdateError] = useState("");
-  const [isOnline, setIsOnline] = useState(true);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
   const { id } = useParams();
 
   //  fetch blogs(your blogs)
   useEffect(() => {
-    if (!navigator.onLine) {
-      setIsOnline(false);
-      return;
-    } else {
-      setIsOnline(true);
-    }
-
     const fetchBlogs = async () => {
       try {
         setIsFetchingBlogs(true);
@@ -35,8 +29,8 @@ const YourBlogsPage = () => {
         console.log("Error fetching blogs", error);
       }
     };
-    fetchBlogs();
-  }, [id, trigger]);
+    isOnline && fetchBlogs();
+  }, [id, trigger, isOnline]);
 
   // Delete
   const handleDelete = async (blogId, setIsDeleting) => {
@@ -102,9 +96,8 @@ const YourBlogsPage = () => {
 
   return (
     <div>
-      {!isOnline && (
-        <p className="noConnection mx-[10%]">No internet connection</p>
-      )}
+      <IsOnline isOnline={isOnline} setIsOnline={setIsOnline} />
+
       {/* Check the fetching status and give info accordingly */}
       {isOnline && isFetchingBlogs ? (
         <div className="flex flex-col justify-center items-center text-blue-800 min-h-[50vh]">
