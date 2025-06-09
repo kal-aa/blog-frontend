@@ -3,12 +3,12 @@
 @tailwind utilities;
 
 body {
-  font-family: mono
+  font-family: mono;
 }
 
 /* landing page */
 .landingContainer {
-  @apply -mt-28 pb-10 bg-gradient-to-tl from-stone-700 via-slate-500 to-black
+  @apply -mt-28 pb-10 bg-gradient-to-tl from-stone-700 via-slate-500 to-black;
 }
 
 .btnStyle {
@@ -21,48 +21,45 @@ body {
 }
 
 .inputStyle {
-  @apply block border border-red-500 rounded-lg w-full outline-none px-10 py-2 md:py-3 focus:bg-slate-100 mb-1 hover:border-red-900
+  @apply block border border-red-500 rounded-lg w-full outline-none px-10 py-2 md:py-3 focus:bg-slate-100 mb-1 hover:border-red-900;
 }
 
 /* header */
 .headerContainer {
-  @apply fixed bg-blue-900 text-slate-300 top-0 left-0 right-0 h-24 flex justify-around items-center text-sm md:text-base font-bold z-20
+  @apply fixed bg-blue-900 text-slate-300 top-0 left-0 right-0 h-24 flex justify-around items-center text-sm md:text-base font-bold z-20;
 }
 
 .mainContainer {
-  @apply relative pr-2 p-6 shadow-lg shadow-red-300 bg-slate-300 rounded-lg
+  @apply relative pr-2 p-6 shadow-lg shadow-red-300 bg-slate-300 rounded-lg;
 }
 
 /* password lock icon */
 .lockStyle {
-  @apply absolute top-3 left-2 text-slate-500 md:top-4
+  @apply absolute top-3 left-2 text-slate-500 md:top-4;
 }
 
 .errorStyle {
-  @apply flex justify-center items-center text-center border-l-8 border-red-500 px-2 rounded-xl text-red-600 border w-full h-20;
+  @apply flex justify-center items-center text-center border-l-8 border-red-500 p-2 rounded-xl text-red-600 border w-full h-20;
 }
 
-.manage-acc-input{
-  @apply text-stone-400 border-y py-1 px-2 rounded-lg block focus:bg-stone-100 focus:text-black focus:outline-none md:border-l-2 md:inline-block md:mt-5 md:py-2 hover:border-red-400
+.manage-acc-input {
+  @apply text-stone-400 border-y py-1 px-2 rounded-lg block focus:bg-stone-100 focus:text-black focus:outline-none md:border-l-2 md:inline-block md:mt-5 md:py-2 hover:border-red-400;
 }
 
-.manage-acc-btn{
-  @apply bg-black p-1 w-56 rounded-xl text-white hover:scale-105 md:w-44
+.manage-acc-btn {
+  @apply bg-black p-1 w-56 rounded-xl text-white hover:scale-105 md:w-44;
 }
 
 .header-hover {
-  @apply hover:text-purple-400 rounded-lg leading-4
+  @apply hover:text-purple-400 rounded-lg leading-4;
 }
 
 .footer-icons {
-    @apply hidden sm:block hover:text-blue-400
+  @apply hidden sm:block hover:text-blue-400;
 }
 
 /* main page */
 .date-style {
-  @apply border-black -mt-6 -mr-5 mb-4 py-4 px-5 min-w-28 bg-black text-white text-sm font-black rounded-bl-3xl
+  @apply border-black -mt-6 -mr-5 mb-4 py-4 px-5 min-w-28 bg-black text-white text-sm font-black rounded-bl-3xl;
 }
 
-.noConnection {
-  @apply border-b-4 border-black p-2  text-center mx-[20%] font-bold
-}

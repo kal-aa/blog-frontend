@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 import { FaLock } from "react-icons/fa";
 import PropTypes from "prop-types";
+import NoInternetConnection from "./NoInternetConnection";
 
 const Login = ({ loginSubmit }) => {
   const [isLogging, setIsLogging] = useState(false);
@@ -40,7 +41,7 @@ const Login = ({ loginSubmit }) => {
 
   return (
     <div className="signupContainer">
-      {!isOnline && <p className="noConnection">No internet connection</p>}
+      {!isOnline && <NoInternetConnection />}
       <h1 className="text-3xl font-bold">Welcome Back</h1>
       <div className={error ? "errorStyle" : undefined}>{error}</div>
 
@@ -59,7 +60,7 @@ const Login = ({ loginSubmit }) => {
         />
         <label htmlFor="password">
           Password:{" "}
-          <p className="text-red-600 text-sm inline-block">{passwordShould}</p>
+          <p className="inline-block text-sm text-red-600">{passwordShould}</p>
         </label>
         <div className="relative">
           <input
@@ -92,13 +93,13 @@ const Login = ({ loginSubmit }) => {
       </form>
 
       {/* The "OR" option */}
-      <div className="w-full flex items-center justify-center mt-6">
-        <span className="flex-grow border-t border-black mx-4"></span>
+      <div className="flex items-center justify-center w-full mt-6">
+        <span className="flex-grow mx-4 border-t border-black"></span>
         <span className="text-sm">OR</span>
-        <span className="flex-grow border-t border-black mx-4"></span>
+        <span className="flex-grow mx-4 border-t border-black"></span>
       </div>
 
-      <NavLink to="/sign-up" className="hover:underline text-lg">
+      <NavLink to="/sign-up" className="text-lg hover:underline">
         sign up
       </NavLink>
     </div>

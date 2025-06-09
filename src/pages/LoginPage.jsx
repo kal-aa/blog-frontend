@@ -1,41 +1,40 @@
 import { useNavigate } from "react-router-dom";
 import Login from "../components/Login";
-import { useRef } from "react";
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const errRef = useRef(null);
 
-  const loginSubmit = (formData, setError, setIsLogging) => {
+  const loginSubmit = async (formData, setError, setIsLogging) => {
+    const url = `${import.meta.env.VITE_BACKEND_URL}/log-in`;
+
+    setError("");
     setIsLogging(true);
-    const url = `https://blog-backend-sandy-three.vercel.app/log-in?email=${encodeURIComponent(
-      formData.email
-    )}&password=${encodeURIComponent(formData.password)}`;
 
-    fetch(url)
-      .then((res) => {
-        if (!res.ok) {
-          return res.json().then((error) => {
-            setError(error.mssg);
-            if (errRef.current) {
-              clearTimeout(errRef.current);
-            }
-            errRef.current = setTimeout(() => {
-              setError("");
-            }, 5000);
-            throw new Error(error.mssg);
-          });
-        }
-        return res.json();
-      })
-      .then((data) => {
-        setIsLogging(false);
-        navigate(`/home/${data.id}?loginName=${data.name}`);
-      })
-      .catch((error) => {
-        setIsLogging(false);
-        console.error("Could not log-in", error);
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
       });
+      if (!res.ok) {
+        const error = await res.json();
+        setError(error.mssg);
+        throw new Error(error.mssg);
+      }
+
+      const data = await res.json();
+      navigate(`/home/${data.id}?loginName=${data.name}`);
+    } catch (error) {
+      console.error("Could not log-in", error);
+      setError(error.message || "An unexpected error occured");
+    } finally {
+      setIsLogging(false);
+    }
   };
 
   return <Login loginSubmit={loginSubmit} />;

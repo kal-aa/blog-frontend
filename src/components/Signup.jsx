@@ -3,6 +3,7 @@ import { FaCheck, FaLock, FaPlus } from "react-icons/fa";
 import ClipLoader from "react-spinners/ClipLoader";
 import { NavLink } from "react-router-dom";
 import PropTypes from "prop-types";
+import NoInternetConnection from "./NoInternetConnection";
 
 const Signup = ({ signupSubmit }) => {
   const [formData, setFormData] = useState({
@@ -14,7 +15,7 @@ const Signup = ({ signupSubmit }) => {
   });
   const [passwordMatched, setPasswordMatched] = useState("");
   const [isPasswordConfirmed, setIsPasswordConfirmed] = useState(false);
-  const [isItFullName, setisIsFullName] = useState(true);
+  const [isFullName, setIssFullName] = useState(true);
   const [error, setError] = useState("");
   const [isSigning, setIsSigning] = useState(false);
   const [preview, setPreview] = useState("");
@@ -26,7 +27,7 @@ const Signup = ({ signupSubmit }) => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleImageUpload = (e, setFormData, setPreview) => {
+  const handleImageUpload = (e) => {
     const image = e.target.files[0];
     setFormData((prevFormData) => ({
       ...prevFormData,
@@ -45,6 +46,7 @@ const Signup = ({ signupSubmit }) => {
     }
   };
 
+  // Show check icon when password and confirmPassword match
   useEffect(() => {
     if (
       formData.password === formData.confirmPassword &&
@@ -66,26 +68,20 @@ const Signup = ({ signupSubmit }) => {
       setIsOnline(true);
     }
 
+    setIssFullName(true);
+    setPasswordMatched("");
+
     const name = formData.name;
     const fullName = name.trim().split(" ");
 
     if (fullName.length !== 2) {
       fullnameRef.current.click();
-      setisIsFullName(false);
-      setTimeout(() => {
-        setisIsFullName(true);
-      }, 4000);
+      setIssFullName(false);
       return;
     } else if (formData.password.length < 8) {
       setPasswordMatched("Password must be greater than 8 characters");
-      setTimeout(() => {
-        setPasswordMatched("");
-      }, 4000);
     } else if (formData.password !== formData.confirmPassword) {
       setPasswordMatched("Password does not match");
-      setTimeout(() => {
-        setPasswordMatched("");
-      }, 4000);
       return;
     } else {
       signupSubmit(formData, setError, setIsSigning);
@@ -93,20 +89,21 @@ const Signup = ({ signupSubmit }) => {
   };
 
   return (
-    <div className="signupContainer relative">
-      {!isOnline && <p className="noConnection">No internet connection</p>}
+    <div className="relative signupContainer">
+      {!isOnline && <NoInternetConnection />}
+
       <div className={error ? "errorStyle" : undefined}>{error}</div>
       <h1 className="text-3xl font-bold">Welcome</h1>
 
       {/* signup form */}
       <form onSubmit={handleSubmit} className="w-full">
-        <div className="flex justify-center items-center">
+        <div className="flex items-center justify-center">
           <input
             type="file"
             accept="image/*"
             className="hidden"
             id="fileInput"
-            onChange={(e) => handleImageUpload(e, setFormData, setPreview)}
+            onChange={handleImageUpload}
           />
           <label htmlFor="fileInput" className="relative">
             <img
@@ -120,7 +117,7 @@ const Signup = ({ signupSubmit }) => {
               title="Click to upload image"
             />
             {!preview && (
-              <FaPlus className="absolute right-4 bottom-4 opacity-25 text-5xl text-white" />
+              <FaPlus className="absolute text-5xl text-white opacity-25 right-4 bottom-4" />
             )}
           </label>
         </div>
@@ -138,8 +135,8 @@ const Signup = ({ signupSubmit }) => {
 
         <label ref={fullnameRef} htmlFor="name">
           Full-name:
-          {!isItFullName && (
-            <p className="text-red-600 text-sm inline-block ml-1">
+          {!isFullName && (
+            <p className="inline-block ml-1 text-sm text-red-600">
               Insert first and last name
             </p>
           )}
@@ -172,7 +169,7 @@ const Signup = ({ signupSubmit }) => {
         <label htmlFor="confirmPassword">
           Confirm Password:
           {isPasswordConfirmed && <FaCheck className="inline mb-0.5" />}
-          <p className="text-red-600 text-sm inline-block">{passwordMatched}</p>
+          <p className="inline-block text-sm text-red-600">{passwordMatched}</p>
         </label>
         <div className="relative">
           <input
@@ -191,7 +188,7 @@ const Signup = ({ signupSubmit }) => {
           disabled={isSigning}
           className={`w-full rounded-md bg-black text-white py-2 mt-2 ${
             !isSigning && "hover:scale-105"
-          } transition-all duration-200 ease-out`}
+          } transition-all duration-200 ease-out `}
         >
           {isSigning ? (
             <div>
@@ -205,10 +202,10 @@ const Signup = ({ signupSubmit }) => {
       </form>
 
       {/* the "OR" option */}
-      <div className="w-full flex items-center justify-center mt-6">
-        <span className="flex-grow border-t border-black mx-4"></span>
+      <div className="flex items-center justify-center w-full mt-6">
+        <span className="flex-grow mx-4 border-t border-black"></span>
         <span className="text-sm">OR</span>
-        <span className="flex-grow border-t border-black mx-4"></span>
+        <span className="flex-grow mx-4 border-t border-black"></span>
       </div>
 
       <NavLink to="/log-in" className="hover:underline">

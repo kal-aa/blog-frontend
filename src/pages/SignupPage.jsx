@@ -5,8 +5,8 @@ const SignupPage = () => {
   const navigate = useNavigate();
 
   const signupSubmit = async (formData, setError, setIsSigning) => {
+    // eslint-disable-next-line no-unused-vars
     const { confirmPassword, image, ...submissionData } = formData;
-    console.log(confirmPassword, "?.?.");
 
     const submissionDataWithFile = new FormData();
     Object.keys(submissionData).forEach((key) => {
@@ -19,7 +19,7 @@ const SignupPage = () => {
 
     setIsSigning(true);
     try {
-      const url = "https://blog-backend-sandy-three.vercel.app/sign-up";
+      const url = `${import.meta.env.VITE_BACKEND_URL}/sign-up`;
       const res = await fetch(url, {
         method: "POST",
         body: submissionDataWithFile,
@@ -30,14 +30,13 @@ const SignupPage = () => {
         setError(error.mssg || "Signup failed");
       } else {
         const data = await res.json();
-        setIsSigning(false);
         navigate(`/home/${data.insertedId}/?signupName=${data.firstName}`);
       }
     } catch (error) {
       console.error("An unexpected error occured", error);
       setError("An unexpected error occurred. Please try again later.");
     } finally {
-      setIsSigning && setIsSigning(false);
+      setIsSigning(false);
     }
   };
 
