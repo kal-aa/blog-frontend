@@ -38,7 +38,7 @@ const Header = () => {
       : "header-hover py-1 px-2";
 
   return (
-    <header className="headerContainer">
+    <header className="header-container">
       {/* Lef section of the header */}
       <div className="flex items-center ml-1">
         <img
@@ -83,7 +83,7 @@ const Header = () => {
       </div>
 
       {/* Right section of the header */}
-      <div className="flex sm:flex sm:flex-col text-center justify-center space-y-1 mr-2">
+      <div className="flex justify-center mr-2 space-y-1 text-center sm:flex sm:flex-col">
         <div className="hidden md:inline">
           <NavLink to={`/manage-your-acc/${id}`} className={isActive}>
             manage your acc

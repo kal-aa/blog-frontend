@@ -34,16 +34,16 @@ const ManageYourAcc = ({
   }
 
   return (
-    <div className="flex items-center justify-center relative">
+    <div className="relative flex items-center justify-center">
       {/* The mini password authuntication form */}
       <form
         onSubmit={(e) => handlePasswordSubmit(e, setIsCheckingPassword)}
         className={isPasswordConfirmed ? "hidden" : " absolute z-10"}
       >
-        <div className="bg-black p-10 shadow-black drop-shadow-xl rounded-xl -mt-32">
-          <label htmlFor="password-confirm" className="text-white flex">
+        <div className="p-10 -mt-32 bg-black shadow-black drop-shadow-xl rounded-xl">
+          <label htmlFor="password-confirm" className="flex text-white">
             Password:
-            <p className="inline-block ml-2 mt-1 text-red-400 text-xs max-w-60 text-center md:max-w-80">
+            <p className="inline-block mt-1 ml-2 text-xs text-center text-red-400 max-w-60 md:max-w-80">
               {passwordError}
             </p>
           </label>
@@ -55,7 +55,7 @@ const ManageYourAcc = ({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="inputStyle"
+              className="input-style"
             />
             <FaLock className="absolute top-3.5 md:top-4 left-2" />
           </div>
@@ -63,7 +63,7 @@ const ManageYourAcc = ({
             <button
               type="submit"
               disabled={isCheckingPassword}
-              className="bg-blue-900 text-white px-5 py-1 mt-2 rounded-lg hover:scale-105"
+              className="px-5 py-1 mt-2 text-white bg-blue-900 rounded-lg hover:scale-105"
             >
               {isCheckingPassword ? (
                 <div className="flex items-end">
@@ -92,7 +92,7 @@ const ManageYourAcc = ({
         }
       >
         <fieldset disabled={!isPasswordConfirmed}>
-          <p className="text-red-600 max-w-60 break-words text-center leading-4 mb-2 md:max-w-80 md:px-2 md:ml-10">
+          <p className="mb-2 leading-4 text-center text-red-600 break-words max-w-60 md:max-w-80 md:px-2 md:ml-10">
             {badManageRequest || "\u00A0"}
           </p>
 
@@ -101,7 +101,7 @@ const ManageYourAcc = ({
             <ClipLoader className="absolute top-[40%] left-[40%]" />
           )}
 
-          <div className="flex justify-center items-center">
+          <div className="flex items-center justify-center">
             <input
               type="file"
               accept="image/*"
@@ -128,7 +128,7 @@ const ManageYourAcc = ({
                 className="w-16 h-16 mb-2 rounded-lg"
               />
               {!preview && !data.buffer && (
-                <FaPlus className="absolute bottom-2 opacity-3 text-6xl opacity-25 text-white" />
+                <FaPlus className="absolute text-6xl text-white opacity-25 bottom-2 opacity-3" />
               )}
             </label>
           </div>

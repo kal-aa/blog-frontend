@@ -1,106 +1,126 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, NavLink, useNavigate, useParams } from "react-router-dom";
-import { RingLoader } from "react-spinners";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa";
+import { RingLoader } from "react-spinners";
 import { toast } from "react-toastify";
-import Main from "../components/Main";
-import IsOnline from "../components/IsOnline";
+import { useQuery } from "@tanstack/react-query";
+import ConnectionMonitor from "../components/ConnectionMonitor";
+import BlogCard from "../components/BlogCard";
+
+// Fetcher function for TranStack Query
+const fetchBlogs = async ({ queryKey }) => {
+  // eslint-disable-next-line no-unused-vars
+  const [_key, { id, limit }] = queryKey;
+  const res = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}/all-blogs/${id}?page=${limit}`
+  );
+  if (!res.ok) throw new Error("Failed to fetch blogs for home page");
+  return res.json();
+};
 
 const HomePage = () => {
-  const [data, setData] = useState([]);
-  const [isFetchingBlogs, setIsFetchingBlogs] = useState(true);
-  const [trigger, setTrigger] = useState(false);
   const [limit, setLimit] = useState(0);
-  const [totalPages, setTotalPages] = useState(Number);
+  const [userOfInterest, setUserOfInterest] = useState("");
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const hasShownLoginToast = useRef(false);
   const hasShownSignupToast = useRef(false);
-  const [userOfInterest, setUserOfInterest] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const queryParams = useMemo(
-    () => new URLSearchParams(location.search),
-    [location.search]
-  );
-  const loginName = queryParams.get("loginName");
-  const signupName = queryParams.get("signupName");
-
-  //  Welcome toast
+  // one-time-toast for login/signup welcome
   useEffect(() => {
-    if (loginName && !hasShownLoginToast.current) {
-      toast(`Welcome back, ${loginName}`);
-      queryParams.delete("loginName");
+    const queryParams = new URLSearchParams(location.search);
+    const loggerName = queryParams.get("loggerName");
+    const signerName = queryParams.get("signerName");
+
+    if (loggerName && !hasShownLoginToast.current) {
+      toast(`Welcome back, ${loggerName}`);
+      queryParams.delete("loggerName");
       navigate({ search: queryParams.toString() }, { replace: true });
       hasShownLoginToast.current = true;
     }
 
-    if (signupName && !hasShownSignupToast.current) {
-      toast(`Welcome, ${signupName}`);
-      queryParams.delete("signupName");
+    if (signerName && !hasShownSignupToast.current) {
+      toast(`Welcome, ${signerName}`);
+      queryParams.delete("signerName");
       navigate({ search: queryParams.toString() }, { replace: true });
       hasShownSignupToast.current = true;
     }
-  }, [loginName, signupName, location.search, navigate, queryParams]);
+  }, [location.search, navigate]);
 
-  //  fetch data
-  useEffect(() => {
-    async function fetchBlogs() {
-      try {
-        setIsFetchingBlogs(true);
-        const url = `https://blog-backend-sandy-three.vercel.app/all-blogs/${id}?page=${limit}`;
+  const {
+    data: blogData,
+    isFetching,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["blogs", { id, limit }],
+    queryFn: fetchBlogs,
+    enabled: isOnline,
+    keepPreviousData: true,
+  });
 
-        const beData = await fetch(url);
+  const blogs = useMemo(() => {
+    if (!blogData) return [];
 
-        const response = await beData.json();
-        setTotalPages(response.totalPages);
-        const dataArray =
-          // set the data to all blogs or the blogs of the user of interest
-          userOfInterest === ""
-            ? response.blogsWithAuthors
-            : response.blogsWithAuthors.filter(
-                (blog) => blog.authorId.toString() === userOfInterest
-              );
+    const filtered =
+      userOfInterest === ""
+        ? blogData.blogsWithAuthors
+        : blogData.blogsWithAuthors.filter(
+            (blog) => blog.authorId.toString() === userOfInterest
+          );
 
-        setIsFetchingBlogs(false);
-        setData(dataArray);
-      } catch (error) {
-        setIsFetchingBlogs(false);
-        console.log("Error fetching blogs", error);
-      }
-    }
-    isOnline && fetchBlogs();
-  }, [id, trigger, limit, userOfInterest, isOnline]);
+    return filtered.sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+  }, [blogData, userOfInterest]);
+
+  if (isError) {
+    return (
+      <div className="flex flex-col justify-center items-center text-red-600 min-h-[50vh]">
+        <p>Oops! Something went wrong while fetching blogs.</p>
+        <button
+          onClick={() => refetch()}
+          className="px-4 py-2 mt-4 text-white bg-red-500 rounded"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  const totalPages = blogData?.totalPages ?? 0;
+  const authorName = blogs.length > 0 ? blogs[0].author : "";
 
   return (
     <div>
-      <IsOnline isOnline={isOnline} setIsOnline={setIsOnline} />
+      <ConnectionMonitor isOnline={isOnline} setIsOnline={setIsOnline} />
 
-      {/* Check fetching status and give response */}
-      {isOnline && isFetchingBlogs ? (
+      {/* Check fetching and connection status and give response */}
+      {isFetching ? (
         <div className="flex flex-col justify-center items-center text-blue-800 min-h-[50vh]">
           <RingLoader color="darkBlue" size={100} speedMultiplier={1.5} />
           <p>please wait...</p>
         </div>
-      ) : isOnline && data.length === 0 ? (
+      ) : blogs.length === 0 ? (
         // check if no blogs are available
         userOfInterest ? (
-          <p className="text-center text-xl">
+          <p className="text-xl text-center">
             This user has no blogs yet, go
             <NavLink
               onClick={() => setUserOfInterest("")}
-              className="underline underline-offset-2 text-blue-800 hover:text-blue-700 mx-1"
+              className="mx-1 text-blue-800 underline underline-offset-2 hover:text-blue-700"
             >
               back
             </NavLink>
           </p>
         ) : (
-          <p className="text-center text-xl">
+          <p className="text-xl text-center">
             No Blogs Available yet, be the
             <NavLink
               to={`/add-blog/${id}`}
-              className="underline underline-offset-2 text-blue-800 hover:text-blue-700 mx-1"
+              className="mx-1 text-blue-800 underline underline-offset-2 hover:text-blue-700"
             >
               First
             </NavLink>
@@ -108,66 +128,70 @@ const HomePage = () => {
           </p>
         )
       ) : (
-        isOnline && (
-          <div>
-            {/* render blogs if available */}
-            <section className="flex flex-col mx-[10%] sm:mx-[15%] md:mx-[20%] lg:mx-[25%] 2xl:mx-[30%] space-y-14 my-5">
-              {data.map((blog) => (
-                <Main
-                  key={blog._id}
+        <div>
+          {/* render blogs if available */}
+          <section className="flex flex-col mx-[10%] sm:mx-[15%] md:mx-[20%] lg:mx-[25%] space-y-14 my-5">
+            {blogs.map((blog) => (
+              <div key={blog._id}>
+                {userOfInterest && (
+                  <p className="mb-4 text-lg text-center">
+                    You&apos;re viewing {authorName}&apos;s Blog(s)
+                  </p>
+                )}
+                <BlogCard
                   blog={blog}
                   comments={blog.comments}
-                  setTrigger={setTrigger}
+                  isHome={true}
                   setUserOfInterest={setUserOfInterest}
                 />
-              ))}
-            </section>
+              </div>
+            ))}
+          </section>
 
-            {/* Link to go back to view all blogs when the user is viewing a single user's blogs */}
-            {userOfInterest && (
-              <p
-                onClick={() => {
-                  setUserOfInterest("");
-                }}
-                className="text-center mb-5 cursor-pointer"
-              >
-                <span className="text-blue-800 font-bold hover:text-blue-600 mr-1">
-                  Go back
-                </span>
-                and view all
-              </p>
-            )}
+          {/* Link to go back to view all blogs when the user is viewing a single user's blog(s)*/}
+          {userOfInterest && (
+            <p
+              onClick={() => {
+                setUserOfInterest("");
+              }}
+              className="mb-5 text-center cursor-pointer"
+            >
+              <span className="mr-1 font-bold text-blue-800 hover:text-blue-600">
+                Go back
+              </span>
+              and view all
+            </p>
+          )}
 
-            {/* Pagination */}
-            <section className="flex justify-center space-x-[25%] md:space-x-[20%]">
-              <FaArrowLeft
-                aria-label="Previous page"
-                title="Previous page"
-                className={limit < 1 && "text-gray-300 pointer-events-none"}
-                onClick={() => {
-                  if (limit > 0) {
-                    setLimit((prev) => prev - 1);
-                  }
-                }}
-              />
-              <p className="bg-slate-600 px-2 text-white rounded-full">
-                {limit < 0 ? 0 : limit}
-              </p>
-              <FaArrowRight
-                aria-label="Next page"
-                title="Next page"
-                className={`${
-                  limit >= totalPages - 1 && "text-gray-300 pointer-events-none"
-                }`}
-                onClick={() => {
-                  if (limit < totalPages - 1) {
-                    setLimit((prev) => prev + 1);
-                  }
-                }}
-              />
-            </section>
-          </div>
-        )
+          {/* Pagination */}
+          <section className="flex justify-center space-x-[25%] md:space-x-[20%]">
+            <FaArrowLeft
+              aria-label="Previous page"
+              title="Previous page"
+              className={limit < 1 && "text-gray-300 pointer-events-none"}
+              onClick={() => {
+                if (limit > 0) {
+                  setLimit((prev) => prev - 1);
+                }
+              }}
+            />
+            <p className="px-2 text-white rounded-full bg-slate-600">
+              {limit < 0 ? 0 : limit}
+            </p>
+            <FaArrowRight
+              aria-label="Next page"
+              title="Next page"
+              className={`${
+                limit >= totalPages - 1 && "text-gray-300 pointer-events-none"
+              }`}
+              onClick={() => {
+                if (limit < totalPages - 1) {
+                  setLimit((prev) => prev + 1);
+                }
+              }}
+            />
+          </section>
+        </div>
       )}
     </div>
   );

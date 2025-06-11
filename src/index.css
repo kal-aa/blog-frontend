@@ -7,38 +7,38 @@ body {
 }
 
 /* landing page */
-.landingContainer {
+.landing-container {
   @apply -mt-28 pb-10 bg-gradient-to-tl from-stone-700 via-slate-500 to-black;
 }
 
-.btnStyle {
-  @apply bg-red-500 px-3 py-2 rounded-md text-white text-xs font-bold hover:bg-red-600 md:text-sm md:px-4 md:py-3;
+.btn-style {
+  @apply bg-blue-500 px-3 py-2 rounded-md text-white text-xs font-bold hover:bg-blue-500/80 md:text-sm md:px-4 md:py-3;
 }
 
 /* sign-up page */
-.signupContainer {
+.signup-container {
   @apply flex flex-col justify-center items-center min-h-screen px-[10%] sm:px-[20%] md:px-[25%] lg:px-[30%] -mt-20;
 }
 
-.inputStyle {
+.input-style {
   @apply block border border-red-500 rounded-lg w-full outline-none px-10 py-2 md:py-3 focus:bg-slate-100 mb-1 hover:border-red-900;
 }
 
 /* header */
-.headerContainer {
+.header-container {
   @apply fixed bg-blue-900 text-slate-300 top-0 left-0 right-0 h-24 flex justify-around items-center text-sm md:text-base font-bold z-20;
 }
 
-.mainContainer {
+.blog-container {
   @apply relative pr-2 p-6 shadow-lg shadow-red-300 bg-slate-300 rounded-lg;
 }
 
 /* password lock icon */
-.lockStyle {
+.lock-style {
   @apply absolute top-3 left-2 text-slate-500 md:top-4;
 }
 
-.errorStyle {
+.error-style {
   @apply flex justify-center items-center text-center border-l-8 border-red-500 p-2 rounded-xl text-red-600 border w-full h-20;
 }
 
@@ -60,6 +60,5 @@ body {
 
 /* main page */
 .date-style {
-  @apply border-black -mt-6 -mr-5 mb-4 py-4 px-5 min-w-28 bg-black text-white text-sm font-black rounded-bl-3xl;
+  @apply absolute right-0 top-0 p-4 w-[40%] bg-black/80 text-white text-center text-sm font-black rounded-bl-3xl;
 }
-

@@ -6,7 +6,7 @@ const AddBlogPage = () => {
   const navigage = useNavigate();
 
   const postBlog = async (formData, setIsPosting, setError) => {
-    const url = `https://blog-backend-sandy-three.vercel.app/add-blog/${id}`;
+    const url = `${import.meta.env.VITE_BACKEND_URL}/add-blog/${id}`;
 
     setIsPosting(true);
     try {

@@ -89,10 +89,10 @@ const Signup = ({ signupSubmit }) => {
   };
 
   return (
-    <div className="relative signupContainer">
+    <div className="relative signup-container">
       {!isOnline && <NoInternetConnection />}
 
-      <div className={error ? "errorStyle" : undefined}>{error}</div>
+      <div className={error ? "error-style" : undefined}>{error}</div>
       <h1 className="text-3xl font-bold">Welcome</h1>
 
       {/* signup form */}
@@ -130,7 +130,7 @@ const Signup = ({ signupSubmit }) => {
           onChange={handleChange}
           required
           placeholder="E.g. sadkalshayee@gmail.com"
-          className="inputStyle"
+          className="input-style"
         />
 
         <label ref={fullnameRef} htmlFor="name">
@@ -149,7 +149,7 @@ const Signup = ({ signupSubmit }) => {
           onChange={handleChange}
           required
           placeholder="E.g. Kalab Sisay"
-          className="inputStyle"
+          className="input-style"
         />
 
         <label htmlFor="password">Password:</label>
@@ -162,9 +162,9 @@ const Signup = ({ signupSubmit }) => {
             onChange={handleChange}
             required
             placeholder="Enter password"
-            className="inputStyle"
+            className="input-style"
           />
-          <FaLock className="lockStyle" />
+          <FaLock className="lock-style" />
         </div>
         <label htmlFor="confirmPassword">
           Confirm Password:
@@ -180,9 +180,9 @@ const Signup = ({ signupSubmit }) => {
             onChange={handleChange}
             required
             placeholder="Enter password"
-            className="inputStyle"
+            className="input-style"
           />
-          <FaLock className="lockStyle" />
+          <FaLock className="lock-style" />
         </div>
         <button
           disabled={isSigning}

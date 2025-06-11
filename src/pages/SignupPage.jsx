@@ -29,8 +29,8 @@ const SignupPage = () => {
         const error = await res.json();
         setError(error.mssg || "Signup failed");
       } else {
-        const data = await res.json();
-        navigate(`/home/${data.insertedId}/?signupName=${data.firstName}`);
+        const { insertedId, firstName } = await res.json();
+        navigate(`/home/${insertedId}/?signerName=${firstName}`);
       }
     } catch (error) {
       console.error("An unexpected error occured", error);

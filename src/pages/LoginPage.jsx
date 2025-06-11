@@ -27,8 +27,8 @@ const LoginPage = () => {
         throw new Error(error.mssg);
       }
 
-      const data = await res.json();
-      navigate(`/home/${data.id}?loginName=${data.name}`);
+      const { id, name } = await res.json();
+      navigate(`/home/${id}?loggerName=${name}`);
     } catch (error) {
       console.error("Could not log-in", error);
       setError(error.message || "An unexpected error occured");

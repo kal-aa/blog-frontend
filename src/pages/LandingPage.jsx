@@ -3,7 +3,7 @@ import LandingBlogCard from "../components/LandingBlogCard";
 
 const LandingPage = () => {
   return (
-    <section className="landingContainer">
+    <section className="landing-container">
       <div className="flex justify-between pt-8 mr-5 px-[5%] md:px-[15%] lg-[20%]">
         <img
           src={import.meta.env.VITE_PUBLIC_URL + "assets/images/blog.jpeg"}
@@ -11,10 +11,10 @@ const LandingPage = () => {
           className="w-16 -mt-3"
         />
         <div className="space-x-5">
-          <NavLink to="/log-in" className="btnStyle">
+          <NavLink to="/log-in" className="btn-style">
             Log in
           </NavLink>
-          <NavLink to="/sign-up" className="btnStyle">
+          <NavLink to="/sign-up" className="btn-style">
             Sign up
           </NavLink>
         </div>
@@ -39,7 +39,7 @@ const LandingPage = () => {
       <div className="mt-16 text-center">
         <NavLink
           to="/sign-up"
-          className="px-4 py-3 text-white bg-red-500 rounded-md hover:bg-red-600"
+          className="px-4 py-3 text-white bg-blue-500 rounded-md hover:bg-blue-500/80"
         >
           Get Started
         </NavLink>

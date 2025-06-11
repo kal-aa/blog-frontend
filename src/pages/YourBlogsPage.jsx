@@ -1,13 +1,12 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { NavLink, useParams } from "react-router-dom";
 import { RingLoader } from "react-spinners";
-import Main from "../components/Main";
-import IsOnline from "../components/IsOnline";
+import ConnectionMonitor from "../components/ConnectionMonitor";
+import BlogCard from "../components/BlogCard";
 
 const YourBlogsPage = () => {
-  const [trigger, setTrigger] = useState(false);
   const [isFetchingBlogs, setIsFetchingBlogs] = useState(true);
-  const [data, setData] = useState([]);
+  const [blogs, setBlogs] = useState([]);
   const [updateError, setUpdateError] = useState("");
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const { id } = useParams();
@@ -15,88 +14,100 @@ const YourBlogsPage = () => {
   //  fetch blogs(your blogs)
   useEffect(() => {
     const fetchBlogs = async () => {
-      try {
-        setIsFetchingBlogs(true);
-        const url = `https://blog-backend-sandy-three.vercel.app/your-blogs/${id}`;
+      setIsFetchingBlogs(true);
 
+      try {
+        const url = `${import.meta.env.VITE_BACKEND_URL}/your-blogs/${id}`;
         const res = await fetch(url);
-        const dataArray = await res.json();
 
-        setIsFetchingBlogs(false);
-        setData(dataArray);
+        const blogsArray = await res.json();
+        setBlogs(blogsArray);
       } catch (error) {
+        console.log("Error fetching blogs for your blogs page", error);
+      } finally {
         setIsFetchingBlogs(false);
-        console.log("Error fetching blogs", error);
       }
     };
-    isOnline && fetchBlogs();
-  }, [id, trigger, isOnline]);
+    fetchBlogs();
+  }, [id]);
 
-  // Delete
-  const handleDelete = async (blogId, setIsDeleting) => {
-    const confirm = window.confirm(
-      "Are you sure you want to delete this blog?"
-    );
-    if (confirm) {
+  // Delete blog
+  const handleDelete = useCallback(
+    async (blogId, setIsDeleting) => {
+      const confirm = window.confirm(
+        "Are you sure you want to delete this blog?"
+      );
+      if (!confirm) return;
+
+      setIsDeleting(true);
+
+      const deleteCandidate = blogs.find((b) => b._id === blogId);
+      setBlogs((prev) => prev.filter((b) => b._id !== blogId));
+
       try {
-        const url = `https://blog-backend-sandy-three.vercel.app/delete-blog/${encodeURIComponent(
-          id
-        )}?blogId=${encodeURIComponent(blogId)}`;
-        setIsDeleting(true);
+        const url = `${
+          import.meta.env.VITE_BACKEND_URL
+        }/delete-blog/${encodeURIComponent(id)}?blogId=${encodeURIComponent(
+          blogId
+        )}`;
         await fetch(url, { method: "DELETE" });
-
-        setIsDeleting(false);
-        setTrigger((prev) => !prev);
       } catch (error) {
-        setIsDeleting(false);
         console.error("Error deleting blog", error);
+        if (deleteCandidate) setBlogs((prev) => [...prev, deleteCandidate]);
+      } finally {
+        setIsDeleting(false);
       }
-    }
-  };
+    },
+    [blogs, id]
+  );
 
-  // Update
-  const handleUpdate = async (
-    blog,
-    setEditTitlePen,
-    setEditBodyPen,
-    setIsUpdating
-  ) => {
-    const updateData = {
-      blogId: blog._id,
-      title: blog.editTitleValue,
-      body: blog.editBodyValue,
-    };
-    try {
-      const url = `https://blog-backend-sandy-three.vercel.app/patch-blog/${encodeURIComponent(
-        id
-      )}`;
+  // Update blog
+  const handleUpdate = useCallback(
+    async (blog, setEditBodyPen, setEditTitlePen, setIsUpdating) => {
+      const { editTitleValue: title, editBodyValue: body, _id: blogId } = blog;
+
       setIsUpdating(true);
-      const res = await fetch(url, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updateData),
-      });
-
-      if (!res.ok) {
-        const err = await res.json();
-        setUpdateError(err.mssg || "An unexpected error occured");
-        throw new Error(err.mssg || "An unexpected error occured");
-      }
-
-      setIsUpdating(false);
       setUpdateError("");
-      setTrigger((prev) => !prev);
-      setEditTitlePen(false);
-      setEditBodyPen(false);
-    } catch (error) {
-      setIsUpdating(false);
-      console.error("Error updating blog", error);
-    }
-  };
+
+      const updateCandidate = blogs.find((b) => b._id === blog._id);
+      setBlogs((prev) =>
+        prev.map((b) => (b._id === blog._id ? { ...b, title, body } : b))
+      );
+
+      const url = `${
+        import.meta.env.VITE_BACKEND_URL
+      }/patch-blog/${encodeURIComponent(id)}`;
+      try {
+        const res = await fetch(url, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, body, blogId }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          setUpdateError(err.mssg || "An unexpected error occured");
+          throw new Error(err.mssg || "An unexpected error occured");
+        }
+      } catch (error) {
+        console.error("Error updating blog", error);
+        if (updateCandidate) {
+          setBlogs((prev) =>
+            prev.map((b) => (b._id === blogId ? updateCandidate : b))
+          );
+        }
+      } finally {
+        setIsUpdating(false);
+        setEditTitlePen(false);
+        setEditBodyPen(false);
+      }
+    },
+    [blogs, id]
+  );
 
   return (
     <div>
-      <IsOnline isOnline={isOnline} setIsOnline={setIsOnline} />
+      <ConnectionMonitor isOnline={isOnline} setIsOnline={setIsOnline} />
 
       {/* Check the fetching status and give info accordingly */}
       {isOnline && isFetchingBlogs ? (
@@ -106,12 +117,12 @@ const YourBlogsPage = () => {
         </div>
       ) : (
         isOnline &&
-        data.length === 0 && (
-          <p className="text-center text-xl">
+        blogs.length === 0 && (
+          <p className="text-xl text-center">
             Add your
             <NavLink
               to={`/add-blog/${id}`}
-              className="underline underline-offset-2 text-blue-800 hover:text-blue-700 mx-1"
+              className="mx-1 text-blue-800 underline underline-offset-2 hover:text-blue-700"
             >
               First
             </NavLink>
@@ -120,17 +131,15 @@ const YourBlogsPage = () => {
         )
       )}
 
-      {/* send the data to the main component */}
+      {/* send the data to the BlogCard component */}
       <div className="flex flex-col mx-[10%] sm:mx-[15%] md:mx-[20%] lg:mx-[25%] 2xl:mx-[30%] space-y-14 my-5">
-        {data &&
-          data.length > 0 &&
-          data.map((blog) => (
-            <Main
+        {blogs &&
+          blogs.length > 0 &&
+          blogs.map((blog) => (
+            <BlogCard
               key={blog._id}
               blog={blog}
               comments={blog.comments}
-              setTrigger={setTrigger}
-              isHome={false}
               handleDelete={handleDelete}
               handleUpdate={handleUpdate}
               updateError={updateError}

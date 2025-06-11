@@ -1,8 +1,8 @@
 import PropTypes from "prop-types";
 import { useEffect } from "react";
+import NoInternetConnection from "./NoInternetConnection";
 
-const IsOnline = ({ isOnline, setIsOnline }) => {
-  
+const ConnectionMonitor = ({ isOnline, setIsOnline }) => {
   useEffect(() => {
     function updateOnlineStatus() {
       setIsOnline(navigator.onLine);
@@ -19,23 +19,17 @@ const IsOnline = ({ isOnline, setIsOnline }) => {
   return (
     <>
       {!isOnline && (
-        <div className="noConnection">
-          <p>No internet connection</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="bg-blue-500 text-white text-sm px-2 py-1 rounded-lg mt-[5%] hover:scale-y-105"
-          >
-            reload
-          </button>
+        <div className="mx-[25%] sm:mx-[30%] md:mx-[35%]">
+          <NoInternetConnection />
         </div>
       )}
     </>
   );
 };
 
-IsOnline.propTypes = {
+ConnectionMonitor.propTypes = {
   isOnline: PropTypes.bool,
   setIsOnline: PropTypes.func,
 };
 
-export default IsOnline;
+export default ConnectionMonitor;

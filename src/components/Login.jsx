@@ -40,10 +40,10 @@ const Login = ({ loginSubmit }) => {
   };
 
   return (
-    <div className="signupContainer">
+    <div className="signup-container">
       {!isOnline && <NoInternetConnection />}
       <h1 className="text-3xl font-bold">Welcome Back</h1>
-      <div className={error ? "errorStyle" : undefined}>{error}</div>
+      <div className={error ? "error-style" : undefined}>{error}</div>
 
       {/* login form */}
       <form onSubmit={handleSubmit} className="w-full">
@@ -56,7 +56,7 @@ const Login = ({ loginSubmit }) => {
           onChange={handleChange}
           required
           placeholder="E.g. sadkalshayee@gmail.com"
-          className="inputStyle"
+          className="input-style"
         />
         <label htmlFor="password">
           Password:{" "}
@@ -71,9 +71,9 @@ const Login = ({ loginSubmit }) => {
             onChange={handleChange}
             required
             placeholder="Enter password"
-            className="inputStyle"
+            className="input-style"
           />
-          <FaLock className="lockStyle" />
+          <FaLock className="lock-style" />
         </div>
         <button
           disabled={isLogging}

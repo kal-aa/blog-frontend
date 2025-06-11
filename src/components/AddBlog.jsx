@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { AiOutlineCheck } from "react-icons/ai";
 import PropTypes from "prop-types";
-import IsOnline from "./IsOnline";
+import ConnectionMonitor from "./ConnectionMonitor";
 
 const AddBlog = ({ postBlog }) => {
   const [isPosting, setIsPosting] = useState(false);
@@ -43,15 +43,13 @@ const AddBlog = ({ postBlog }) => {
   };
 
   return (
-    <div className="signupContainer">
+    <div className="signup-container">
       {/* check whether user is online */}
-      <IsOnline isOnline={isOnline} setIsOnline={setIsOnline} />
+      <ConnectionMonitor isOnline={isOnline} setIsOnline={setIsOnline} />
 
       {/* show Error */}
-      <div className={error ? "errorStyle" : undefined}>
-        {error}
-      </div>
-      
+      <div className={error ? "error-style" : undefined}>{error}</div>
+
       <h1 className="text-3xl font-bold">Share your ideas</h1>
       <form onSubmit={handleSubmit} className="w-full">
         <label htmlFor="title">Title:</label>
@@ -63,12 +61,12 @@ const AddBlog = ({ postBlog }) => {
           onChange={handleChange}
           required
           placeholder="Your blog title"
-          className="inputStyle bg-slate-100"
+          className="input-style bg-slate-100"
         />
         <label htmlFor="body">
           Body: {passCheck && <AiOutlineCheck className="inline mb-1" />}
           {bodyError && (
-            <span className="text-red-500 ml-2">100 characters or more</span>
+            <span className="ml-2 text-red-500">100 characters or more</span>
           )}
         </label>
         <div className="relative">
@@ -81,7 +79,7 @@ const AddBlog = ({ postBlog }) => {
             onChange={handleChange}
             required
             placeholder="Write a description for your blog (100 characters or more)"
-            className="inputStyle bg-slate-100"
+            className="input-style bg-slate-100"
           />
         </div>
         <button
@@ -92,9 +90,9 @@ const AddBlog = ({ postBlog }) => {
           } transition-all duration-200 ease-out`}
         >
           {isPosting ? (
-            <div className="flex justify-center items-end">
+            <div className="flex items-end justify-center">
               <span>post</span>
-              <BeatLoader size={5} color="white" className="mb-1 w-5" />
+              <BeatLoader size={5} color="white" className="w-5 mb-1" />
             </div>
           ) : (
             "Post"

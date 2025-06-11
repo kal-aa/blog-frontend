@@ -1,0 +1,301 @@
+import { lazy, memo, Suspense, useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { BeatLoader } from "react-spinners";
+import {
+  FaRegThumbsDown,
+  FaRegThumbsUp,
+  FaThumbsDown,
+  FaThumbsUp,
+  FaReply,
+  FaTrashAlt,
+} from "react-icons/fa";
+import PropTypes from "prop-types";
+import { relativeTime } from "../utils/relativeTime";
+import { formatNumber } from "../utils/formatNumber";
+import SeeMore from "./SeeMore";
+import SuspenseFallback from "./SuspenseFallback";
+const ReplyList = lazy(() => import("./ReplyList"));
+
+function CommentCard(data) {
+  const {
+    authorId,
+    handleDeleteComment,
+    handleRegThumbsDownClick,
+    handleRegThumbsUpClick,
+    handleSendReply,
+    handleThumbsDownClick,
+    handleThumbsupClick,
+    isHome,
+    optimComment,
+    setOptimComments,
+    setUserOfInterest,
+  } = data;
+  const sortedReplies = optimComment.replies.sort(
+    (a, b) => new Date(b.timeStamp) - new Date(a.timeStamp)
+  );
+  const [optimReplies, setOptimReplies] = useState(sortedReplies);
+  const [ShowReplyForm, setShowReplyForm] = useState(false);
+  const [thumbsUp, setThumbsUp] = useState(false);
+  const [thumbsDown, setThumbsDown] = useState(false);
+  const [likeCount, setLikeCount] = useState(optimComment.likes.length);
+  const [dislikeCount, setDislikeCount] = useState(
+    optimComment.dislikes.length
+  );
+  const [replyValue, setReplyValue] = useState("");
+  const [replyCount, setReplyCount] = useState(optimReplies.length);
+  const [isFullComment, setIsFullComment] = useState(false);
+  const [showReplies, setShowReplies] = useState(false);
+  const [isDeletingComment, setIsDeletingComment] = useState(false);
+  const [isSendingReply, setIsSendingReply] = useState(false);
+  const navigate = useNavigate();
+  const inputRef = useRef(null);
+  const { id } = useParams();
+  const commentValue = optimComment.comment;
+
+  // for the like and dislike icons
+  useEffect(() => {
+    const liked = optimComment.likes.includes(id);
+    const disliked = optimComment.dislikes.includes(id);
+
+    setThumbsUp(liked);
+    setThumbsDown(disliked);
+  }, [optimComment, id]);
+
+  // reply input focus
+  useEffect(() => {
+    if (ShowReplyForm && inputRef.current) inputRef.current.focus();
+  }, [ShowReplyForm]);
+
+  const commenterName = optimComment.commenterName || "Unknown user";
+
+  return (
+    <section className="bg-black rounded-xl">
+      <div className="flex flex-col px-3 py-2 md:items-end md:flex-row md:justify-around">
+        <div className="md:w-2/3">
+          <div className="flex items-center space-x-1">
+            <img
+              onClick={() => {
+                // navigate to the clicked user's blogs
+                if (id === optimComment.commenterId) {
+                  navigate(`/your-blogs/${id}`);
+                } else setUserOfInterest(optimComment.commenterId);
+              }}
+              src={
+                optimComment.buffer && optimComment.mimetype
+                  ? `data:${optimComment.mimetype};base64,${optimComment.buffer}`
+                  : import.meta.env.VITE_PUBLIC_URL +
+                    "assets/images/unknown-user.jpg"
+              }
+              alt="user"
+              className="w-5 h-5 rounded-full cursor-pointer"
+            />
+            <p className="text-xs text-red-200">
+              {authorId === optimComment.commenterId
+                ? commenterName + " :The Author"
+                : commenterName}
+            </p>
+          </div>
+
+          {/* make the comment shorter (...) */}
+          <p
+            onClick={() => setIsFullComment((prev) => !prev)}
+            className="mt-1 text-sm indent-1 "
+          >
+            <SeeMore value={commentValue} isFull={isFullComment} />
+          </p>
+
+          <p className="mt-1 text-xs text-red-300">
+            {relativeTime(optimComment.timeStamp)}
+          </p>
+        </div>
+
+        {/* like dislike reply icons */}
+        <div className="flex items-center justify-around w-1/2 md:w-2/3">
+          {/* like */}
+          <div className="flex items-center space-x-3">
+            {thumbsUp ? (
+              <FaThumbsUp
+                size={12}
+                className="cursor-pointer hover:text-slate-400"
+                onClick={() =>
+                  handleThumbsupClick(optimComment, setThumbsUp, setLikeCount)
+                }
+              />
+            ) : (
+              <FaRegThumbsUp
+                size={12}
+                className="cursor-pointer hover:text-slate-400"
+                onClick={() =>
+                  handleRegThumbsUpClick(
+                    dislikeCount,
+                    optimComment,
+                    setDislikeCount,
+                    setLikeCount,
+                    setThumbsDown,
+                    setThumbsUp,
+                    thumbsDown
+                  )
+                }
+              />
+            )}
+            <p className="-ml-3">{formatNumber(likeCount)}</p>
+          </div>
+          {/* dislike */}
+          <div className="flex items-center space-x-3">
+            {thumbsDown ? (
+              <FaThumbsDown
+                size={12}
+                className="cursor-pointer hover:text-slate-400"
+                onClick={() =>
+                  handleThumbsDownClick(
+                    optimComment,
+                    setDislikeCount,
+                    setThumbsDown
+                  )
+                }
+              />
+            ) : (
+              <FaRegThumbsDown
+                size={12}
+                className="cursor-pointer hover:text-slate-400"
+                onClick={() =>
+                  handleRegThumbsDownClick(
+                    likeCount,
+                    optimComment,
+                    setDislikeCount,
+                    setLikeCount,
+                    setThumbsUp,
+                    setThumbsDown,
+                    thumbsUp
+                  )
+                }
+              />
+            )}
+            <p className="-ml-3">{formatNumber(dislikeCount)}</p>
+          </div>
+          {/* reply */}
+          <div className="flex items-center space-x-3">
+            <FaReply
+              size={12}
+              className="cursor-pointer hover:text-slate-400"
+              onClick={() => setShowReplyForm(!ShowReplyForm)}
+            />
+            <p
+              onClick={() => setShowReplies((prev) => !prev)}
+              className="pr-1 -ml-3 cursor-pointer hover:text-blue-400 hover:underline"
+            >
+              {!ShowReplyForm && replyCount < 0
+                ? setReplyCount(0)
+                : formatNumber(replyCount)}
+            </p>
+          </div>
+          {!isHome && (
+            <FaTrashAlt
+              size={12}
+              className={`hover:animate-pulse ${
+                isDeletingComment && "animate-spin"
+              }`}
+              onClick={() =>
+                handleDeleteComment(optimComment, setIsDeletingComment)
+              }
+            />
+          )}
+        </div>
+      </div>
+
+      {/* Reply form section */}
+      {ShowReplyForm && (
+        <div className="flex flex-col items-center mx-[10%]">
+          <form
+            onSubmit={(e) =>
+              handleSendReply(
+                e,
+                optimComment,
+                replyValue,
+                setIsSendingReply,
+                setOptimReplies,
+                setReplyCount,
+                setReplyValue,
+                setShowReplies
+              )
+            }
+            className="flex justify-around w-full"
+          >
+            <input
+              ref={inputRef}
+              type="text"
+              placeholder="reply"
+              value={replyValue}
+              onChange={(e) => setReplyValue(e.target.value)}
+              required
+              className="w-2/4 px-2 py-1 text-blue-800 rounded-lg outline-none focus:ring-2 hover:ring-1 ring-white"
+            />
+            <button
+              type="submit"
+              disabled={isSendingReply}
+              className="px-2 bg-blue-900 rounded-lg hover:bg-blue-800"
+            >
+              {isSendingReply ? (
+                <div className="flex items-end">
+                  <span>reply</span>
+                  <BeatLoader size={2} color="white" className="mb-1" />
+                </div>
+              ) : (
+                "reply"
+              )}
+            </button>
+          </form>
+          <p
+            onClick={() => setShowReplies((prev) => !prev)}
+            className="my-2 cursor-pointer hover:underline underline-offset-2"
+          >
+            {replyCount < 0
+              ? setReplyCount(0)
+              : replyCount !== 1
+              ? formatNumber(replyCount) + " Replies"
+              : formatNumber(replyCount) + " Reply"}
+          </p>
+        </div>
+      )}
+
+      {/* Replies */}
+      <div className="flex flex-col space-y-4">
+        {showReplies ? (
+          optimReplies.length === 0 ? (
+            <p className="text-sm text-center text-red-300">No replies</p>
+          ) : (
+            <Suspense fallback={<SuspenseFallback />}>
+              <ReplyList
+                isHome={isHome}
+                optimComment={optimComment}
+                optimReplies={optimReplies}
+                setOptimComments={setOptimComments}
+                setOptimReplies={setOptimReplies}
+                setReplyCount={setReplyCount}
+                setUserOfInterest={setUserOfInterest}
+              />
+            </Suspense>
+          )
+        ) : (
+          ""
+        )}
+      </div>
+    </section>
+  );
+}
+
+CommentCard.propTypes = {
+  authorId: PropTypes.string.isRequired,
+  handleDeleteComment: PropTypes.func,
+  handleRegThumbsDownClick: PropTypes.func,
+  handleRegThumbsUpClick: PropTypes.func,
+  handleSendReply: PropTypes.func,
+  handleThumbsDownClick: PropTypes.func,
+  handleThumbsupClick: PropTypes.func,
+  isHome: PropTypes.bool,
+  optimComment: PropTypes.object,
+  setOptimComments: PropTypes.func,
+  setUserOfInterest: PropTypes.func,
+};
+
+export default memo(CommentCard);
