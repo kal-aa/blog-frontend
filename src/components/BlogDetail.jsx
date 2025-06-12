@@ -187,6 +187,7 @@ function BlogDetail(data) {
       );
       setCommentCount((prev) => prev + 1);
       setCommentValue("");
+      setShowComments(true);
 
       try {
         const res = await axios.patch(url, {
@@ -202,7 +203,6 @@ function BlogDetail(data) {
         setOptimComments((prev) =>
           prev.map((c) => (c._id === tempId ? newComment : c))
         );
-        setShowComments(true);
       } catch (error) {
         console.error("Error comming", error);
         // Rollback optimistic comment
