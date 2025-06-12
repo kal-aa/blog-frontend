@@ -1,36 +1,40 @@
+import { useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import AddBlog from "../components/AddBlog";
+import CreateBlogForm from "../components/CreateBlogForm";
 
 const AddBlogPage = () => {
   const { id } = useParams();
   const navigage = useNavigate();
 
-  const postBlog = async (formData, setIsPosting, setError) => {
-    const url = `${import.meta.env.VITE_BACKEND_URL}/add-blog/${id}`;
+  const hanldeBlogPost = useCallback(
+    async (formData, setIsPosting, setError) => {
+      setIsPosting(true);
 
-    setIsPosting(true);
-    try {
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      if (!res.ok) {
-        const error = await res.json();
-        setError(error.mssg);
-        throw new Error(error.mssg);
+      const url = `${import.meta.env.VITE_BACKEND_URL}/add-blog/${id}`;
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+        if (!res.ok) {
+          const error = await res.json();
+          setError(error.mssg);
+          throw new Error(error.mssg);
+        }
+
+        setError("");
+        navigage(`/your-blogs/${id}`);
+      } catch (error) {
+        console.error("Error posting a blog", error.message);
+      } finally {
+        setIsPosting(false);
       }
+    },
+    [id, navigage]
+  );
 
-      setError("");
-      setIsPosting(false);
-      navigage(`/your-blogs/${id}`);
-    } catch (error) {
-      setIsPosting(false);
-      console.log("Error posting a blog", error.message);
-    }
-  };
-
-  return <AddBlog postBlog={postBlog} />;
+  return <CreateBlogForm hanldeBlogPost={hanldeBlogPost} />;
 };
 
 export default AddBlogPage;
