@@ -153,6 +153,12 @@ function BlogCard(data) {
                 onChange={(e) => setEditTitleValue(e.target.value)}
                 placeholder="Title"
                 className="w-1/2 px-2 py-1 rounded-md outline-none ring-2 hover:rounded-lg focus:bg-gray-100"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && readyToUpdate) {
+                    if (updateBtnRef.current && readyToUpdate)
+                      updateBtnRef.current.click();
+                  }
+                }}
               />
             )}
             {!isHome &&

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { FaCheck, FaLock, FaPlus } from "react-icons/fa";
+import { FaCheck, FaLock } from "react-icons/fa";
 import ClipLoader from "react-spinners/ClipLoader";
 import { NavLink } from "react-router-dom";
 import PropTypes from "prop-types";
@@ -105,7 +105,7 @@ const Signup = ({ signupSubmit }) => {
             id="fileInput"
             onChange={handleImageUpload}
           />
-          <label htmlFor="fileInput" className="relative">
+          <label htmlFor="fileInput">
             <img
               src={
                 preview ||
@@ -116,9 +116,6 @@ const Signup = ({ signupSubmit }) => {
               className="inline w-20 h-20 border border-red-300 rounded-full cursor-pointer"
               title="Click to upload image"
             />
-            {!preview && (
-              <FaPlus className="absolute text-5xl text-white opacity-25 right-4 bottom-4" />
-            )}
           </label>
         </div>
         <label htmlFor="email">Email:</label>

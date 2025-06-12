@@ -11,7 +11,7 @@ import AddBlogPage from "./pages/AddBlogPage";
 import YourBlogsPage from "./pages/YourBlogsPage";
 import ContactUsPage from "./pages/ContactUsPage";
 import AboutUsPage from "./pages/AboutUsPage";
-import ManageYourAccPage from "./pages/ManageYourAccPage";
+import AccountPage from "./pages/AccountPage";
 
 const App = () => {
   const location = useLocation();
@@ -31,7 +31,7 @@ const App = () => {
           <Route path="/home/:id" element={<HomePage />} />
           <Route path="/add-blog/:id" element={<AddBlogPage />} />
           <Route path="/your-blogs/:id" element={<YourBlogsPage />} />
-          <Route path="/manage-your-acc/:id" element={<ManageYourAccPage />} />
+          <Route path="/manage-your-acc/:id" element={<AccountPage />} />
           <Route path="/contact-us/:id" element={<ContactUsPage />} />
           <Route path="/about-us/:id" element={<AboutUsPage />} />
         </Routes>
