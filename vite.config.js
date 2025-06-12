@@ -6,7 +6,8 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
-    base: env.VITE_PUBLIC_URL || "/",
+    // base: env.VITE_PUBLIC_URL || "/",
+    base: "/",
     publicDir: "public",
     server: { port: 5005 },
   };
