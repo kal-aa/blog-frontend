@@ -1,6 +1,5 @@
 import { lazy, memo, Suspense, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { BeatLoader } from "react-spinners";
 import {
   FaRegThumbsDown,
   FaRegThumbsUp,
@@ -235,14 +234,7 @@ function CommentCard(data) {
               disabled={isSendingReply}
               className="px-2 bg-blue-900 rounded-lg hover:bg-blue-800"
             >
-              {isSendingReply ? (
-                <div className="flex items-end">
-                  <span>reply</span>
-                  <BeatLoader size={2} color="white" className="mb-1" />
-                </div>
-              ) : (
-                "reply"
-              )}
+              reply
             </button>
           </form>
           <p

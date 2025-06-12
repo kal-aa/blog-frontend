@@ -1,5 +1,4 @@
 import { lazy, memo, Suspense, useEffect, useRef, useState } from "react";
-import { BeatLoader } from "react-spinners";
 import {
   FaRegHeart,
   FaHeart,
@@ -204,14 +203,7 @@ function BlogDetailView(data) {
               disabled={isSendingComment}
               className="px-4 text-white bg-black rounded-lg hover:bg-gray-900"
             >
-              {isSendingComment ? (
-                <div className="flex items-end">
-                  <span>post</span>
-                  <BeatLoader size={2} color="white" className="mb-1" />
-                </div>
-              ) : (
-                "post"
-              )}
+              post
             </button>
           </form>
           <p

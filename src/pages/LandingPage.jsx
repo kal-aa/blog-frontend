@@ -10,7 +10,7 @@ const LandingPage = () => {
           alt="Blog.jpeg"
           className="w-16 -mt-3"
         />
-        <div className="space-x-5">
+        <div className="w-1/2 sm:w-1/3 space-x-[10%] sm:space-x-[15%]">
           <NavLink to="/log-in" className="btn-style">
             Log in
           </NavLink>

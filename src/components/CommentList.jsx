@@ -239,8 +239,10 @@ function CommentList(data) {
           (a, b) => new Date(b.timeStamp) - new Date(a.timeStamp)
         )
       );
+
       setReplyCount((prev) => prev + 1);
       setReplyValue("");
+      setShowReplies(true);
 
       try {
         const res = await axios.patch(urll(optimComment), {
@@ -263,8 +265,6 @@ function CommentList(data) {
             (a, b) => new Date(b.timeStamp) - new Date(a.timeStamp)
           ),
         });
-
-        setShowReplies(true);
       } catch (error) {
         console.error("Error comming", error);
         // Rollback optimisitc reply
