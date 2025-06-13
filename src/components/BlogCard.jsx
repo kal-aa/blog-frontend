@@ -143,7 +143,7 @@ function BlogCard(data) {
           {isHome && !expand && (
             <p className="text-xs capitalize md:text-sm">by: {blog.author}</p>
           )}
-          <div className="flex items-end space-x-1">
+          <div className="space-x-1 w-[60%]">
             {!editTitlePen && (
               <h3 className="inline text-xl font-bold">{blog.title}</h3>
             )}
@@ -152,7 +152,7 @@ function BlogCard(data) {
                 value={editTitleValue}
                 onChange={(e) => setEditTitleValue(e.target.value)}
                 placeholder="Title"
-                className="w-1/2 px-2 py-1 rounded-md outline-none ring-2 hover:rounded-lg focus:bg-gray-100"
+                className="w-[80%] px-2 rounded-md outline-none ring-2 hover:rounded-lg focus:bg-gray-100"
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && readyToUpdate) {
                     if (updateBtnRef.current && readyToUpdate)
@@ -170,13 +170,13 @@ function BlogCard(data) {
                         updateBtnRef.current.click();
                     }}
                     size={18}
-                    className="text-red-600/60 hover:text-red-600/50"
+                    className="inline text-red-600/60 hover:text-red-600/50"
                   />
                 ) : (
                   <FaTimesCircle
                     onClick={() => setEditTitlePen(false)}
                     size={18}
-                    className="text-red-600/60 hover:text-red-600/50"
+                    className="inline text-red-600/60 hover:text-red-600/50"
                   />
                 )
               ) : (
@@ -184,7 +184,7 @@ function BlogCard(data) {
                   title="Edit the title"
                   size={16}
                   onClick={() => setEditTitlePen((prev) => !prev)}
-                  className="mb-1 text-red-600 hover:text-red-600/80"
+                  className="inline mb-1 text-red-600 hover:text-red-600/80"
                 />
               ))}
           </div>

@@ -66,7 +66,7 @@ function BlogDetailView(data) {
             value={editBodyValue}
             onChange={(e) => setEditBodyValue(e.target.value)}
             placeholder="Your updated description should be 100 characters or more"
-            className="w-full px-2 py-1 rounded-md outline-none ring-2 hover:rounded-lg focus:bg-gray-100"
+            className="w-[90%] px-2 py-1 rounded-md outline-none ring-2 hover:rounded-lg focus:bg-gray-100"
           />
         )}
         {!isHome &&
@@ -77,13 +77,13 @@ function BlogDetailView(data) {
                   if (updateBtnRef.current) updateBtnRef.current.click();
                 }}
                 size={18}
-                className="mb-1 text-red-600/60 hover:text-red-600/50"
+                className="inline mb-1 ml-2 text-red-600/60 hover:text-red-600/50"
               />
             ) : (
               <FaTimesCircle
                 onClick={() => setEditBodyPen(false)}
                 size={18}
-                className="text-red-600/60 hover:text-red-600/50"
+                className="inline mb-1 ml-2 text-red-600/60 hover:text-red-600/50"
               />
             )
           ) : (
@@ -91,9 +91,7 @@ function BlogDetailView(data) {
               title="Edit the body"
               size={18}
               onClick={() => setEditBodyPen((prev) => !prev)}
-              className={`text-red-600 hover:text-red-600/80 inline ml-1 ${
-                editBodyPen && "-mt-6"
-              }`}
+              className="inline ml-1 text-red-600 hover:text-red-600/80"
             />
           ))}
       </div>
