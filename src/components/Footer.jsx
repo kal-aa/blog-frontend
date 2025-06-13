@@ -24,12 +24,12 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-blue-800 text-slate-300 h-[135px] mt-10 font-serif z-10">
+    <footer className="bg-blue-800 text-slate-300 h-[140px] mt-10 font-serif  z-10">
       <div className="relative flex items-center justify-around text-sm font-bold md:py-4 md:flex-row-reverse">
         <div className="flex flex-col items-center space-y-2">
           <NavLink
             to={`/manage-your-acc/${id}`}
-            className="hover:text-blue-400 sm:hidden"
+            className="mt-2 hover:text-blue-400 sm:hidden"
           >
             Manage your account
           </NavLink>

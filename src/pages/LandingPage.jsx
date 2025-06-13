@@ -4,13 +4,13 @@ import LandingBlogCard from "../components/LandingBlogCard";
 const LandingPage = () => {
   return (
     <section className="landing-container">
-      <div className="flex justify-between pt-8 mr-5 px-[5%] md:px-[15%] lg-[20%]">
+      <div className="flex items-center justify-between pt-8 mr-5 px-[5%] md:px-[15%]">
         <img
           src={import.meta.env.VITE_PUBLIC_URL + "assets/images/blog.jpeg"}
           alt="Blog.jpeg"
-          className="w-16 -mt-3"
+          className="w-16"
         />
-        <div className="w-1/2 sm:w-1/3 space-x-[10%] sm:space-x-[15%]">
+        <div className="flex gap-10 ml-auto">
           <NavLink to="/log-in" className="btn-style">
             Log in
           </NavLink>

@@ -52,6 +52,7 @@ const HomePage = () => {
   const {
     data: blogData,
     isFetching,
+    isRefetching,
     isError,
     refetch,
   } = useQuery({
@@ -59,6 +60,7 @@ const HomePage = () => {
     queryFn: fetchBlogs,
     enabled: isOnline,
     keepPreviousData: true,
+    refetchOnWindowFocus: true,
   });
 
   const blogs = useMemo(() => {
@@ -98,7 +100,7 @@ const HomePage = () => {
       <ConnectionMonitor isOnline={isOnline} setIsOnline={setIsOnline} />
 
       {/* Check fetching and connection status and give response */}
-      {isFetching ? (
+      {isFetching && !isRefetching ? (
         <div className="flex flex-col justify-center items-center text-blue-800 min-h-[50vh]">
           <RingLoader color="darkBlue" size={100} speedMultiplier={1.5} />
           <p>please wait...</p>

@@ -9,6 +9,8 @@ export default defineConfig(({ mode }) => {
     // base: env.VITE_PUBLIC_URL || "/",
     base: "/",
     publicDir: "public",
-    server: { port: 5005 },
+    server: {
+      port: 5005,
+    },
   };
 });
