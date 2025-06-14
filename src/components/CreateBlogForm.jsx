@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { AiOutlineCheck } from "react-icons/ai";
 import PropTypes from "prop-types";
@@ -11,6 +11,13 @@ const CreateBlogForm = ({ hanldeBlogPost }) => {
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({ title: "", body: "" });
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
   useEffect(() => {
     if (formData.body.replace(/\s+/g, " ").trim().length >= 100)
@@ -52,6 +59,7 @@ const CreateBlogForm = ({ hanldeBlogPost }) => {
         <form onSubmit={handleSubmit} className="w-full">
           <label htmlFor="title">Title:</label>
           <input
+            ref={inputRef}
             type="title"
             name="title"
             id="title"

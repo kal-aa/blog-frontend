@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FaLock } from "react-icons/fa";
@@ -6,12 +6,13 @@ import { BeatLoader } from "react-spinners";
 const ManageAccount = lazy(() => import("../components/ManageAccount"));
 
 const AccountPage = () => {
-  const [formData, setFormdata] = useState({
+  const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
     image: null,
+    removeImage: false,
   });
   const [user, setUser] = useState({});
   const [authPassword, setAuthPassword] = useState("");
@@ -20,14 +21,18 @@ const AccountPage = () => {
   const [authError, setAuthError] = useState("");
   const [manageError, setManageError] = useState("");
   const navigate = useNavigate();
+  const authInputRef = useRef(null);
   const { id } = useParams();
+
+  useEffect(() => {
+    if (authInputRef.current) {
+      authInputRef.current.focus();
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormdata({
-      ...formData,
-      [name]: value,
-    });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   //  check the mini Authentication's password and fetch the data
@@ -64,6 +69,7 @@ const AccountPage = () => {
       setIsAuthorized(true);
     } catch (err) {
       console.error("Error comparing password", err);
+      setAuthPassword("");
     } finally {
       setIsAuthenticating(false);
     }
@@ -76,12 +82,13 @@ const AccountPage = () => {
         user.buffer && user.mimetype
           ? `data:${user.mimetype};base64,${user.buffer}`
           : "";
-      setFormdata({
+      setFormData({
         name: user.name || "",
         email: user.email || "",
         password: user.password || "",
         confirmPassword: user.password || "",
         image,
+        removeImage: false,
       });
     }
   }, [user]);
@@ -150,18 +157,15 @@ const AccountPage = () => {
         name: formData.name,
         email: formData.email,
         newPassword: formData.password,
-        Oldpassword: authPassword,
+        removeImage: formData.removeImage,
       };
 
       const submissionDataWithFile = new FormData();
-      Object.keys(updateData).map((key) => {
+      Object.keys(updateData).forEach((key) => {
         submissionDataWithFile.append(key, updateData[key]);
       });
 
-      if (
-        formData.image !== `data:${user.mimetype};base64,${user.buffer}` &&
-        formData.image !== ""
-      ) {
+      if (formData.image instanceof File) {
         submissionDataWithFile.append("image", formData.image);
       }
 
@@ -204,7 +208,7 @@ const AccountPage = () => {
             onSubmit={handleAuthenticate}
             className="p-10 bg-black/90 shadow-black drop-shadow-xl rounded-xl"
           >
-            <label htmlFor="password-confirm" className="flex text-white">
+            <label htmlFor="auth-password" className="flex text-white">
               Password:
               <p className="inline-block mt-1 ml-2 text-xs text-center text-red-400 max-w-60 md:max-w-80">
                 {authError}
@@ -212,36 +216,33 @@ const AccountPage = () => {
             </label>
             <div className="relative group">
               <input
+                ref={authInputRef}
                 type="password"
-                id="password-confirm"
-                name="password-confirm"
+                id="auth-password"
+                name="auth-password"
                 value={authPassword}
                 onChange={(e) => setAuthPassword(e.target.value)}
+                placeholder="Your password"
                 required
+                disabled={isAuthenticating}
                 className="input-style hover:border-blue-300"
               />
               <FaLock className="absolute top-3.5 md:top-4 left-2 group-hover:animate-pulse" />
             </div>
-            <div className="text-center">
-              <button
-                type="submit"
-                disabled={isAuthenticating}
-                className="px-5 py-1 mt-2 text-white bg-blue-900 rounded-lg hover:scale-105"
-              >
-                {isAuthenticating ? (
-                  <div className="flex items-end">
-                    <span>go</span>
-                    <BeatLoader
-                      size={5}
-                      color="white"
-                      className="w-4 mb-0.5 ml-0.5"
-                    />
-                  </div>
-                ) : (
-                  "Go"
-                )}
-              </button>
-            </div>
+            <button
+              type="submit"
+              disabled={isAuthenticating}
+              className="w-full px-5 py-1 mt-2 text-center text-white bg-blue-900 rounded-lg hover:scale-105"
+            >
+              {isAuthenticating ? (
+                <div className="flex items-end justify-center">
+                  <span>go</span>
+                  <BeatLoader size={5} color="white" className="ml-0.5" />
+                </div>
+              ) : (
+                "Go"
+              )}
+            </button>
           </form>
         </div>
       )}
@@ -255,7 +256,7 @@ const AccountPage = () => {
             handleChange={handleChange}
             handleManageSubmit={handleManageSubmit}
             authError={authError}
-            setFormdata={setFormdata}
+            setFormData={setFormData}
           />
         </Suspense>
       )}

@@ -37,7 +37,7 @@ function ReplyCard(data) {
                 "assets/images/unknown-user.jpg"
           }
           alt="user"
-          className="w-5 h-5 rounded-full cursor-pointer"
+          className="w-5 h-5 bg-white rounded-full cursor-pointer"
         />
       </div>
 

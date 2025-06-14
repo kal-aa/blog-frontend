@@ -3,33 +3,39 @@ import { NavLink, useParams } from "react-router-dom";
 import { RingLoader } from "react-spinners";
 import ConnectionMonitor from "../components/ConnectionMonitor";
 import BlogCard from "../components/BlogCard";
+import { fetchBlogs } from "../utils/fetchBlogs";
+import { useQuery } from "@tanstack/react-query";
+import BlogFetchError from "../components/BlogFetchError";
 
 const YourBlogsPage = () => {
-  const [isFetchingBlogs, setIsFetchingBlogs] = useState(true);
   const [blogs, setBlogs] = useState([]);
   const [updateError, setUpdateError] = useState("");
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const { id } = useParams();
 
-  //  fetch blogs(your blogs)
+  const isValid = isOnline && /^[a-f\d]{24}$/i.test(id);
+
+  const {
+    data: blogData,
+    isFetching,
+    isRefetching,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["blogs", { route: `your-blogs/${id}` }],
+    queryFn: fetchBlogs,
+    enabled: isValid,
+    staleTime: 1000 * 60 * 2,
+    keepPreviousData: true,
+    refetchOnWindowFocus: true,
+  });
+
   useEffect(() => {
-    const fetchBlogs = async () => {
-      setIsFetchingBlogs(true);
-
-      try {
-        const url = `${import.meta.env.VITE_BACKEND_URL}/your-blogs/${id}`;
-        const res = await fetch(url);
-
-        const blogsArray = await res.json();
-        setBlogs(blogsArray);
-      } catch (error) {
-        console.log("Error fetching blogs for your blogs page", error);
-      } finally {
-        setIsFetchingBlogs(false);
-      }
-    };
-    fetchBlogs();
-  }, [id]);
+    if (blogData) {
+      setBlogs(blogData);
+      console.log("blog data");
+    }
+  }, [blogData]);
 
   // Delete blog
   const handleDelete = useCallback(
@@ -105,18 +111,21 @@ const YourBlogsPage = () => {
     [blogs, id]
   );
 
+  if (isError || !isValid) {
+    return <BlogFetchError refetch={refetch} isError={isError} />;
+  }
+
   return (
     <div>
       <ConnectionMonitor isOnline={isOnline} setIsOnline={setIsOnline} />
 
       {/* Check the fetching status and give info accordingly */}
-      {isOnline && isFetchingBlogs ? (
+      {isFetching && !isRefetching ? (
         <div className="flex flex-col justify-center items-center text-blue-800 min-h-[50vh]">
           <RingLoader color="darkBlue" size={100} speedMultiplier={1.5} />
           <p>please wait...</p>
         </div>
       ) : (
-        isOnline &&
         blogs.length === 0 && (
           <p className="text-xl text-center">
             Add your

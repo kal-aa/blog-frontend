@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import { BeatLoader } from "react-spinners";
 
@@ -9,25 +9,27 @@ const ManageYourAcc = (props) => {
     formData,
     handleChange,
     handleManageSubmit,
-    setFormdata,
+    setFormData,
   } = props;
   const [preview, setPreview] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const fullNameRef = useRef(null);
 
-  let matched;
-  if (formData.password === formData.confirmPassword) {
-    matched = true;
-  } else {
-    matched = false;
-  }
+  useEffect(() => {
+    if (fullNameRef.current) {
+      fullNameRef.current.focus();
+    }
+  }, []);
 
-  // hanlde the input img
-  const handleImageUpload = (e, setPreview) => {
+  const matched = formData.password === formData.confirmPassword;
+
+  // hanlde the input image
+  const handleImageUpload = (e) => {
     const image = e.target.files[0];
-    setFormdata((prevFormData) => ({
+    setFormData((prevFormData) => ({
       ...prevFormData,
+      removeImage: false,
       image,
     }));
     if (image) {
@@ -50,13 +52,14 @@ const ManageYourAcc = (props) => {
       }
       className="max-w-xl p-10 mt-5 rounded-md bg-stone-50 drop-shadow-2xl"
     >
-      <div className="flex items-center justify-center">
+      <div className="flex flex-col items-center justify-center gap-2">
         <input
           type="file"
           accept="image/*"
           className="hidden"
           id="fileInput"
-          onChange={(e) => handleImageUpload(e, setPreview)}
+          onChange={handleImageUpload}
+          disabled={isDeleting || isUpdating}
         />
         <label
           htmlFor="fileInput"
@@ -74,9 +77,25 @@ const ManageYourAcc = (props) => {
                   "assets/images/unknown-user.jpg"
             }
             alt="user"
-            className="w-16 h-16 mb-2 rounded-lg"
+            className="w-16 h-16 rounded-lg"
           />
         </label>
+        {formData.image && (
+          <button
+            type="button"
+            onClick={() => {
+              setFormData((prev) => ({
+                ...prev,
+                image: null,
+                removeImage: true,
+              }));
+              setPreview("");
+            }}
+            className="text-xs text-red-500 underline md:text-sm hover:text-red-700"
+          >
+            Remove Image
+          </button>
+        )}
       </div>
       <div>
         <label htmlFor="name" ref={fullNameRef}>
@@ -88,6 +107,8 @@ const ManageYourAcc = (props) => {
           name="name"
           value={formData.name}
           onChange={handleChange}
+          placeholder="Your name"
+          disabled={isDeleting || isUpdating}
           required
           className="manage-acc-input md:ml-[76px]"
         />
@@ -100,6 +121,8 @@ const ManageYourAcc = (props) => {
           name="email"
           value={formData.email}
           onChange={handleChange}
+          placeholder="Your email"
+          disabled={isDeleting || isUpdating}
           required
           className="manage-acc-input md:ml-[100px]"
         />
@@ -112,6 +135,8 @@ const ManageYourAcc = (props) => {
           name="password"
           value={formData.password}
           onChange={handleChange}
+          placeholder="Your password"
+          disabled={isDeleting || isUpdating}
           required
           className="manage-acc-input md:ml-[80px]"
         />
@@ -129,9 +154,11 @@ const ManageYourAcc = (props) => {
           name="confirmPassword"
           value={formData.confirmPassword}
           onChange={handleChange}
+          placeholder="Confirm password"
+          disabled={isDeleting || isUpdating}
           required
           className={`manage-acc-input md:-ml-[1px] ${
-            !matched && "md:ml-[19px]"
+            !matched ? "md:ml-[19px]" : ""
           }`}
         />
       </div>
@@ -147,13 +174,9 @@ const ManageYourAcc = (props) => {
           disabled={isUpdating}
         >
           {isUpdating ? (
-            <div className="flex items-end justify-center">
+            <div className="flex items-end justify-center gap-0.5">
               <span>update</span>
-              <BeatLoader
-                size={8}
-                color="white"
-                className="w-4 mb-0.5 ml-0.5"
-              />
+              <BeatLoader size={5} color="white" />
             </div>
           ) : (
             "Update"
@@ -166,13 +189,9 @@ const ManageYourAcc = (props) => {
           disabled={isDeleting}
         >
           {isDeleting ? (
-            <div className="flex items-end justify-center">
+            <div className="flex items-end justify-center gap-0.5">
               <span>delete</span>
-              <BeatLoader
-                size={8}
-                color="white"
-                className="w-4 mb-0.5 ml-0.5"
-              />
+              <BeatLoader size={5} color="white" />
             </div>
           ) : (
             "Delete"
@@ -188,7 +207,7 @@ ManageYourAcc.propTypes = {
   handleChange: PropTypes.func.isRequired,
   handleManageSubmit: PropTypes.func.isRequired,
   manageError: PropTypes.string,
-  setFormdata: PropTypes.func,
+  setFormData: PropTypes.func,
 };
 
 export default ManageYourAcc;

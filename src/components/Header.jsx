@@ -25,10 +25,10 @@ const Header = () => {
 
   const handleImgClick = () => {
     const confirm = window.confirm(
-      "You are about to navigate to the signup page"
+      "You are about to navigate to the landing page"
     );
     if (confirm) {
-      navigate("/sign-up");
+      navigate("/");
     }
   };
 

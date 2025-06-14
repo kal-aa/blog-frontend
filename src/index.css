@@ -43,7 +43,7 @@ body {
 }
 
 .manage-acc-input {
-  @apply text-stone-400 border-y py-1 px-2 rounded-lg block focus:bg-stone-100 focus:text-black focus:outline-none md:border-l-2 md:inline-block md:mt-5 md:py-2 hover:border-red-400;
+  @apply text-stone-400 border py-1 px-2 rounded-lg block focus:bg-stone-100 focus:text-black focus:outline-none md:inline-block md:mt-5 md:py-2 ring-black/20 hover:ring-1 disabled:hover:ring-0;
 }
 
 .manage-acc-btn {

@@ -21,6 +21,13 @@ const Signup = ({ signupSubmit }) => {
   const [preview, setPreview] = useState("");
   const [isOnline, setIsOnline] = useState(true);
   const fullnameRef = useRef(null);
+  const emailInputRef = useRef(null);
+
+  useEffect(() => {
+    if (emailInputRef.current) {
+      emailInputRef.current.focus();
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { value, name } = e.target;
@@ -97,13 +104,14 @@ const Signup = ({ signupSubmit }) => {
 
       {/* signup form */}
       <form onSubmit={handleSubmit} className="w-full">
-        <div className="flex items-center justify-center">
+        <div className="flex flex-col items-center justify-center gap-2">
           <input
             type="file"
             accept="image/*"
             className="hidden"
             id="fileInput"
             onChange={handleImageUpload}
+            disabled={isSigning}
           />
           <label htmlFor="fileInput">
             <img
@@ -117,9 +125,22 @@ const Signup = ({ signupSubmit }) => {
               title="Click to upload image"
             />
           </label>
+          {formData.image && (
+            <button
+              type="button"
+              onClick={() => {
+                setFormData((prev) => ({ ...prev, image: null }));
+                setPreview("");
+              }}
+              className="text-xs text-red-500 underline md:text-sm hover:text-red-700"
+            >
+              Remove Image
+            </button>
+          )}
         </div>
         <label htmlFor="email">Email:</label>
         <input
+          ref={emailInputRef}
           type="email"
           name="email"
           id="email"
@@ -127,6 +148,7 @@ const Signup = ({ signupSubmit }) => {
           onChange={handleChange}
           required
           placeholder="E.g. sadkalshayee@gmail.com"
+          disabled={isSigning}
           className="input-style"
         />
 
@@ -146,6 +168,7 @@ const Signup = ({ signupSubmit }) => {
           onChange={handleChange}
           required
           placeholder="E.g. Kalab Sisay"
+          disabled={isSigning}
           className="input-style"
         />
 
@@ -159,6 +182,7 @@ const Signup = ({ signupSubmit }) => {
             onChange={handleChange}
             required
             placeholder="Enter password"
+            disabled={isSigning}
             className="input-style"
           />
           <FaLock className="lock-style" />
@@ -176,7 +200,8 @@ const Signup = ({ signupSubmit }) => {
             value={formData.confirmPassword}
             onChange={handleChange}
             required
-            placeholder="Enter password"
+            placeholder="Confirm password"
+            disabled={isSigning}
             className="input-style"
           />
           <FaLock className="lock-style" />

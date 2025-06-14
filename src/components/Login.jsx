@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 import { FaLock } from "react-icons/fa";
@@ -14,6 +14,13 @@ const Login = ({ loginSubmit }) => {
     password: "",
   });
   const [isOnline, setIsOnline] = useState(true);
+  const emailInputRef = useRef(null);
+
+  useEffect(() => {
+    if (emailInputRef.current) {
+      emailInputRef.current.focus();
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { value, name } = e.target;
@@ -49,6 +56,7 @@ const Login = ({ loginSubmit }) => {
       <form onSubmit={handleSubmit} className="w-full">
         <label htmlFor="email">Email:</label>
         <input
+          ref={emailInputRef}
           type="email"
           name="email"
           id="email"
@@ -56,6 +64,7 @@ const Login = ({ loginSubmit }) => {
           onChange={handleChange}
           required
           placeholder="E.g. sadkalshayee@gmail.com"
+          disabled={isLogging}
           className="input-style"
         />
         <label htmlFor="password">
@@ -71,6 +80,7 @@ const Login = ({ loginSubmit }) => {
             onChange={handleChange}
             required
             placeholder="Enter password"
+            disabled={isLogging}
             className="input-style"
           />
           <FaLock className="lock-style" />
