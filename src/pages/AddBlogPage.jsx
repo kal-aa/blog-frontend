@@ -24,7 +24,7 @@ const AddBlogPage = () => {
         }
 
         setError("");
-        navigage(`/your-blogs/${id}`);
+        window.location.href = `/your-blogs/${id}`;
       } catch (error) {
         console.error("Error posting a blog", error.message);
       } finally {
