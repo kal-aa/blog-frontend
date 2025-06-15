@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FaLock } from "react-icons/fa";
 import { BeatLoader } from "react-spinners";
+import { useQueryClient } from "@tanstack/react-query";
 const ManageAccount = lazy(() => import("../components/ManageAccount"));
 
 const AccountPage = () => {
@@ -22,13 +23,14 @@ const AccountPage = () => {
   const [manageError, setManageError] = useState("");
   const navigate = useNavigate();
   const authInputRef = useRef(null);
+  const queryClient = useQueryClient();
   const { id } = useParams();
 
   useEffect(() => {
-    if (authInputRef.current) {
+    if (authError || authInputRef.current) {
       authInputRef.current.focus();
     }
-  }, []);
+  }, [authError]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -189,6 +191,7 @@ const AccountPage = () => {
         }
 
         toast("Updated successfully!");
+        queryClient.invalidateQueries(["all-blogs"]);
         navigate(`/home/${id}`);
       } catch (error) {
         console.error("Error updating client data", error);
@@ -232,7 +235,7 @@ const AccountPage = () => {
             <button
               type="submit"
               disabled={isAuthenticating}
-              className="w-full px-5 py-1 mt-2 text-center text-white bg-blue-900 rounded-lg hover:scale-105"
+              className="w-full px-5 py-1 mt-2 text-center text-white bg-blue-900 rounded-lg hover:scale-105 disabled:hover:scale-100"
             >
               {isAuthenticating ? (
                 <div className="flex items-end justify-center">

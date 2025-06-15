@@ -18,10 +18,11 @@ const Signup = ({ signupSubmit }) => {
   const [isFullName, setIssFullName] = useState(true);
   const [error, setError] = useState("");
   const [isSigning, setIsSigning] = useState(false);
+  const [focus, setFocus] = useState(false);
   const [preview, setPreview] = useState("");
-  const [isOnline, setIsOnline] = useState(true);
   const fullnameRef = useRef(null);
   const emailInputRef = useRef(null);
+  const isOnline = navigator.onLine;
 
   useEffect(() => {
     if (emailInputRef.current) {
@@ -68,15 +69,16 @@ const Signup = ({ signupSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!navigator.onLine) {
-      setIsOnline(false);
-      return;
-    } else {
-      setIsOnline(true);
-    }
-
-    setIssFullName(true);
     setPasswordMatched("");
+    setError("");
+
+    if (!isOnline) {
+      setFocus(false);
+      setTimeout(() => {
+        setFocus(true);
+      }, 0);
+      return;
+    }
 
     const name = formData.name;
     const fullName = name.trim().split(" ");
@@ -97,7 +99,7 @@ const Signup = ({ signupSubmit }) => {
 
   return (
     <div className="relative signup-container">
-      {!isOnline && <NoInternetConnection />}
+      {!isOnline && <NoInternetConnection focus={focus} />}
 
       <div className={error ? "error-style" : undefined}>{error}</div>
       <h1 className="text-3xl font-bold">Welcome</h1>
@@ -207,10 +209,11 @@ const Signup = ({ signupSubmit }) => {
           <FaLock className="lock-style" />
         </div>
         <button
+          type="submit"
           disabled={isSigning}
-          className={`w-full rounded-md bg-black text-white py-2 mt-2 ${
+          className={`w-full rounded-md bg-black text-white py-2 mt-2 transition-all duration-200 ease-out disabled:scale-100 ${
             !isSigning && "hover:scale-105"
-          } transition-all duration-200 ease-out `}
+          }`}
         >
           {isSigning ? (
             <div>

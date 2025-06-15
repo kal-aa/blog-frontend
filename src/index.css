@@ -21,7 +21,7 @@ body {
 }
 
 .input-style {
-  @apply block border border-red-500 rounded-lg w-full outline-none px-10 py-2 md:py-3 focus:bg-slate-100 mb-1 hover:border-red-900;
+  @apply block border border-red-500 rounded-lg w-full outline-none px-10 py-2 md:py-3 focus:bg-slate-100 mb-1 hover:border-red-900 disabled:hover:border-red-500 disabled:bg-black/10;
 }
 
 /* header */
@@ -47,7 +47,7 @@ body {
 }
 
 .manage-acc-btn {
-  @apply bg-black p-1 w-56 rounded-xl text-white hover:scale-105 md:w-44;
+  @apply bg-black p-1 w-56 rounded-xl text-white hover:scale-105 md:w-44 disabled:scale-100;
 }
 
 .header-hover {

@@ -170,8 +170,8 @@ const ManageYourAcc = (props) => {
         <button
           type="submit"
           name="update"
-          className="manage-acc-btn"
           disabled={isUpdating}
+          className="manage-acc-btn"
         >
           {isUpdating ? (
             <div className="flex items-end justify-center gap-0.5">

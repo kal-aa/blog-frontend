@@ -13,8 +13,7 @@ const YourBlogsPage = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const { id } = useParams();
 
-  const isValid = isOnline && /^[a-f\d]{24}$/i.test(id);
-
+  const isValid = /^[a-f\d]{24}$/i.test(id);
   const {
     data: blogData,
     isFetching,
@@ -22,9 +21,9 @@ const YourBlogsPage = () => {
     isError,
     refetch,
   } = useQuery({
-    queryKey: ["blogs", { route: `your-blogs/${id}` }],
+    queryKey: ["your-blogs", { route: `your-blogs/${id}` }],
     queryFn: fetchBlogs,
-    enabled: isValid,
+    enabled: isValid && isOnline,
     staleTime: 1000 * 60 * 2,
     keepPreviousData: true,
     refetchOnWindowFocus: true,
@@ -126,7 +125,8 @@ const YourBlogsPage = () => {
           <p>please wait...</p>
         </div>
       ) : (
-        blogs.length === 0 && (
+        blogs.length === 0 &&
+        isOnline && (
           <p className="text-xl text-center">
             Add your
             <NavLink

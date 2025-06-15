@@ -74,10 +74,15 @@ function CommentCard(data) {
           <div className="flex items-center space-x-1">
             <img
               onClick={() => {
-                // navigate to the clicked user's blogs
-                if (id === optimComment.commenterId) {
+                if (isHome && id === optimComment.commenterId) {
                   navigate(`/your-blogs/${id}`);
-                } else setUserOfInterest(optimComment.commenterId);
+                } else if (isHome && id !== optimComment.commenterId) {
+                  setUserOfInterest(optimComment.commenterId);
+                } else if (!isHome && id !== optimComment.commenterId) {
+                  navigate(`/home/${id}`, {
+                    state: { userOfInterest: optimComment.commenterId },
+                  });
+                }
               }}
               src={
                 optimComment.buffer && optimComment.mimetype
@@ -88,6 +93,7 @@ function CommentCard(data) {
               alt="user"
               className="w-5 h-5 bg-white rounded-full cursor-pointer"
             />
+
             <p className="text-xs text-red-200">
               {authorId === optimComment.commenterId
                 ? commenterName + " :The Author"

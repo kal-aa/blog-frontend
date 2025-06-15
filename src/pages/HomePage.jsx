@@ -19,6 +19,13 @@ const HomePage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
+  useEffect(() => {
+    const incomingUser = location.state?.userOfInterest;
+    if (incomingUser) {
+      setUserOfInterest(incomingUser);
+    }
+  }, [location.state]);
+
   // one-time-toast for login/signup welcome
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
@@ -40,7 +47,7 @@ const HomePage = () => {
     }
   }, [location.search, navigate]);
 
-  const isValid = isOnline && /^[a-f\d]{24}$/i.test(id);
+  const isValid = /^[a-f\d]{24}$/i.test(id);
 
   const {
     data: blogData,
@@ -49,9 +56,9 @@ const HomePage = () => {
     isError,
     refetch,
   } = useQuery({
-    queryKey: ["blogs", { route: `all-blogs/${id}?page=${limit}` }],
+    queryKey: ["all-blogs", { route: `all-blogs/${id}?page=${limit}` }],
     queryFn: fetchBlogs,
-    enabled: isValid,
+    enabled: isValid && isOnline,
     staleTime: 1000 * 60 * 2,
     keepPreviousData: true,
     refetchOnWindowFocus: true,
@@ -89,7 +96,7 @@ const HomePage = () => {
           <RingLoader color="darkBlue" size={100} speedMultiplier={1.5} />
           <p>please wait...</p>
         </div>
-      ) : blogs.length === 0 ? (
+      ) : blogs.length === 0 && isOnline ? (
         // check if no blogs are available
         userOfInterest ? (
           <p className="text-xl text-center">
@@ -150,33 +157,35 @@ const HomePage = () => {
           )}
 
           {/* Pagination */}
-          <section className="flex justify-center space-x-[25%] md:space-x-[20%]">
-            <FaArrowLeft
-              aria-label="Previous page"
-              title="Previous page"
-              className={limit < 1 && "text-gray-300 pointer-events-none"}
-              onClick={() => {
-                if (limit > 0) {
-                  setLimit((prev) => prev - 1);
-                }
-              }}
-            />
-            <p className="px-2 text-white rounded-full bg-slate-600">
-              {limit < 0 ? 0 : limit}
-            </p>
-            <FaArrowRight
-              aria-label="Next page"
-              title="Next page"
-              className={`${
-                limit >= totalPages - 1 && "text-gray-300 pointer-events-none"
-              }`}
-              onClick={() => {
-                if (limit < totalPages - 1) {
-                  setLimit((prev) => prev + 1);
-                }
-              }}
-            />
-          </section>
+          {isOnline && (
+            <section className="flex justify-center space-x-[25%] md:space-x-[20%]">
+              <FaArrowLeft
+                aria-label="Previous page"
+                title="Previous page"
+                className={limit < 1 && "text-gray-300 pointer-events-none"}
+                onClick={() => {
+                  if (limit > 0) {
+                    setLimit((prev) => prev - 1);
+                  }
+                }}
+              />
+              <p className="px-2 text-white rounded-full bg-slate-600">
+                {limit < 0 ? 0 : limit}
+              </p>
+              <FaArrowRight
+                aria-label="Next page"
+                title="Next page"
+                className={`${
+                  limit >= totalPages - 1 && "text-gray-300 pointer-events-none"
+                }`}
+                onClick={() => {
+                  if (limit < totalPages - 1) {
+                    setLimit((prev) => prev + 1);
+                  }
+                }}
+              />
+            </section>
+          )}
         </div>
       )}
     </div>

@@ -25,10 +25,15 @@ function ReplyCard(data) {
         </p>
         <img
           onClick={() => {
-            // navigate to the clicked user's blogs
-            if (id === optimReply.replierId) {
+            if (isHome && id === optimReply.replierId) {
               navigate(`/your-blogs/${id}`);
-            } else setUserOfInterest(optimReply.replierId);
+            } else if (isHome && id !== optimReply.replierId) {
+              setUserOfInterest(optimReply.replierId);
+            } else {
+              navigate(`/home/${id}`, {
+                state: { userOfInterest: optimReply.replierId },
+              });
+            }
           }}
           src={
             optimReply.buffer && optimReply.mimetype

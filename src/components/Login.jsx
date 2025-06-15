@@ -7,14 +7,15 @@ import NoInternetConnection from "./NoInternetConnection";
 
 const Login = ({ loginSubmit }) => {
   const [isLogging, setIsLogging] = useState(false);
-  const [passwordShould, setPasswordShould] = useState("");
+  const [focus, setFocus] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  const [isOnline, setIsOnline] = useState(true);
   const emailInputRef = useRef(null);
+  const isOnline = navigator.onLine;
 
   useEffect(() => {
     if (emailInputRef.current) {
@@ -29,18 +30,19 @@ const Login = ({ loginSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!navigator.onLine) {
-      setIsOnline(false);
+    setPasswordError("");
+    setError("");
+
+    if (!isOnline) {
+      setFocus(false);
+      setTimeout(() => {
+        setFocus(true);
+      }, 0);
       return;
-    } else {
-      setIsOnline(true);
     }
 
     if (formData.password.length < 8) {
-      setPasswordShould("Password must be greater than 8 characters");
-      setTimeout(() => {
-        setPasswordShould("");
-      }, 4000);
+      setPasswordError("Password must be greater than 8 characters");
     } else {
       loginSubmit(formData, setError, setIsLogging);
     }
@@ -48,7 +50,7 @@ const Login = ({ loginSubmit }) => {
 
   return (
     <div className="signup-container">
-      {!isOnline && <NoInternetConnection />}
+      {!isOnline && <NoInternetConnection focus={focus} />}
       <h1 className="text-3xl font-bold">Welcome Back</h1>
       <div className={error ? "error-style" : undefined}>{error}</div>
 
@@ -69,7 +71,7 @@ const Login = ({ loginSubmit }) => {
         />
         <label htmlFor="password">
           Password:{" "}
-          <p className="inline-block text-sm text-red-600">{passwordShould}</p>
+          <p className="inline-block text-sm text-red-600">{passwordError}</p>
         </label>
         <div className="relative">
           <input
@@ -86,10 +88,11 @@ const Login = ({ loginSubmit }) => {
           <FaLock className="lock-style" />
         </div>
         <button
+          type="submit"
           disabled={isLogging}
-          className={`w-full rounded-md bg-black text-white py-2 mt-2 ${
-            !isLogging && "hover:scale-105"
-          } transition-all duration-200 ease-out`}
+          className={`w-full rounded-md bg-black text-white py-2 mt-2  transition-all duration-200 ease-out disabled:scale-100 ${
+            !isLogging ? "hover:scale-105" : ""
+          }`}
         >
           {isLogging ? (
             <div>

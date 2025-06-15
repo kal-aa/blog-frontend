@@ -7,7 +7,6 @@ const LoginPage = () => {
   const loginSubmit = async (formData, setError, setIsLogging) => {
     const url = `${import.meta.env.VITE_BACKEND_URL}/log-in`;
 
-    setError("");
     setIsLogging(true);
 
     try {

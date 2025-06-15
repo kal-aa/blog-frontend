@@ -2,15 +2,16 @@ import { memo, useEffect, useRef, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { AiOutlineCheck } from "react-icons/ai";
 import PropTypes from "prop-types";
-import ConnectionMonitor from "./ConnectionMonitor";
+import NoInternetConnection from "./NoInternetConnection";
 
 const CreateBlogForm = ({ hanldeBlogPost }) => {
   const [isPosting, setIsPosting] = useState(false);
   const [bodyError, setBodyError] = useState(false);
   const [passCheck, setPassCheck] = useState(false);
+  const [focus, setFocus] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({ title: "", body: "" });
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const isOnline = navigator.onLine;
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -34,6 +35,14 @@ const CreateBlogForm = ({ hanldeBlogPost }) => {
     e.preventDefault();
     setBodyError(false);
 
+    if (!isOnline) {
+      setFocus(false);
+      setTimeout(() => {
+        setFocus(true);
+      }, 0);
+      return;
+    }
+
     formData.body = formData.body.replace(/\s+/g, " ").trim();
     formData.title = formData.title.replace(/\s+/g, " ").trim();
     if (!passCheck) {
@@ -47,7 +56,9 @@ const CreateBlogForm = ({ hanldeBlogPost }) => {
 
   return (
     <>
-      <ConnectionMonitor isOnline={isOnline} setIsOnline={setIsOnline} />
+      <div className="px-[15%] sm:px-[20%] md:px-[25%] lg:px-[30%]">
+        {!isOnline && <NoInternetConnection focus={focus} />}
+      </div>
 
       <div className="signup-container">
         {/* check whether user is online */}
@@ -66,6 +77,7 @@ const CreateBlogForm = ({ hanldeBlogPost }) => {
             value={formData.title}
             onChange={handleChange}
             required
+            disabled={isPosting}
             placeholder="Your blog title"
             className="input-style bg-slate-100"
           />
@@ -84,6 +96,7 @@ const CreateBlogForm = ({ hanldeBlogPost }) => {
               value={formData.body}
               onChange={handleChange}
               required
+              disabled={isPosting}
               placeholder="Write a description for your blog (100 characters or more)"
               className="input-style bg-slate-100"
             />
@@ -92,7 +105,7 @@ const CreateBlogForm = ({ hanldeBlogPost }) => {
             type="submit"
             disabled={isPosting}
             className={`w-full rounded-md bg-black text-white py-2 mt-2 ${
-              !isPosting && "hover:scale-95"
+              !isPosting && "hover:scale-95 disabled:hover:scale-100"
             } transition-all duration-200 ease-out`}
           >
             {isPosting ? (

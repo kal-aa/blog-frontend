@@ -1,14 +1,17 @@
 import { useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import CreateBlogForm from "../components/CreateBlogForm";
 
 const AddBlogPage = () => {
   const { id } = useParams();
-  const navigage = useNavigate();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const hanldeBlogPost = useCallback(
     async (formData, setIsPosting, setError) => {
       setIsPosting(true);
+      setError("");
 
       const url = `${import.meta.env.VITE_BACKEND_URL}/add-blog/${id}`;
       try {
@@ -23,15 +26,15 @@ const AddBlogPage = () => {
           throw new Error(error.mssg);
         }
 
-        setError("");
-        navigage(`/your-blogs/${id}`);
+        queryClient.invalidateQueries(["your-blogs"]);
+        navigate(`/your-blogs/${id}`);
       } catch (error) {
         console.error("Error posting a blog", error.message);
       } finally {
         setIsPosting(false);
       }
     },
-    [id, navigage]
+    [id, navigate, queryClient]
   );
 
   return <CreateBlogForm hanldeBlogPost={hanldeBlogPost} />;
