@@ -13,6 +13,10 @@ import { relativeTime } from "../utils/relativeTime";
 import { formatNumber } from "../utils/formatNumber";
 import SeeMore from "./SeeMore";
 import SuspenseFallback from "./SuspenseFallback";
+import { useUser } from "../context/UserContext";
+import { isObjectId } from "../utils/isObjectId";
+import { fetchData } from "../utils/fetchBlogs";
+import { useQuery } from "@tanstack/react-query";
 const ReplyList = lazy(() => import("./ReplyList"));
 
 function CommentCard(data) {
@@ -26,22 +30,18 @@ function CommentCard(data) {
     handleThumbsupClick,
     isHome,
     optimComment,
-    setOptimComments,
     setUserOfInterest,
   } = data;
-  const sortedReplies = optimComment.replies.sort(
-    (a, b) => new Date(b.timeStamp) - new Date(a.timeStamp)
-  );
-  const [optimReplies, setOptimReplies] = useState(sortedReplies);
+
+  const [optimReplies, setOptimReplies] = useState([]);
   const [ShowReplyForm, setShowReplyForm] = useState(false);
   const [thumbsUp, setThumbsUp] = useState(false);
   const [thumbsDown, setThumbsDown] = useState(false);
-  const [likeCount, setLikeCount] = useState(optimComment.likes.length);
-  const [dislikeCount, setDislikeCount] = useState(
-    optimComment.dislikes.length
-  );
+  const [likeCount, setLikeCount] = useState(0);
+  const [dislikeCount, setDislikeCount] = useState(0);
   const [replyValue, setReplyValue] = useState("");
-  const [replyCount, setReplyCount] = useState(optimReplies.length);
+  const [replyError, setReplyError] = useState("");
+  const [replyCount, setReplyCount] = useState(0);
   const [isFullComment, setIsFullComment] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
   const [isDeletingComment, setIsDeletingComment] = useState(false);
@@ -49,7 +49,32 @@ function CommentCard(data) {
   const navigate = useNavigate();
   const inputRef = useRef(null);
   const { id } = useParams();
+  const { user } = useUser();
   const commentValue = optimComment.comment;
+
+  const {
+    data: replies,
+    isSuccess,
+    // refetch,
+  } = useQuery({
+    queryKey: ["replies", { route: `comments/${optimComment._id}/replies` }],
+    queryFn: fetchData,
+    enabled: isObjectId(optimComment._id),
+    staleTime: 1000 * 60 * 5,
+    keepPreviousData: true,
+  });
+
+  useEffect(() => {
+    setLikeCount(optimComment.likes.length);
+    setDislikeCount(optimComment.dislikes.length);
+  }, [optimComment.likes, optimComment.dislikes]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      setOptimReplies(replies);
+      setReplyCount(replies.length || 0);
+    }
+  }, [replies, isSuccess]);
 
   // for the like and dislike icons
   useEffect(() => {
@@ -65,7 +90,8 @@ function CommentCard(data) {
     if (ShowReplyForm && inputRef.current) inputRef.current.focus();
   }, [ShowReplyForm]);
 
-  const commenterName = optimComment.commenterName || "Unknown user";
+  const commenterName =
+    optimComment.commenterName || user.name || "Unknown user";
 
   return (
     <section className="bg-black rounded-xl">
@@ -221,7 +247,8 @@ function CommentCard(data) {
                 setOptimReplies,
                 setReplyCount,
                 setReplyValue,
-                setShowReplies
+                setShowReplies,
+                setReplyError
               )
             }
             className="flex justify-around w-full"
@@ -243,6 +270,9 @@ function CommentCard(data) {
               reply
             </button>
           </form>
+          <p className="text-sm mt-1 text-red-400 w-[80%] text-center">
+            {replyError}
+          </p>
           <p
             onClick={() => setShowReplies((prev) => !prev)}
             className="my-2 cursor-pointer hover:underline underline-offset-2"
@@ -267,7 +297,6 @@ function CommentCard(data) {
                 isHome={isHome}
                 optimComment={optimComment}
                 optimReplies={optimReplies}
-                setOptimComments={setOptimComments}
                 setOptimReplies={setOptimReplies}
                 setReplyCount={setReplyCount}
                 setUserOfInterest={setUserOfInterest}
@@ -292,7 +321,6 @@ CommentCard.propTypes = {
   handleThumbsupClick: PropTypes.func,
   isHome: PropTypes.bool,
   optimComment: PropTypes.object,
-  setOptimComments: PropTypes.func,
   setUserOfInterest: PropTypes.func,
 };
 

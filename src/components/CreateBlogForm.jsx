@@ -2,16 +2,16 @@ import { memo, useEffect, useRef, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { AiOutlineCheck } from "react-icons/ai";
 import PropTypes from "prop-types";
-import NoInternetConnection from "./NoInternetConnection";
+// import NoInternetConnection from "./NoInternetConnection";
 
 const CreateBlogForm = ({ hanldeBlogPost }) => {
   const [isPosting, setIsPosting] = useState(false);
   const [bodyError, setBodyError] = useState(false);
   const [passCheck, setPassCheck] = useState(false);
-  const [focus, setFocus] = useState(false);
+  // const [focus, setFocus] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({ title: "", body: "" });
-  const isOnline = navigator.onLine;
+  // const isOnline = navigator.onLine;
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -35,13 +35,13 @@ const CreateBlogForm = ({ hanldeBlogPost }) => {
     e.preventDefault();
     setBodyError(false);
 
-    if (!isOnline) {
-      setFocus(false);
-      setTimeout(() => {
-        setFocus(true);
-      }, 0);
-      return;
-    }
+    // if (!isOnline) {
+    //   setFocus(false);
+    //   setTimeout(() => {
+    //     setFocus(true);
+    //   }, 0);
+    //   return;
+    // }
 
     formData.body = formData.body.replace(/\s+/g, " ").trim();
     formData.title = formData.title.replace(/\s+/g, " ").trim();
@@ -49,7 +49,7 @@ const CreateBlogForm = ({ hanldeBlogPost }) => {
       setBodyError(true);
       return;
     }
-    if (!isOnline) return;
+    // if (!isOnline) return;
 
     hanldeBlogPost(formData, setIsPosting, setError);
   };
@@ -57,7 +57,7 @@ const CreateBlogForm = ({ hanldeBlogPost }) => {
   return (
     <>
       <div className="px-[15%] sm:px-[20%] md:px-[25%] lg:px-[30%]">
-        {!isOnline && <NoInternetConnection focus={focus} />}
+        {/* {!isOnline && <NoInternetConnection focus={focus} />} */}
       </div>
 
       <div className="signup-container">

@@ -3,20 +3,21 @@ import { memo, useCallback } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
 import CommentCard from "./CommentCard";
+import { useQueryClient } from "@tanstack/react-query";
 
 function CommentList(data) {
   const {
     blog,
     optimComments,
-    onInteractionUpdate,
     isHome,
     setCommentCount,
     setOptimComments,
     setUserOfInterest,
   } = data;
   const { id } = useParams();
+  const queryClient = useQueryClient();
 
-  const urll = (optimComment) =>
+  const url = (optimComment) =>
     `${import.meta.env.VITE_BACKEND_URL}/interaction/${optimComment._id}`;
 
   // setThumbsUp(true) Add like
@@ -43,24 +44,33 @@ function CommentList(data) {
       try {
         // Remove dislike first
         if (thumbsDown) {
-          await axios.patch(urll(optimComment), {
+          await axios.patch(url(optimComment), {
             action: "removeCommentDislike",
             userId: id,
           });
         }
 
         //Add like
-        await axios.patch(urll(optimComment), {
+        await axios.patch(url(optimComment), {
           action: "addCommentLike",
           userId: id,
         });
 
-        const newDislikes = optimComment.dislikes.filter((d) => d !== id);
-        const newLikes = [...optimComment.likes, id];
-        onInteractionUpdate(optimComment._id, {
-          likes: newLikes,
-          dislikes: newDislikes,
-        });
+        queryClient.setQueryData(
+          ["comments", { route: `blogs/${blog._id}/comments` }],
+          (old) => {
+            if (!old) return old;
+            return old.map((c) =>
+              c._id === optimComment._id
+                ? {
+                    ...c,
+                    likes: c.likes.includes(id) ? c.likes : [...c.likes, id],
+                    dislikes: c.dislikes.filter((d) => d !== id),
+                  }
+                : c
+            );
+          }
+        );
       } catch (error) {
         console.error("Error removing dislike and or adding like:", error);
         setThumbsUp(false);
@@ -69,7 +79,7 @@ function CommentList(data) {
         setDislikeCount(prevDislikeCount);
       }
     },
-    [id, onInteractionUpdate]
+    [id, queryClient, blog._id]
   );
 
   //  setThumbsUp(false) remove like
@@ -79,23 +89,32 @@ function CommentList(data) {
       setLikeCount((prev) => prev - 1);
 
       try {
-        await axios.patch(urll(optimComment), {
+        await axios.patch(url(optimComment), {
           action: "removeCommentLike",
           userId: id,
         });
 
-        const newLikes = optimComment.likes.filter((l) => l !== id);
-        onInteractionUpdate(optimComment._id, {
-          likes: newLikes,
-          dislikes: optimComment.dislikes,
-        });
+        queryClient.setQueryData(
+          ["comments", { route: `blogs/${blog._id}/comments` }],
+          (old) => {
+            if (!old) return old;
+            return old.map((c) =>
+              c._id === optimComment._id
+                ? {
+                    ...c,
+                    likes: c.likes.filter((l) => l !== id),
+                  }
+                : c
+            );
+          }
+        );
       } catch (error) {
         console.error("Error removing like:", error);
         setThumbsUp(true);
         setLikeCount((prev) => prev + 1);
       }
     },
-    [id, onInteractionUpdate]
+    [id, queryClient, blog._id]
   );
 
   //  setThumbsDown(true) add dislike
@@ -123,23 +142,34 @@ function CommentList(data) {
       try {
         // remove like first
         if (thumbsUp)
-          await axios.patch(urll(optimComment), {
+          await axios.patch(url(optimComment), {
             action: "removeCommentLike",
             userId: id,
           });
 
         // add dislike
-        await axios.patch(urll(optimComment), {
+        await axios.patch(url(optimComment), {
           action: "addCommentDislike",
           userId: id,
         });
 
-        const newLikes = optimComment.likes.filter((l) => l !== id);
-        const newDislikes = [...optimComment.dislikes, id];
-        onInteractionUpdate(optimComment._id, {
-          likes: newLikes,
-          dislikes: newDislikes,
-        });
+        queryClient.setQueryData(
+          ["comments", { route: `blogs/${blog._id}/comments` }],
+          (old) => {
+            if (!old) return old;
+            return old.map((c) =>
+              c._id === optimComment._id
+                ? {
+                    ...c,
+                    likes: c.likes.filter((l) => l !== id),
+                    dislikes: c.dislikes.includes(id)
+                      ? c.dislikes
+                      : [...c.dislikes, id],
+                  }
+                : c
+            );
+          }
+        );
       } catch (error) {
         console.log("Error adding dislike and or removing like:", error);
         setThumbsDown(false);
@@ -148,7 +178,7 @@ function CommentList(data) {
         setLikeCount(prevLikeCount);
       }
     },
-    [id, onInteractionUpdate]
+    [id, queryClient, blog._id]
   );
 
   //  setThumbsDown(false)  remove dislike
@@ -158,23 +188,32 @@ function CommentList(data) {
       setDislikeCount((prev) => prev - 1);
 
       try {
-        await axios.patch(urll(optimComment), {
+        await axios.patch(url(optimComment), {
           action: "removeCommentDislike",
           userId: id,
         });
 
-        const newDislikes = optimComment.dislikes.filter((l) => l !== id);
-        onInteractionUpdate(optimComment._id, {
-          likes: optimComment.likes,
-          dislikes: newDislikes,
-        });
+        queryClient.setQueryData(
+          ["comments", { route: `blogs/${blog._id}/comments` }],
+          (old) => {
+            if (!old) return old;
+            return old.map((c) =>
+              c._id === optimComment._id
+                ? {
+                    ...c,
+                    dislikes: c.dislikes.filter((d) => d !== id),
+                  }
+                : c
+            );
+          }
+        );
       } catch (error) {
         console.error("Error removing dislike:", error);
         setThumbsDown(true);
         setDislikeCount((prev) => prev + 1);
       }
     },
-    [id, onInteractionUpdate]
+    [id, queryClient, blog._id]
   );
 
   // !isHome
@@ -193,6 +232,13 @@ function CommentList(data) {
 
       try {
         await axios.delete(delUrl);
+        queryClient.setQueryData(
+          ["comments", { route: `blogs/${blog._id}/comments` }],
+          (old) => {
+            if (!old) return old;
+            return old.filter((c) => c._id !== optimComment._id);
+          }
+        );
       } catch (error) {
         console.error("Error deleting comment", error);
         // Rollback
@@ -208,7 +254,7 @@ function CommentList(data) {
         setIsDeletingComment(false);
       }
     },
-    [setCommentCount, setOptimComments]
+    [setCommentCount, setOptimComments, queryClient, blog._id]
   );
 
   const handleSendReply = useCallback(
@@ -220,10 +266,12 @@ function CommentList(data) {
       setOptimReplies,
       setReplyCount,
       setReplyValue,
-      setShowReplies
+      setShowReplies,
+      setReplyError
     ) => {
       e.preventDefault();
       setIsSendingReply(true);
+      setReplyError("");
 
       // Temporary optimisitc comment
       const tempId = new Date().getTime().toString();
@@ -245,26 +293,37 @@ function CommentList(data) {
       setShowReplies(true);
 
       try {
-        const res = await axios.patch(urll(optimComment), {
-          action: "reply",
-          userId: id,
+        const replyData = {
+          blogId: blog._id,
+          commentId: optimComment._id,
           reply: replyValue,
+        };
+
+        const url = `${import.meta.env.VITE_BACKEND_URL}/add-reply/${id}`;
+        const res = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(replyData),
         });
 
-        const newReply = res.data.newReply;
-        if (!newReply) throw new Error("Error receiving the new reply");
+        if (!res.ok) {
+          const err = await res.json();
+          setReplyError(err?.mssg || "Something wrong happened");
+          throw new Error(err?.mssg || "Reply failed");
+        }
 
-        // Replace temp reply with the real reply from server
-        setOptimReplies((prev) =>
-          prev.map((r) => (r._id === tempId ? newReply : r))
+        const { newReply } = await res.json();
+        if (!newReply) throw new Error("No new reply returned");
+
+        queryClient.setQueryData(
+          ["replies", { route: `comments/${optimComment._id}/replies` }],
+          (old) => {
+            if (!old) return [newReply];
+            return [newReply, ...old];
+          }
         );
-
-        // Update parent state with new replies array
-        onInteractionUpdate(optimComment._id, {
-          replies: [...optimComment.replies, newReply].sort(
-            (a, b) => new Date(b.timeStamp) - new Date(a.timeStamp)
-          ),
-        });
       } catch (error) {
         console.error("Error comming", error);
         // Rollback optimisitc reply
@@ -274,14 +333,14 @@ function CommentList(data) {
         setIsSendingReply(false);
       }
     },
-    [id, onInteractionUpdate]
+    [id, queryClient, blog._id]
   );
 
   return (
     <>
       {optimComments.map((c) => (
         <CommentCard
-          key={`${c._id}-${c.likes.length}-${c.dislikes.length}`}
+          key={`${c._id}`}
           authorId={blog.authorId}
           handleDeleteComment={handleDeleteComment}
           handleRegThumbsDownClick={handleRegThumbsDownClick}
@@ -290,9 +349,7 @@ function CommentList(data) {
           handleThumbsDownClick={handleThumbsDownClick}
           handleThumbsupClick={handleThumbsupClick}
           isHome={isHome}
-          onInteractionUpdate={onInteractionUpdate}
           optimComment={c}
-          setOptimComments={setOptimComments}
           setUserOfInterest={setUserOfInterest}
         />
       ))}
@@ -303,7 +360,6 @@ function CommentList(data) {
 CommentList.propTypes = {
   blog: PropTypes.object.isRequired,
   optimComments: PropTypes.array.isRequired,
-  onInteractionUpdate: PropTypes.func,
   isHome: PropTypes.bool,
   setCommentCount: PropTypes.func,
   setOptimComments: PropTypes.func,

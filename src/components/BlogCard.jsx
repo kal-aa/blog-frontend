@@ -18,7 +18,6 @@ const BlogDetail = lazy(() => import("./BlogDetail"));
 function BlogCard(data) {
   const {
     blog,
-    comments,
     handleDelete, // !isHome
     handleUpdate, // !isHome
     isHome = false,
@@ -29,7 +28,7 @@ function BlogCard(data) {
   const [thumbsUp, setThumbsUp] = useState(false);
   const [thumbsDown, setThumbsDown] = useState(false);
   const [viewCount, setViewCount] = useState(blog.views.length);
-  const [expand, setExpand] = useState(false);
+  const [expand, setExpand] = useState(true);
   const navigate = useNavigate();
   //  for the YourtodosPage
   const [editTitleValue, setEditTitleValue] = useState(blog.title || "");
@@ -95,7 +94,6 @@ function BlogCard(data) {
 
   const blogDetailProps = {
     blog,
-    comments,
     editBodyPen,
     editBodyValue,
     expand,
@@ -325,7 +323,6 @@ function BlogCard(data) {
 
 BlogCard.propTypes = {
   blog: PropTypes.object.isRequired,
-  comments: PropTypes.array,
   handleDelete: PropTypes.func,
   handleUpdate: PropTypes.func,
   isHome: PropTypes.bool,

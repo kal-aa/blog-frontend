@@ -3,11 +3,11 @@ import { NavLink } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 import { FaLock } from "react-icons/fa";
 import PropTypes from "prop-types";
-import NoInternetConnection from "./NoInternetConnection";
+// import NoInternetConnection from "./NoInternetConnection";
 
 const Login = ({ loginSubmit }) => {
   const [isLogging, setIsLogging] = useState(false);
-  const [focus, setFocus] = useState(false);
+  // const [focus, setFocus] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
@@ -15,7 +15,7 @@ const Login = ({ loginSubmit }) => {
     password: "",
   });
   const emailInputRef = useRef(null);
-  const isOnline = navigator.onLine;
+  // const isOnline = navigator.onLine;
 
   useEffect(() => {
     if (emailInputRef.current) {
@@ -33,13 +33,13 @@ const Login = ({ loginSubmit }) => {
     setPasswordError("");
     setError("");
 
-    if (!isOnline) {
-      setFocus(false);
-      setTimeout(() => {
-        setFocus(true);
-      }, 0);
-      return;
-    }
+    // if (!isOnline) {
+    //   setFocus(false);
+    //   setTimeout(() => {
+    //     setFocus(true);
+    //   }, 0);
+    //   return;
+    // }
 
     if (formData.password.length < 8) {
       setPasswordError("Password must be greater than 8 characters");
@@ -50,7 +50,7 @@ const Login = ({ loginSubmit }) => {
 
   return (
     <div className="signup-container">
-      {!isOnline && <NoInternetConnection focus={focus} />}
+      {/* {!isOnline && <NoInternetConnection focus={focus} />} */}
       <h1 className="text-3xl font-bold">Welcome Back</h1>
       <div className={error ? "error-style" : undefined}>{error}</div>
 

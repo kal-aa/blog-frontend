@@ -1,6 +1,6 @@
 import { useCallback } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import PropTypes from "prop-types";
-import axios from "axios";
 import ReplyCard from "./ReplyCard";
 
 function ReplyList(data) {
@@ -8,43 +8,43 @@ function ReplyList(data) {
     isHome,
     optimComment,
     optimReplies,
-    setOptimComments,
     setOptimReplies,
     setReplyCount,
     setUserOfInterest,
   } = data;
+  const queryClient = useQueryClient();
 
   // !isHome
   const handleDeleteReply = useCallback(
     async (optimReply, setIsDeletingReply) => {
       setIsDeletingReply(true);
-      console.log(optimReply);
 
       setOptimReplies((prev) => prev.filter((r) => r._id !== optimReply._id));
-
       setReplyCount((prev) => prev - 1);
 
-      const url = `${
-        import.meta.env.VITE_BACKEND_URL
-      }/interaction/${encodeURIComponent(optimReply._id)}`;
+      const url = `${import.meta.env.VITE_BACKEND_URL}/delete-reply/${
+        optimReply._id
+      }`;
 
       try {
-        await axios.patch(url, {
-          action: "removeReply",
-          userId: optimReply.replierId,
+        await fetch(url, {
+          method: "DELETE",
         });
-        setOptimComments((prev) =>
-          prev.map((c) =>
-            c._id === optimComment._id
-              ? {
-                  ...c,
-                  replies: c.replies.filter((r) => r._id !== optimReply._id),
-                }
-              : c
-          )
+
+        queryClient.setQueryData(
+          ["replies", { route: `comments/${optimComment._id}/replies` }],
+          (old) => {
+            if (!old) return old;
+            return old.filter((r) => {
+              console.log("old reply:", r);
+              console.log("optim reply:", optimReply);
+
+              return r._id !== optimReply._id;
+            });
+          }
         );
       } catch (error) {
-        console.error("Error deleting comment", error);
+        console.error("Error deleting reply", error);
         if (optimReply) {
           setOptimReplies((prev) =>
             [...prev, optimReply].sort(
@@ -57,7 +57,7 @@ function ReplyList(data) {
         setIsDeletingReply(false);
       }
     },
-    [setOptimComments, setOptimReplies, setReplyCount, optimComment]
+    [setOptimReplies, setReplyCount, optimComment, queryClient]
   );
 
   return (
@@ -79,7 +79,6 @@ ReplyList.propTypes = {
   isHome: PropTypes.bool,
   optimComment: PropTypes.object,
   optimReplies: PropTypes.array,
-  setOptimComments: PropTypes.func,
   setOptimReplies: PropTypes.func,
   setReplyCount: PropTypes.func,
   setUserOfInterest: PropTypes.func,

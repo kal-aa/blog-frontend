@@ -2,12 +2,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import PropTypes from "prop-types";
 import axios from "axios";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { fetchData } from "../utils/fetchBlogs";
+import { isObjectId } from "../utils/isObjectId";
 import BlogDetailView from "./BlogDetailView";
 
 function BlogDetail(data) {
   const {
     blog,
-    comments,
     editBodyPen,
     editBodyValue,
     expand,
@@ -22,19 +24,41 @@ function BlogDetail(data) {
     thumbsUp,
     updateBtnRef,
   } = data;
-  const sortedComments = comments.sort(
-    (a, b) => new Date(b.timeStamp) - new Date(a.timeStamp)
-  );
-  const [optimComments, setOptimComments] = useState(sortedComments);
+  const [optimComments, setOptimComments] = useState([]);
   const [showComments, setShowComments] = useState(false);
   const [commentValue, setCommentValue] = useState("");
-  const [likeCount, setLikeCount] = useState(blog.likes.length);
-  const [dislikeCount, setDislikeCount] = useState(blog.dislikes.length);
-  const [commentCount, setCommentCount] = useState(optimComments.length);
+  const [likeCount, setLikeCount] = useState(0);
+  const [dislikeCount, setDislikeCount] = useState(0);
+  const [commentCount, setCommentCount] = useState(0);
   const [isSendingComment, setIsSendingComment] = useState(false);
   const commentRef = useRef(null);
   const pTagRef = useRef(null);
   const { id } = useParams();
+  const queryClient = useQueryClient();
+
+  const {
+    data: comments,
+    isSuccess,
+    // refetch,
+  } = useQuery({
+    queryKey: ["comments", { route: `blogs/${blog._id}/comments` }],
+    queryFn: fetchData,
+    enabled: isObjectId(blog._id),
+    staleTime: 1000 * 60 * 5,
+    keepPreviousData: true,
+  });
+
+  useEffect(() => {
+    setLikeCount(blog.likes.length);
+    setDislikeCount(blog.dislikes.length);
+  }, [blog.likes, blog.dislikes]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      setOptimComments(comments);
+      setCommentCount(comments.length || 0);
+    }
+  }, [comments, isSuccess]);
 
   // Check if the click was outside the comments section and the p tag
   useEffect(() => {
@@ -87,6 +111,9 @@ function BlogDetail(data) {
         action: "addLike",
         userId: id,
       });
+
+      queryClient.invalidateQueries(["all-blogs"]);
+      queryClient.invalidateQueries(["your-blogs"]);
     } catch (error) {
       console.error("Error updating like/dislike:", error);
       // Rollback optimistic updates
@@ -95,7 +122,15 @@ function BlogDetail(data) {
       setThumbsDown(prevThumbsDown);
       setDislikeCount(prevDislikeCount);
     }
-  }, [setThumbsDown, thumbsDown, setThumbsUp, dislikeCount, url, id]);
+  }, [
+    setThumbsDown,
+    thumbsDown,
+    setThumbsUp,
+    dislikeCount,
+    url,
+    id,
+    queryClient,
+  ]);
 
   //  setThumbsUp(false) remove like
   const handleThumbsupClick = useCallback(async () => {
@@ -107,13 +142,16 @@ function BlogDetail(data) {
         action: "removeLike",
         userId: id,
       });
+
+      queryClient.invalidateQueries(["all-blogs"]);
+      queryClient.invalidateQueries(["your-blogs"]);
     } catch (error) {
       console.error("Error removing like:", error);
       // Rollback
       setThumbsUp(true);
       setLikeCount((prev) => prev + 1);
     }
-  }, [setThumbsUp, url, id]);
+  }, [setThumbsUp, url, id, queryClient]);
 
   //  setThumbsDown(true) add dislike
   const handleRegThumbsDownClick = useCallback(async () => {
@@ -133,6 +171,9 @@ function BlogDetail(data) {
         await axios.patch(url, { action: "removeLike", userId: id });
       }
       await axios.patch(url, { action: "addDislike", userId: id });
+
+      queryClient.invalidateQueries(["all-blogs"]);
+      queryClient.invalidateQueries(["your-blogs"]);
     } catch (error) {
       console.error("Error removing like and or adding dislike:", error);
       // Rollback
@@ -141,7 +182,7 @@ function BlogDetail(data) {
       setThumbsUp(prevThumbsUp);
       setLikeCount(prevLikeCount);
     }
-  }, [setThumbsDown, setThumbsUp, thumbsUp, url, likeCount, id]);
+  }, [setThumbsDown, setThumbsUp, thumbsUp, url, likeCount, id, queryClient]);
 
   //  setThumbsDown(false)  remove dislike
   const handleThumbsDownClick = useCallback(async () => {
@@ -153,22 +194,26 @@ function BlogDetail(data) {
         action: "removeDislike",
         userId: id,
       });
+
+      queryClient.invalidateQueries(["all-blogs"]);
+      queryClient.invalidateQueries(["your-blogs"]);
     } catch (error) {
       console.error("Error removing dislike:", error);
       // Rollback
       setThumbsDown(true);
       setDislikeCount((prev) => prev + 1);
     }
-  }, [setThumbsDown, id, url]);
+  }, [setThumbsDown, id, url, queryClient]);
 
   // send comment
   const handleSendComment = useCallback(
-    async (e) => {
+    async (e, setCommentError) => {
       e.preventDefault();
       setIsSendingComment(true);
+      setCommentError("");
 
       // Temporary optimisitc comment
-      const tempId = new Date().getTime().toString();
+      const tempId = Date.now().toString();
       const tempComment = {
         _id: tempId,
         blogId: blog._id,
@@ -180,29 +225,46 @@ function BlogDetail(data) {
         replies: [],
       };
 
-      setOptimComments((prev) =>
-        [...prev, tempComment].sort(
-          (a, b) => new Date(b.timeStamp) - new Date(a.timeStamp)
-        )
-      );
+      setOptimComments((prev) => [tempComment, ...prev]);
       setCommentCount((prev) => prev + 1);
       setCommentValue("");
       setShowComments(true);
 
       try {
-        const res = await axios.patch(url, {
-          action: "comment",
-          userId: id,
+        const commentData = {
           blogId: blog._id,
           comment: commentValue,
+        };
+
+        const url = `${import.meta.env.VITE_BACKEND_URL}/add-comment/${id}`;
+        const res = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(commentData),
         });
 
-        const newComment = res.data.newComment;
-        if (!newComment) throw new Error("Error receiving the new comment");
+        if (!res.ok) {
+          const err = await res.json();
+          setCommentError(err?.mssg || "Something wrong happened");
+          setShowComments(false);
+          throw new Error(err?.mssg || "Comment failed");
+        }
 
-        setOptimComments((prev) =>
-          prev.map((c) => (c._id === tempId ? newComment : c))
+        const { newComment } = await res.json();
+        if (!newComment) throw new Error("No new comment returned");
+
+        // Replace temp comment with real one directly in cache
+        queryClient.setQueryData(
+          ["comments", { route: `blogs/${blog._id}/comments` }],
+          (old) => {
+            if (!old) return [newComment];
+            return [newComment, ...old];
+          }
         );
+
+        queryClient.invalidateQueries(["your-blogs"]);
       } catch (error) {
         console.error("Error comming", error);
         // Rollback optimistic comment
@@ -212,14 +274,8 @@ function BlogDetail(data) {
         setIsSendingComment(false);
       }
     },
-    [blog._id, id, commentValue, url]
+    [blog._id, id, commentValue, queryClient]
   );
-
-  const handleInteractionUpdate = useCallback((commentId, updates) => {
-    setOptimComments((prev) =>
-      prev.map((c) => (c._id === commentId ? { ...c, ...updates } : c))
-    );
-  }, []);
 
   return (
     <BlogDetailView
@@ -239,7 +295,6 @@ function BlogDetail(data) {
       isHome={isHome}
       isSendingComment={isSendingComment}
       likeCount={likeCount}
-      onInteractionUpdate={handleInteractionUpdate}
       optimComments={optimComments}
       pTagRef={pTagRef}
       readyToUpdate={readyToUpdate}
@@ -260,7 +315,6 @@ function BlogDetail(data) {
 
 BlogDetail.propTypes = {
   blog: PropTypes.object.isRequired,
-  comments: PropTypes.array,
   editBodyPen: PropTypes.bool,
   editBodyValue: PropTypes.string,
   expand: PropTypes.bool,

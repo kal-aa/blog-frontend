@@ -1,19 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
 import { NavLink, useParams } from "react-router-dom";
 import { RingLoader } from "react-spinners";
-import ConnectionMonitor from "../components/ConnectionMonitor";
+// import ConnectionMonitor from "../components/ConnectionMonitor";
 import BlogCard from "../components/BlogCard";
-import { fetchBlogs } from "../utils/fetchBlogs";
+import { fetchData } from "../utils/fetchBlogs";
+import { isObjectId } from "../utils/isObjectId";
 import { useQuery } from "@tanstack/react-query";
 import BlogFetchError from "../components/BlogFetchError";
 
 const YourBlogsPage = () => {
   const [blogs, setBlogs] = useState([]);
   const [updateError, setUpdateError] = useState("");
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  // const [isOnline, setIsOnline] = useState(navigator.onLine);
   const { id } = useParams();
 
-  const isValid = /^[a-f\d]{24}$/i.test(id);
   const {
     data: blogData,
     isFetching,
@@ -22,17 +22,16 @@ const YourBlogsPage = () => {
     refetch,
   } = useQuery({
     queryKey: ["your-blogs", { route: `your-blogs/${id}` }],
-    queryFn: fetchBlogs,
-    enabled: isValid && isOnline,
-    staleTime: 1000 * 60 * 2,
+    queryFn: fetchData,
+    enabled: isObjectId(id),
+    // && isOnline
+    staleTime: 1000 * 60 * 5,
     keepPreviousData: true,
-    refetchOnWindowFocus: true,
   });
 
   useEffect(() => {
     if (blogData) {
       setBlogs(blogData);
-      console.log("blog data");
     }
   }, [blogData]);
 
@@ -110,13 +109,13 @@ const YourBlogsPage = () => {
     [blogs, id]
   );
 
-  if (isError || !isValid) {
+  if (isError || !isObjectId(id)) {
     return <BlogFetchError refetch={refetch} isError={isError} />;
   }
 
   return (
     <div>
-      <ConnectionMonitor isOnline={isOnline} setIsOnline={setIsOnline} />
+      {/* <ConnectionMonitor isOnline={isOnline} setIsOnline={setIsOnline} /> */}
 
       {/* Check the fetching status and give info accordingly */}
       {isFetching && !isRefetching ? (
@@ -125,8 +124,8 @@ const YourBlogsPage = () => {
           <p>please wait...</p>
         </div>
       ) : (
-        blogs.length === 0 &&
-        isOnline && (
+        blogs.length === 0 && (
+          // isOnline &&
           <p className="text-xl text-center">
             Add your
             <NavLink
