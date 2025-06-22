@@ -1,35 +1,29 @@
 import PropTypes from "prop-types";
-import { useEffect } from "react";
-import NoInternetConnection from "./NoInternetConnection";
+import { useEffect, useRef } from "react";
 
-const ConnectionMonitor = ({ isOnline, setIsOnline }) => {
+export default function ConnectionMonitor({ focus = false }) {
+  const btnRef = useRef(null);
+
   useEffect(() => {
-    function updateOnlineStatus() {
-      setIsOnline(navigator.onLine);
+    if (focus && btnRef.current) {
+      btnRef.current.focus();
     }
+  }, [focus]);
 
-    window.addEventListener("online", updateOnlineStatus);
-    window.addEventListener("offline", updateOnlineStatus);
-
-    return () => {
-      window.removeEventListener("online", updateOnlineStatus);
-      window.removeEventListener("offline", updateOnlineStatus);
-    };
-  }, [isOnline, setIsOnline]);
   return (
-    <>
-      {!isOnline && (
-        <div className="mx-[25%] sm:mx-[30%] md:mx-[35%]">
-          <NoInternetConnection />
-        </div>
-      )}
-    </>
+    <div className="flex flex-col items-center w-full pb-2 border-b-4 border-black rounded-full">
+      <p className="font-bold">No internet connection</p>
+      <button
+        ref={btnRef}
+        onClick={() => window.location.reload()}
+        className="px-8 border border-black/30 focus:border rounded-2xl hover:bg-white/30"
+      >
+        Try again
+      </button>
+    </div>
   );
-};
+}
 
 ConnectionMonitor.propTypes = {
-  isOnline: PropTypes.bool,
-  setIsOnline: PropTypes.func,
+  focus: PropTypes.bool,
 };
-
-export default ConnectionMonitor;

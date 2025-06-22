@@ -49,11 +49,19 @@ function BlogDetailView(data) {
   const [showCommentForm, setShowCommentForm] = useState(false);
   const [commentError, setCommentError] = useState("");
   const inputRef = useRef(null);
+  const bodyInpRef = useRef(null);
 
   // comment Input focus
   useEffect(() => {
     if (showCommentForm && inputRef.current) inputRef.current.focus();
   }, [showCommentForm]);
+
+  useEffect(() => {
+    if (editBodyPen && bodyInpRef.current) {
+      bodyInpRef.current.focus();
+      bodyInpRef.current.select?.();
+    }
+  }, [bodyInpRef, editBodyPen]);
 
   return (
     <div className={isHome ? (expand ? "" : "hidden") : ""}>
@@ -62,6 +70,7 @@ function BlogDetailView(data) {
           <p className="inline leading-4 break-words indent-1">{blog.body}</p>
         ) : (
           <textarea
+            ref={bodyInpRef}
             rows={4}
             value={editBodyValue}
             onChange={(e) => setEditBodyValue(e.target.value)}

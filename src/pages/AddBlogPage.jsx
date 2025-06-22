@@ -27,6 +27,7 @@ const AddBlogPage = () => {
         }
 
         queryClient.invalidateQueries(["your-blogs"]);
+        queryClient.invalidateQueries(["all-blogs"]);
         navigate(`/your-blogs/${id}`);
       } catch (error) {
         console.error("Error posting a blog", error.message);

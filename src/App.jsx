@@ -12,15 +12,20 @@ import YourBlogsPage from "./pages/YourBlogsPage";
 import ContactUsPage from "./pages/ContactUsPage";
 import AboutUsPage from "./pages/AboutUsPage";
 import AccountPage from "./pages/AccountPage";
+import NotFound from "./components/NotFound";
+import { useUser } from "./context/UserContext";
 
 const App = () => {
   const location = useLocation();
+  const { user } = useUser();
 
-  const noFooterRoutes = ["/", "/sign-up", "/log-in"];
+  const noFooterAndHeader = ["/", "/sign-up", "/log-in"];
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-200">
-      {!noFooterRoutes.includes(location.pathname) && <Header />}
+      {!noFooterAndHeader.includes(location.pathname) && user?.name && (
+        <Header />
+      )}
 
       {/* Routes */}
       <div className="flex-grow mt-28">
@@ -28,16 +33,23 @@ const App = () => {
           <Route path="/" element={<LandingPage />} />
           <Route path="/log-in" element={<LoginPage />} />
           <Route path="/sign-up" element={<SignupPage />} />
-          <Route path="/home/:id" element={<HomePage />} />
-          <Route path="/add-blog/:id" element={<AddBlogPage />} />
-          <Route path="/your-blogs/:id" element={<YourBlogsPage />} />
-          <Route path="/manage-your-acc/:id" element={<AccountPage />} />
-          <Route path="/contact-us/:id" element={<ContactUsPage />} />
-          <Route path="/about-us/:id" element={<AboutUsPage />} />
+          {user?.id && (
+            <>
+              <Route path="/home/:id" element={<HomePage />} />
+              <Route path="/add-blog/:id" element={<AddBlogPage />} />
+              <Route path="/your-blogs/:id" element={<YourBlogsPage />} />
+              <Route path="/manage-your-acc/:id" element={<AccountPage />} />
+            </>
+          )}
+          <Route path="/contact-us" element={<ContactUsPage />} />
+          <Route path="/about-us" element={<AboutUsPage />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
 
-      {!noFooterRoutes.includes(location.pathname) && <Footer />}
+      {!noFooterAndHeader.includes(location.pathname) && user?.name && (
+        <Footer />
+      )}
       <ToastContainer />
     </div>
   );
