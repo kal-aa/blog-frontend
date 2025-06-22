@@ -3,7 +3,7 @@ import { FaCheck, FaLock } from "react-icons/fa";
 import ClipLoader from "react-spinners/ClipLoader";
 import { NavLink } from "react-router-dom";
 import PropTypes from "prop-types";
-import NoInternetConnection from "./NoInternetConnection";
+import ConnectionMonitor from "./ConnectionMonitor";
 
 const Signup = ({ signupSubmit }) => {
   const [formData, setFormData] = useState({
@@ -99,7 +99,7 @@ const Signup = ({ signupSubmit }) => {
 
   return (
     <div className="relative signup-container">
-      {!isOnline && <NoInternetConnection focus={focus} />}
+      {!isOnline && <ConnectionMonitor focus={focus} />}
 
       <div className={error ? "error-style" : undefined}>{error}</div>
       <h1 className="text-3xl font-bold">Welcome</h1>

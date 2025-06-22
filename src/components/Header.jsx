@@ -1,27 +1,13 @@
 import { FaEllipsisV } from "react-icons/fa";
-import { NavLink, useMatch, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useUser } from "../context/UserContext";
 
 const Header = () => {
   const [elipsisClicked, setElipsisClicked] = useState(true);
   const navigate = useNavigate();
-  const matchHome = useMatch("/home/:id");
-  const matchAddBlog = useMatch("/add-blog/:id");
-  const matchYourBlogs = useMatch("/your-blogs/:id");
-  const matchUserInfo = useMatch("user/:id");
-  const matchManageAccout = useMatch("/manage-your-acc/:id");
-  const matchAboutUs = useMatch("/about-us/:id");
-  const matchContactUs = useMatch("/contact-us/:id");
-
-  const id =
-    matchHome?.params.id ||
-    matchAddBlog?.params.id ||
-    matchYourBlogs?.params.id ||
-    matchUserInfo?.params.id ||
-    matchManageAccout?.params.id ||
-    matchAboutUs?.params.id ||
-    matchContactUs?.params.id ||
-    undefined;
+  const { user } = useUser();
+  const id = user?.id;
 
   const handleImgClick = () => {
     const confirm = window.confirm(
@@ -89,13 +75,13 @@ const Header = () => {
             manage your acc
           </NavLink>
         </div>
-        <div className="">
-          <NavLink to={`/about-us/${id}`} className={isActive}>
+        <div>
+          <NavLink to="/about-us" className={isActive}>
             About us
           </NavLink>
         </div>
-        <div className="">
-          <NavLink to={`/contact-us/${id}`} className={isActive}>
+        <div>
+          <NavLink to="/contact-us" className={isActive}>
             Contact us
           </NavLink>
         </div>

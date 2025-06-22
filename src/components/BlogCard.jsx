@@ -13,12 +13,12 @@ import PropTypes from "prop-types";
 import { formatNumber } from "../utils/formatNumber";
 import { relativeTime } from "../utils/relativeTime";
 import SuspenseFallback from "./SuspenseFallback";
+import { useQueryClient } from "@tanstack/react-query";
 const BlogDetail = lazy(() => import("./BlogDetail"));
 
 function BlogCard(data) {
   const {
     blog,
-    comments,
     handleDelete, // !isHome
     handleUpdate, // !isHome
     isHome = false,
@@ -28,18 +28,26 @@ function BlogCard(data) {
   const { id } = useParams();
   const [thumbsUp, setThumbsUp] = useState(false);
   const [thumbsDown, setThumbsDown] = useState(false);
-  const [viewCount, setViewCount] = useState(blog.views.length);
+  const [viewCount, setViewCount] = useState();
   const [expand, setExpand] = useState(false);
   const navigate = useNavigate();
   //  for the YourtodosPage
   const [editTitleValue, setEditTitleValue] = useState(blog.title || "");
   const [editBodyValue, setEditBodyValue] = useState(blog.body || "");
+  const originalTitleRef = useRef(blog.title || "");
+  const originalBodyRef = useRef(blog.body || "");
   const [editTitlePen, setEditTitlePen] = useState(false);
   const [editBodyPen, setEditBodyPen] = useState(false);
   const [readyToUpdate, setReadyToUpdate] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const updateBtnRef = useRef(null);
+  const titleInpRef = useRef(null);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    setViewCount(blog.views.length);
+  }, [blog.views.length]);
 
   // for isHome = the like and dislike icons
   useEffect(() => {
@@ -68,6 +76,13 @@ function BlogCard(data) {
     }
   }, [blog, editTitleValue, editBodyValue, editTitlePen, editBodyPen, isHome]);
 
+  useEffect(() => {
+    if (editTitlePen && titleInpRef.current) {
+      titleInpRef.current.focus();
+      titleInpRef.current.select?.();
+    }
+  }, [editTitlePen]);
+
   const url = `${
     import.meta.env.VITE_BACKEND_URL
   }/interaction/${encodeURIComponent(blog._id)}`;
@@ -76,26 +91,27 @@ function BlogCard(data) {
   const handleSeeMore = async () => {
     setExpand(true);
 
-    if (!blog.views.includes(id)) {
-      setViewCount((prev) => prev + 1);
-      blog.views.push(id);
+    if (blog.views.includes(id)) return;
 
-      try {
-        await axios.patch(url, {
-          action: "addView",
-          userId: id,
-        });
-      } catch (error) {
-        console.error("Error adding view:", error);
-        setViewCount((prev) => prev - 1);
-        blog.views = blog.views.filter((userId) => userId !== id);
-      }
+    setViewCount((prev) => prev + 1);
+
+    try {
+      await axios.patch(url, {
+        action: "addView",
+        userId: id,
+      });
+
+      queryClient.invalidateQueries(["all-blogs"]);
+      queryClient.invalidateQueries(["your-blogs"]);
+    } catch (error) {
+      console.error("Error adding view:", error);
+      setViewCount((prev) => prev - 1);
+      blog.views = blog.views.filter((userId) => userId !== id);
     }
   };
 
   const blogDetailProps = {
     blog,
-    comments,
     editBodyPen,
     editBodyValue,
     expand,
@@ -149,6 +165,7 @@ function BlogCard(data) {
             )}
             {editTitlePen && (
               <input
+                ref={titleInpRef}
                 value={editTitleValue}
                 onChange={(e) => setEditTitleValue(e.target.value)}
                 placeholder="Title"
@@ -261,7 +278,7 @@ function BlogCard(data) {
       {/* Update and Delete btns, along with update Error */}
       {!isHome && (
         <div>
-          <div className="-mt-1 -mb-3 leading-4 text-center text-red-500">
+          <div className="-mt-1 -mb-3 text-sm leading-4 text-center text-red-500">
             {updateError || "\u00A0"}
           </div>
 
@@ -272,8 +289,12 @@ function BlogCard(data) {
               onClick={() =>
                 handleUpdate(
                   blog,
+                  originalBodyRef,
+                  originalTitleRef,
                   setEditBodyPen,
+                  setEditBodyValue,
                   setEditTitlePen,
+                  setEditTitleValue,
                   setIsUpdating
                 )
               }
@@ -325,7 +346,6 @@ function BlogCard(data) {
 
 BlogCard.propTypes = {
   blog: PropTypes.object.isRequired,
-  comments: PropTypes.array,
   handleDelete: PropTypes.func,
   handleUpdate: PropTypes.func,
   isHome: PropTypes.bool,

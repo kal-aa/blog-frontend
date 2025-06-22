@@ -6,6 +6,13 @@ body {
   font-family: mono;
 }
 
+button,
+a,
+select,
+input {
+  @apply cursor-pointer transition-all duration-200 ease-in-out;
+}
+
 /* landing page */
 .landing-container {
   @apply -mt-28 pb-10 bg-gradient-to-tl from-stone-700 via-slate-500 to-black;
@@ -26,7 +33,7 @@ body {
 
 /* header */
 .header-container {
-  @apply fixed bg-blue-900 text-slate-300 top-2 left-2 right-2 h-24 flex justify-around items-center text-sm md:text-base font-bold z-20 rounded-2xl;
+  @apply fixed bg-blue-900 text-slate-300 top-2 left-[3%] right-[3%] h-24 flex justify-around items-center text-sm md:text-base font-bold z-20 rounded-2xl;
 }
 
 .blog-container {

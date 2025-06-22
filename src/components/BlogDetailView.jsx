@@ -31,7 +31,6 @@ function BlogDetailView(data) {
     isHome,
     isSendingComment,
     likeCount,
-    onInteractionUpdate,
     optimComments,
     pTagRef,
     readyToUpdate,
@@ -48,12 +47,21 @@ function BlogDetailView(data) {
     updateBtnRef,
   } = data;
   const [showCommentForm, setShowCommentForm] = useState(false);
+  const [commentError, setCommentError] = useState("");
   const inputRef = useRef(null);
+  const bodyInpRef = useRef(null);
 
   // comment Input focus
   useEffect(() => {
     if (showCommentForm && inputRef.current) inputRef.current.focus();
   }, [showCommentForm]);
+
+  useEffect(() => {
+    if (editBodyPen && bodyInpRef.current) {
+      bodyInpRef.current.focus();
+      bodyInpRef.current.select?.();
+    }
+  }, [bodyInpRef, editBodyPen]);
 
   return (
     <div className={isHome ? (expand ? "" : "hidden") : ""}>
@@ -62,6 +70,7 @@ function BlogDetailView(data) {
           <p className="inline leading-4 break-words indent-1">{blog.body}</p>
         ) : (
           <textarea
+            ref={bodyInpRef}
             rows={4}
             value={editBodyValue}
             onChange={(e) => setEditBodyValue(e.target.value)}
@@ -154,7 +163,6 @@ function BlogDetailView(data) {
                   <CommentList
                     blog={blog}
                     isHome={isHome}
-                    onInteractionUpdate={onInteractionUpdate}
                     optimComments={optimComments}
                     setCommentCount={setCommentCount}
                     setOptimComments={setOptimComments}
@@ -184,7 +192,7 @@ function BlogDetailView(data) {
       {showCommentForm && (
         <div className="flex flex-col items-center pt-5 md:pt-10 my-2 mx-[10%] bg-gray-400 rounded-xl">
           <form
-            onSubmit={handleSendComment}
+            onSubmit={(e) => handleSendComment(e, setCommentError)}
             className="flex justify-around w-full"
           >
             <input
@@ -204,6 +212,9 @@ function BlogDetailView(data) {
               post
             </button>
           </form>
+          <p className="text-sm mt-1 text-red-700 w-[80%] text-center">
+            {commentError}
+          </p>
           <p
             onClick={() => setShowComments((prev) => !prev)}
             className="my-2 cursor-pointer hover:underline underline-offset-2"
@@ -236,7 +247,6 @@ BlogDetailView.propTypes = {
   isHome: PropTypes.bool,
   isSendingComment: PropTypes.bool,
   likeCount: PropTypes.number,
-  onInteractionUpdate: PropTypes.func,
   optimComments: PropTypes.array,
   pTagRef: PropTypes.object,
   readyToUpdate: PropTypes.bool,

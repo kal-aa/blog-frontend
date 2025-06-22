@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext";
 import Signup from "../components/Signup";
 
 const SignupPage = () => {
   const navigate = useNavigate();
+  const { setUser } = useUser();
 
   const signupSubmit = async (formData, setError, setIsSigning) => {
     // eslint-disable-next-line no-unused-vars
@@ -29,7 +31,13 @@ const SignupPage = () => {
         const error = await res.json();
         setError(error.mssg || "Signup failed");
       } else {
-        const { insertedId, firstName } = await res.json();
+        const { insertedId, name } = await res.json();
+        setUser({ insertedId, name });
+
+        const trim = name.trim().split(" ")[0];
+        const firstName =
+          trim.charAt(0).toUpperCase() + trim.slice(1) || "User";
+
         navigate(`/home/${insertedId}/?signerName=${firstName}`);
       }
     } catch (error) {

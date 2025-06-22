@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext";
 import Login from "../components/Login";
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { setUser } = useUser();
 
   const loginSubmit = async (formData, setError, setIsLogging) => {
     const url = `${import.meta.env.VITE_BACKEND_URL}/log-in`;
@@ -27,7 +29,12 @@ const LoginPage = () => {
       }
 
       const { id, name } = await res.json();
-      navigate(`/home/${id}?loggerName=${name}`);
+      setUser({ id, name });
+
+      const trim = name.trim().split(" ")[0];
+      const firstName = trim.charAt(0).toUpperCase() + trim.slice(1) || "User";
+
+      navigate(`/home/${id}?loggerName=${firstName}`);
     } catch (error) {
       console.error("Could not log-in", error);
       setError(error.message || "An unexpected error occured");

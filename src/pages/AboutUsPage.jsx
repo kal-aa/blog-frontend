@@ -1,8 +1,7 @@
-import { useParams, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const AboutUsPage = () => {
   const headingStyle = "text-[24px] border-b-2 pb-2 mb-3";
-  const { id } = useParams("id");
 
   return (
     <div className="mx-[5%] px-[10%] p-3 flex flex-col shadow-2xl items-center">
@@ -13,7 +12,7 @@ const AboutUsPage = () => {
           <strong>Abstruse Co.</strong>, where we are dedicated to delivering
           innovative solutions to transform the way you live and work.
         </p>
-      </section>
+    </section>
 
       {/* Mission and Vision */}
       <section className="mb-2">
@@ -70,7 +69,7 @@ const AboutUsPage = () => {
         <p>
           Have questions or want to work with us?{" "}
           <NavLink
-            to={`/contact-us/${id}`}
+            to="/contact-us"
             className="text-blue-900 hover:text-blue-700"
           >
             Contact us

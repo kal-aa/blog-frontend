@@ -7,10 +7,11 @@ import {
   FaWhatsapp,
   FaFacebook,
 } from "react-icons/fa";
+import { MdFindInPage } from "react-icons/md";
 import { Link } from "react-router-dom";
 
 const ContactUs = () => {
-  const socailMediaStyle = " hover:text-blue-600 inline";
+  const socailMediaStyle = "hover:text-blue-600 inline";
 
   return (
     <div className="mt-5 mx-[5%] px-[5%] md:text-center shadow-2xl">
@@ -23,7 +24,7 @@ const ContactUs = () => {
       </div>
       <section className="border-b-4 pb-2 my-6 md:inline-block md:mr-[3%]">
         <h2 className="text-xl md:mr-2">Phone:</h2>
-        <a href="tel: +251968350741">
+        <a to="tel: +251968350741">
           <FaPhone className="inline mb-1 mr-2 text-green-500" />
           <p className="inline hover:text-neutral-500">+251 968350741</p>
         </a>
@@ -32,7 +33,7 @@ const ContactUs = () => {
       <section className="border-b-4 pb-2 md:inline-block md:ml-[3%]">
         <div>
           <h2 className="text-xl md:mr-2">Email:</h2>
-          <a href="mailto: sadkalshayee@gmail.com">
+          <a to="mailto: sadkalshayee@gmail.com">
             <FaEnvelope className="inline mb-1 mr-2 text-blue-800" />
             <p className="inline hover:text-neutral-500">
               sadkalshayee@gmail.com
@@ -48,24 +49,36 @@ const ContactUs = () => {
           Ethiopia, Qobo<span className="text-xs">(for the time being)</span>
         </p>
       </section>
+      <section className="pb-2 my-6 border-b-4">
+        <h2 className="text-xl">Website:</h2>
+        <MdFindInPage className="inline mb-1 mr-2 text-red-500" />
+        <Link
+          to="https://kal-portfolio-lime.vercel.app"
+          target="_blank"
+          className="text-blue-900 underline hover:underline-offset-2"
+        >
+          Portfolio app
+        </Link>
+      </section>
+
       <section>
         <h2 className="text-xl">Social Media</h2>
         <p>Follow us on social media for the latest updates</p>
         <div className="flex flex-col gap-1 pl-5 mt-2 md:items-center">
           <Link
-            href="https://web.facebook.com/profile.php?id=61572989257505"
+            to="https://web.facebook.com/profile.php?id=61572989257505"
             target="_blank"
           >
             <span className={socailMediaStyle}>Facebook </span>
             <FaFacebook color="#0088CC" className="inline" />
           </Link>
-          <Link href="https://t.me/@Silent7951" target="_blank">
+          <Link to="https://t.me/@Silent7951" target="_blank">
             <span className={socailMediaStyle}>Linkedin </span>
             <FaLinkedin color="#0088CC" className="inline" />
           </Link>
           <Link
             data-testid="social-media-link"
-            href="https://t.me/@Silent7951"
+            to="https://t.me/@Silent7951"
             target="_blank"
           >
             <span className={socailMediaStyle}>Telegram </span>
@@ -73,7 +86,7 @@ const ContactUs = () => {
           </Link>
           <Link
             data-testid="social-media-link"
-            href="https://wa.me/+251968350741"
+            to="https://wa.me/+251968350741"
             target="_blank"
           >
             <span className={socailMediaStyle}>WhatsApp </span>

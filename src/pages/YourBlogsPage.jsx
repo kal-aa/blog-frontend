@@ -1,40 +1,37 @@
 import { useCallback, useEffect, useState } from "react";
 import { NavLink, useParams } from "react-router-dom";
 import { RingLoader } from "react-spinners";
-import ConnectionMonitor from "../components/ConnectionMonitor";
-import BlogCard from "../components/BlogCard";
-import { fetchBlogs } from "../utils/fetchBlogs";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { fetchData } from "../utils/fetchBlogs";
+import { isObjectId } from "../utils/isObjectId";
 import BlogFetchError from "../components/BlogFetchError";
+import Pagination from "../components/Pagination";
+import BlogCard from "../components/BlogCard";
+import NoInternetConnection from "../components/ConnectionMonitor";
 
 const YourBlogsPage = () => {
   const [blogs, setBlogs] = useState([]);
   const [updateError, setUpdateError] = useState("");
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [limit, setLimit] = useState(0);
   const { id } = useParams();
+  const queryclient = useQueryClient();
+  const isOnline = navigator.onLine;
 
-  const isValid = /^[a-f\d]{24}$/i.test(id);
-  const {
-    data: blogData,
-    isFetching,
-    isRefetching,
-    isError,
-    refetch,
-  } = useQuery({
-    queryKey: ["your-blogs", { route: `your-blogs/${id}` }],
-    queryFn: fetchBlogs,
-    enabled: isValid && isOnline,
-    staleTime: 1000 * 60 * 2,
+  const { data, isFetching, isRefetching, isError, refetch } = useQuery({
+    queryKey: ["your-blogs", { route: `your-blogs/${id}?page=${limit}` }],
+    queryFn: fetchData,
+    enabled: isObjectId(id),
+    staleTime: 1000 * 60 * 5,
     keepPreviousData: true,
-    refetchOnWindowFocus: true,
   });
 
+  const { blogs: paginatedBlogs = [], totalPages = 0 } = data || {};
+
   useEffect(() => {
-    if (blogData) {
-      setBlogs(blogData);
-      console.log("blog data");
+    if (paginatedBlogs) {
+      setBlogs(paginatedBlogs);
     }
-  }, [blogData]);
+  }, [paginatedBlogs]);
 
   // Delete blog
   const handleDelete = useCallback(
@@ -56,6 +53,9 @@ const YourBlogsPage = () => {
           blogId
         )}`;
         await fetch(url, { method: "DELETE" });
+
+        queryclient.invalidateQueries(["all-blogs"]);
+        queryclient.invalidateQueries(["your-blogs"]);
       } catch (error) {
         console.error("Error deleting blog", error);
         if (deleteCandidate) setBlogs((prev) => [...prev, deleteCandidate]);
@@ -63,12 +63,21 @@ const YourBlogsPage = () => {
         setIsDeleting(false);
       }
     },
-    [blogs, id]
+    [blogs, id, queryclient]
   );
 
   // Update blog
   const handleUpdate = useCallback(
-    async (blog, setEditBodyPen, setEditTitlePen, setIsUpdating) => {
+    async (
+      blog,
+      originalBodyRef,
+      originalTitleRef,
+      setEditBodyPen,
+      setEditBodyValue,
+      setEditTitlePen,
+      setEditTitleValue,
+      setIsUpdating
+    ) => {
       const { editTitleValue: title, editBodyValue: body, _id: blogId } = blog;
 
       setIsUpdating(true);
@@ -92,8 +101,19 @@ const YourBlogsPage = () => {
         if (!res.ok) {
           const err = await res.json();
           setUpdateError(err.mssg || "An unexpected error occured");
+
+          // Reset to orginal values
+          setEditBodyValue(originalBodyRef.current);
+          setEditTitleValue(originalTitleRef.current);
+
           throw new Error(err.mssg || "An unexpected error occured");
         }
+
+        queryclient.invalidateQueries(["all-blogs"]);
+        queryclient.invalidateQueries(["your-blogs"]);
+
+        originalBodyRef.current = body;
+        originalTitleRef.current = title;
       } catch (error) {
         console.error("Error updating blog", error);
         if (updateCandidate) {
@@ -107,16 +127,18 @@ const YourBlogsPage = () => {
         setEditBodyPen(false);
       }
     },
-    [blogs, id]
+    [blogs, id, queryclient]
   );
 
-  if (isError || !isValid) {
+  if (isError || !isObjectId(id)) {
     return <BlogFetchError refetch={refetch} isError={isError} />;
   }
 
   return (
     <div>
-      <ConnectionMonitor isOnline={isOnline} setIsOnline={setIsOnline} />
+      <div className="px-[15%] sm:px-[20%] md:px-[25%] lg:px-[30%]">
+        {!isOnline && <NoInternetConnection />}
+      </div>
 
       {/* Check the fetching status and give info accordingly */}
       {isFetching && !isRefetching ? (
@@ -125,8 +147,7 @@ const YourBlogsPage = () => {
           <p>please wait...</p>
         </div>
       ) : (
-        blogs.length === 0 &&
-        isOnline && (
+        blogs.length === 0 && (
           <p className="text-xl text-center">
             Add your
             <NavLink
@@ -141,10 +162,9 @@ const YourBlogsPage = () => {
       )}
 
       {/* send the data to the BlogCard component */}
-      <div className="flex flex-col mx-[10%] sm:mx-[15%] md:mx-[20%] lg:mx-[25%] 2xl:mx-[30%] space-y-14 my-5">
-        {blogs &&
-          blogs.length > 0 &&
-          blogs.map((blog) => (
+      {blogs && blogs.length > 0 && (
+        <div className="flex flex-col mx-[10%] sm:mx-[15%] md:mx-[20%] lg:mx-[25%] 2xl:mx-[30%] space-y-14 my-5">
+          {blogs.map((blog) => (
             <BlogCard
               key={blog._id}
               blog={blog}
@@ -154,7 +174,15 @@ const YourBlogsPage = () => {
               updateError={updateError}
             />
           ))}
-      </div>
+
+          {/* Pagination */}
+          <Pagination
+            limit={limit}
+            setLimit={setLimit}
+            totalPages={totalPages}
+          />
+        </div>
+      )}
     </div>
   );
 };

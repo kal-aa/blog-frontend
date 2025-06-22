@@ -2,7 +2,7 @@ import { memo, useEffect, useRef, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { AiOutlineCheck } from "react-icons/ai";
 import PropTypes from "prop-types";
-import NoInternetConnection from "./NoInternetConnection";
+import ConnectionMonitor from "./ConnectionMonitor";
 
 const CreateBlogForm = ({ hanldeBlogPost }) => {
   const [isPosting, setIsPosting] = useState(false);
@@ -49,7 +49,6 @@ const CreateBlogForm = ({ hanldeBlogPost }) => {
       setBodyError(true);
       return;
     }
-    if (!isOnline) return;
 
     hanldeBlogPost(formData, setIsPosting, setError);
   };
@@ -57,7 +56,7 @@ const CreateBlogForm = ({ hanldeBlogPost }) => {
   return (
     <>
       <div className="px-[15%] sm:px-[20%] md:px-[25%] lg:px-[30%]">
-        {!isOnline && <NoInternetConnection focus={focus} />}
+        {!isOnline && <ConnectionMonitor focus={focus} />}
       </div>
 
       <div className="signup-container">
