@@ -31,14 +31,14 @@ const SignupPage = () => {
         const error = await res.json();
         setError(error.mssg || "Signup failed");
       } else {
-        const { insertedId, name } = await res.json();
-        setUser({ insertedId, name });
+        const { insertedId: id, name } = await res.json();
+        setUser({ id, name });
 
         const trim = name.trim().split(" ")[0];
         const firstName =
           trim.charAt(0).toUpperCase() + trim.slice(1) || "User";
 
-        navigate(`/home/${insertedId}/?signerName=${firstName}`);
+        navigate(`/home/${id}/?signerName=${firstName}`);
       }
     } catch (error) {
       console.error("An unexpected error occured", error);

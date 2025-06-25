@@ -222,7 +222,6 @@ function BlogDetail(data) {
         timeStamp: new Date().toISOString(),
         likes: [],
         dislikes: [],
-        replies: [],
       };
 
       setOptimComments((prev) => [tempComment, ...prev]);
