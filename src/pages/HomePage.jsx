@@ -8,7 +8,6 @@ import { isObjectId } from "../utils/isObjectId";
 import BlogFetchError from "../components/BlogFetchError";
 import BlogCard from "../components/BlogCard";
 import Pagination from "../components/Pagination";
-import ConnectionMonitor from "../components/ConnectionMonitor";
 import { useUser } from "../context/UserContext";
 
 const HomePage = () => {
@@ -18,7 +17,6 @@ const HomePage = () => {
   const hasShownSignupToast = useRef(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const isOnline = navigator.onLine;
   const { user } = useUser();
   const id = user?.id;
 
@@ -89,10 +87,6 @@ const HomePage = () => {
 
   return (
     <div>
-      <div className="px-[15%] sm:px-[20%] md:px-[25%] lg:px-[30%]">
-        {!isOnline && <ConnectionMonitor />}
-      </div>
-
       {/* Check fetching and connection status and give response */}
       {isFetching && !isRefetching ? (
         <div className="flex flex-col justify-center items-center text-blue-800 min-h-[50vh]">

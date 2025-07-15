@@ -7,7 +7,6 @@ import { isObjectId } from "../utils/isObjectId";
 import BlogFetchError from "../components/BlogFetchError";
 import Pagination from "../components/Pagination";
 import BlogCard from "../components/BlogCard";
-import NoInternetConnection from "../components/ConnectionMonitor";
 import { useUser } from "../context/UserContext";
 
 const YourBlogsPage = () => {
@@ -15,7 +14,6 @@ const YourBlogsPage = () => {
   const [updateError, setUpdateError] = useState("");
   const [limit, setLimit] = useState(0);
   const queryclient = useQueryClient();
-  const isOnline = navigator.onLine;
   const { user } = useUser();
   const id = user?.id;
 
@@ -138,10 +136,6 @@ const YourBlogsPage = () => {
 
   return (
     <div>
-      <div className="px-[15%] sm:px-[20%] md:px-[25%] lg:px-[30%]">
-        {!isOnline && <NoInternetConnection />}
-      </div>
-
       {/* Check the fetching status and give info accordingly */}
       {isFetching && !isRefetching ? (
         <div className="flex flex-col justify-center items-center text-blue-800 min-h-[50vh]">

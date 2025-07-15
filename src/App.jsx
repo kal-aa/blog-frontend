@@ -16,6 +16,7 @@ import NotFound from "./components/NotFound";
 import { useUser } from "./context/UserContext";
 import VerfyEmail from "./pages/VerfiyEmail";
 import CompleteProfile from "./pages/CompleteProfile";
+import ResetPassword from "./pages/ResetPassword";
 
 const App = () => {
   const location = useLocation();
@@ -40,6 +41,7 @@ const App = () => {
             <>
               <Route path="/verify-email" element={<VerfyEmail />} />
               <Route path="/complete-profile" element={<CompleteProfile />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
             </>
           ) : (
             <>

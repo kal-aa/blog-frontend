@@ -1,15 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 import { FaGithub, FaLock } from "react-icons/fa";
 import PropTypes from "prop-types";
-import ConnectionMonitor from "./ConnectionMonitor";
 import { FcGoogle } from "react-icons/fc";
 
 const Login = ({ emailLogin, googleSignIn, githubSignIn }) => {
   const [isLogging, setIsLogging] = useState(false);
   const [isLogWithEmail, setIsLogWithEmail] = useState(false);
-  const [focus, setFocus] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
@@ -17,7 +15,6 @@ const Login = ({ emailLogin, googleSignIn, githubSignIn }) => {
     password: "",
   });
   const emailInputRef = useRef(null);
-  const isOnline = navigator.onLine;
 
   useEffect(() => {
     if (emailInputRef.current) {
@@ -32,16 +29,9 @@ const Login = ({ emailLogin, googleSignIn, githubSignIn }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setPasswordError("");
     setError("");
-
-    if (!isOnline) {
-      setFocus(false);
-      setTimeout(() => {
-        setFocus(true);
-      }, 0);
-      return;
-    }
 
     if (formData.password.length < 8) {
       setPasswordError("Password must be greater than 8 characters");
@@ -73,30 +63,29 @@ const Login = ({ emailLogin, googleSignIn, githubSignIn }) => {
 
   return (
     <div className="signup-container">
-      {!isOnline && <ConnectionMonitor focus={focus} />}
       <h1 className="text-3xl font-bold">Welcome Back</h1>
-      <div className={error ? "error-style" : undefined}>{error}</div>
+      <div className={error ? "error-style" : ""}>{error}</div>
 
       {/* login form */}
       <form onSubmit={handleSubmit} className="w-full">
-        <label htmlFor="email">Email:</label>
-        <input
-          ref={emailInputRef}
-          type="email"
-          name="email"
-          id="email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          placeholder="E.g. sadkalshayee@gmail.com"
-          disabled={isLogging}
-          className="input-style"
-        />
-        <label htmlFor="password">
+        <label htmlFor="email">
+          Email:
+          <input
+            ref={emailInputRef}
+            type="email"
+            name="email"
+            id="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            placeholder="E.g. sadkalshayee@gmail.com"
+            disabled={isLogging}
+            className="input-style"
+          />
+        </label>
+        <label htmlFor="password" className="relative">
           Password:{" "}
           <p className="inline-block text-sm text-red-600">{passwordError}</p>
-        </label>
-        <div className="relative">
           <input
             type="password"
             name="password"
@@ -109,13 +98,26 @@ const Login = ({ emailLogin, googleSignIn, githubSignIn }) => {
             className="input-style"
           />
           <FaLock className="lock-style" />
+        </label>
+        <div className="flex justify-end">
+          {isLogging ? (
+            <span className="text-blue-800/70">Forgot Password</span>
+          ) : (
+            <Link
+              to="/reset-password"
+              state={{ email: formData.email }}
+              className="text-blue-800 cursor-pointer hover:text-blue-800/80"
+            >
+              Forgot Password
+            </Link>
+          )}
         </div>
         <button
           type="submit"
           disabled={isLogging}
-          className="!w-full bg-black text-white disabled:bg-black/50 sign-btn mt-5"
+          className="!w-full bg-black text-white disabled:bg-black/50 sign-btn mt-3"
         >
-          <span>submit</span>
+          <span>Submit</span>
           {isLogging && isLogWithEmail && (
             <div>
               <ClipLoader color="white" size={10} className="ml-1" />

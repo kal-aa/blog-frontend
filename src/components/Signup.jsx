@@ -4,7 +4,6 @@ import { FcGoogle } from "react-icons/fc";
 import ClipLoader from "react-spinners/ClipLoader";
 import { NavLink } from "react-router-dom";
 import PropTypes from "prop-types";
-import ConnectionMonitor from "./ConnectionMonitor";
 
 const Signup = ({ emailSignup, googleSignup, githubSignup }) => {
   const [formData, setFormData] = useState({
@@ -17,9 +16,7 @@ const Signup = ({ emailSignup, googleSignup, githubSignup }) => {
   const [error, setError] = useState("");
   const [isSigning, setIsSigning] = useState(false);
   const [isSignWithEmail, setIsSignWithEmail] = useState(false);
-  const [focus, setFocus] = useState(false);
   const emailInputRef = useRef(null);
-  const isOnline = navigator.onLine;
 
   useEffect(() => {
     if (emailInputRef.current) {
@@ -49,14 +46,6 @@ const Signup = ({ emailSignup, googleSignup, githubSignup }) => {
     e.preventDefault();
     setPasswordMatched("");
     setError("");
-
-    if (!isOnline) {
-      setFocus(false);
-      setTimeout(() => {
-        setFocus(true);
-      }, 0);
-      return;
-    }
 
     if (formData.password.length < 8) {
       setPasswordMatched("Password must be greater than 8 characters");
@@ -90,61 +79,58 @@ const Signup = ({ emailSignup, googleSignup, githubSignup }) => {
 
   return (
     <div className="relative signup-container">
-      {!isOnline && <ConnectionMonitor focus={focus} />}
       <div className={error ? "error-style" : undefined}>{error}</div>
       <h1 className="text-3xl font-bold">Welcome</h1>
       {/* signup form */}
       <form onSubmit={handleSubmit} className="w-full">
-        <label htmlFor="email">Email:</label>
-        <input
-          ref={emailInputRef}
-          type="email"
-          name="email"
-          id="email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          placeholder="E.g. sadkalshayee@gmail.com"
-          disabled={isSigning}
-          className="input-style"
-        />
-
-        <label htmlFor="password">
-          Password:
-          <div className="relative">
-            <input
-              type="password"
-              name="password"
-              id="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              placeholder="Enter password"
-              disabled={isSigning}
-              className="input-style"
-            />
-            <FaLock className="lock-style" />
-          </div>
+        <label htmlFor="email">
+          Email:
+          <input
+            ref={emailInputRef}
+            type="email"
+            name="email"
+            id="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            placeholder="E.g. sadkalshayee@gmail.com"
+            disabled={isSigning}
+            className="input-style"
+          />
         </label>
 
-        <label htmlFor="confirmPassword">
+        <label htmlFor="password" className="relative">
+          Password:
+          <input
+            type="password"
+            name="password"
+            id="password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+            placeholder="Enter password"
+            disabled={isSigning}
+            className="input-style"
+          />
+          <FaLock className="lock-style" />
+        </label>
+
+        <label htmlFor="confirmPassword" className="relative">
           Confirm Password:
           {isPasswordConfirmed && <FaCheck className="inline mb-0.5" />}
           <p className="inline-block text-sm text-red-600">{passwordMatched}</p>
-          <div className="relative">
-            <input
-              type="password"
-              name="confirmPassword"
-              id="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              required
-              placeholder="Confirm password"
-              disabled={isSigning}
-              className="input-style"
-            />
-            <FaLock className="lock-style" />
-          </div>
+          <input
+            type="password"
+            name="confirmPassword"
+            id="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            required
+            placeholder="Confirm password"
+            disabled={isSigning}
+            className="input-style"
+          />
+          <FaLock className="lock-style" />
         </label>
 
         <button
