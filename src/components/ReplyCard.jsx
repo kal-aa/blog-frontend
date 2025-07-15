@@ -1,5 +1,5 @@
 import { memo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { FaTrashAlt } from "react-icons/fa";
 import PropTypes from "prop-types";
 import { relativeTime } from "../utils/relativeTime";
@@ -11,8 +11,8 @@ function ReplyCard(data) {
   const [isFullReply, setIsFullReply] = useState(false);
   const [isDeletingReply, setIsDeletingReply] = useState(false);
   const navigate = useNavigate();
-  const { id } = useParams();
   const { user } = useUser();
+  const id = user?.id;
 
   const replyValue = optimReply.reply;
   const replierName = optimReply.replierName || user.name || "Unkonwn user";
@@ -28,11 +28,11 @@ function ReplyCard(data) {
         <img
           onClick={() => {
             if (isHome && id === optimReply.replierId) {
-              navigate(`/your-blogs/${id}`);
+              navigate(`/your-blogs`);
             } else if (isHome && id !== optimReply.replierId) {
               setUserOfInterest(optimReply.replierId);
             } else {
-              navigate(`/home/${id}`, {
+              navigate(`/home`, {
                 state: { userOfInterest: optimReply.replierId },
               });
             }

@@ -14,6 +14,8 @@ import AboutUsPage from "./pages/AboutUsPage";
 import AccountPage from "./pages/AccountPage";
 import NotFound from "./components/NotFound";
 import { useUser } from "./context/UserContext";
+import VerfyEmail from "./pages/VerfiyEmail";
+import CompleteProfile from "./pages/CompleteProfile";
 
 const App = () => {
   const location = useLocation();
@@ -33,12 +35,18 @@ const App = () => {
           <Route path="/" element={<LandingPage />} />
           <Route path="/log-in" element={<LoginPage />} />
           <Route path="/sign-up" element={<SignupPage />} />
-          {user?.id && (
+
+          {!user?.id ? (
             <>
-              <Route path="/home/:id" element={<HomePage />} />
-              <Route path="/add-blog/:id" element={<AddBlogPage />} />
-              <Route path="/your-blogs/:id" element={<YourBlogsPage />} />
-              <Route path="/manage-your-acc/:id" element={<AccountPage />} />
+              <Route path="/verify-email" element={<VerfyEmail />} />
+              <Route path="/complete-profile" element={<CompleteProfile />} />
+            </>
+          ) : (
+            <>
+              <Route path="/home" element={<HomePage />} />
+              <Route path="/add-blog" element={<AddBlogPage />} />
+              <Route path="/your-blogs" element={<YourBlogsPage />} />
+              <Route path="/manage-account" element={<AccountPage />} />
             </>
           )}
           <Route path="/contact-us" element={<ContactUsPage />} />

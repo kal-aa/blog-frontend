@@ -1,12 +1,14 @@
 import { useCallback } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import CreateBlogForm from "../components/CreateBlogForm";
+import { useUser } from "../context/UserContext";
 
 const AddBlogPage = () => {
-  const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { user } = useUser();
+  const id = user?.id;
 
   const hanldeBlogPost = useCallback(
     async (formData, setIsPosting, setError) => {
@@ -28,7 +30,7 @@ const AddBlogPage = () => {
 
         queryClient.invalidateQueries(["your-blogs"]);
         queryClient.invalidateQueries(["all-blogs"]);
-        navigate(`/your-blogs/${id}`);
+        navigate(`/your-blogs`);
       } catch (error) {
         console.error("Error posting a blog", error.message);
       } finally {

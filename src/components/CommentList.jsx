@@ -1,9 +1,9 @@
-import { useParams } from "react-router-dom";
 import { memo, useCallback } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
 import CommentCard from "./CommentCard";
 import { useQueryClient } from "@tanstack/react-query";
+import { useUser } from "../context/UserContext";
 
 function CommentList(data) {
   const {
@@ -14,8 +14,9 @@ function CommentList(data) {
     setOptimComments,
     setUserOfInterest,
   } = data;
-  const { id } = useParams();
   const queryClient = useQueryClient();
+  const { user } = useUser();
+  const id = user?.id;
 
   const url = (optimComment) =>
     `${import.meta.env.VITE_BACKEND_URL}/interaction/${optimComment._id}`;

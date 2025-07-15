@@ -1,19 +1,18 @@
 import { FaEllipsisV } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useUser } from "../context/UserContext";
+import { auth } from "../config/firebase";
 
 const Header = () => {
   const [elipsisClicked, setElipsisClicked] = useState(true);
   const navigate = useNavigate();
-  const { user } = useUser();
-  const id = user?.id;
 
   const handleImgClick = () => {
     const confirm = window.confirm(
       "You are about to navigate to the landing page"
     );
     if (confirm) {
+      auth.signOut()
       navigate("/");
     }
   };
@@ -51,17 +50,17 @@ const Header = () => {
           }
         >
           <div>
-            <NavLink to={`/home/${id}`} className={isActive}>
+            <NavLink to="/home" className={isActive}>
               Home
             </NavLink>
           </div>
           <div>
-            <NavLink to={`/add-blog/${id}`} className={isActive}>
+            <NavLink to="/add-blog" className={isActive}>
               Add blog
             </NavLink>
           </div>
           <div>
-            <NavLink to={`/your-blogs/${id}`} className={isActive}>
+            <NavLink to="/your-blogs" className={isActive}>
               Your blogs
             </NavLink>
           </div>
@@ -71,7 +70,7 @@ const Header = () => {
       {/* Right section of the header */}
       <div className="flex justify-center mr-2 space-y-1 text-center sm:flex sm:flex-col">
         <div className="hidden md:inline">
-          <NavLink to={`/manage-your-acc/${id}`} className={isActive}>
+          <NavLink to="/manage-account" className={isActive}>
             manage your acc
           </NavLink>
         </div>

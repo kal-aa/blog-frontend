@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { NavLink, useParams } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { RingLoader } from "react-spinners";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchData } from "../utils/fetchBlogs";
@@ -8,14 +8,16 @@ import BlogFetchError from "../components/BlogFetchError";
 import Pagination from "../components/Pagination";
 import BlogCard from "../components/BlogCard";
 import NoInternetConnection from "../components/ConnectionMonitor";
+import { useUser } from "../context/UserContext";
 
 const YourBlogsPage = () => {
   const [blogs, setBlogs] = useState([]);
   const [updateError, setUpdateError] = useState("");
   const [limit, setLimit] = useState(0);
-  const { id } = useParams();
   const queryclient = useQueryClient();
   const isOnline = navigator.onLine;
+  const { user } = useUser();
+  const id = user?.id;
 
   const { data, isFetching, isRefetching, isError, refetch } = useQuery({
     queryKey: ["your-blogs", { route: `your-blogs/${id}?page=${limit}` }],
@@ -151,7 +153,7 @@ const YourBlogsPage = () => {
           <p className="text-xl text-center">
             Add your
             <NavLink
-              to={`/add-blog/${id}`}
+              to="/add-blog"
               className="mx-1 text-blue-800 underline underline-offset-2 hover:text-blue-700"
             >
               First

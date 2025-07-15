@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
-import { FaLock } from "react-icons/fa";
+import { FaGithub, FaLock } from "react-icons/fa";
 import PropTypes from "prop-types";
 import ConnectionMonitor from "./ConnectionMonitor";
+import { FcGoogle } from "react-icons/fc";
 
-const Login = ({ loginSubmit }) => {
+const Login = ({ emailLogin, googleSignIn, githubSignIn }) => {
   const [isLogging, setIsLogging] = useState(false);
+  const [isLogWithEmail, setIsLogWithEmail] = useState(false);
   const [focus, setFocus] = useState(false);
   const [passwordError, setPasswordError] = useState("");
   const [error, setError] = useState("");
@@ -28,7 +30,7 @@ const Login = ({ loginSubmit }) => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setPasswordError("");
     setError("");
@@ -43,8 +45,29 @@ const Login = ({ loginSubmit }) => {
 
     if (formData.password.length < 8) {
       setPasswordError("Password must be greater than 8 characters");
-    } else {
-      loginSubmit(formData, setError, setIsLogging);
+      return;
+    }
+
+    try {
+      setIsLogging(true);
+      setIsLogWithEmail(true);
+      await emailLogin(formData, setError);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLogging(false);
+      setIsLogWithEmail(false);
+    }
+  };
+
+  const handleLoginWithPopup = async (method) => {
+    try {
+      setIsLogging(true);
+      await method(setError);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLogging(false);
     }
   };
 
@@ -90,20 +113,35 @@ const Login = ({ loginSubmit }) => {
         <button
           type="submit"
           disabled={isLogging}
-          className={`w-full rounded-md bg-black text-white py-2 mt-2  transition-all duration-200 ease-out disabled:scale-100 ${
-            !isLogging ? "hover:scale-105" : ""
-          }`}
+          className="!w-full bg-black text-white disabled:bg-black/50 sign-btn mt-5"
         >
-          {isLogging ? (
+          <span>submit</span>
+          {isLogging && isLogWithEmail && (
             <div>
-              <span>submit</span>
               <ClipLoader color="white" size={10} className="ml-1" />
             </div>
-          ) : (
-            "Submit"
           )}
         </button>
       </form>
+
+      {/* Social login buttons */}
+      <div className="flex flex-wrap justify-center w-full gap-4 mt-3">
+        <button
+          disabled={isLogging}
+          onClick={() => handleLoginWithPopup(googleSignIn)}
+          className="sign-btn"
+        >
+          Log in with
+          <FcGoogle className="ml-2" size={24} />
+        </button>
+        <button
+          disabled={isLogging}
+          onClick={() => handleLoginWithPopup(githubSignIn)}
+          className="sign-btn"
+        >
+          Log in with <FaGithub className="ml-2" size={24} />
+        </button>
+      </div>
 
       {/* The "OR" option */}
       <div className="flex items-center justify-center w-full mt-6">
@@ -120,7 +158,9 @@ const Login = ({ loginSubmit }) => {
 };
 
 Login.propTypes = {
-  loginSubmit: PropTypes.func,
+  emailLogin: PropTypes.func,
+  googleSignIn: PropTypes.func,
+  githubSignIn: PropTypes.func,
 };
 
 export default Login;

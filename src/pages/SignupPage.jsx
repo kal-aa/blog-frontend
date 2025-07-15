@@ -1,54 +1,66 @@
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import Signup from "../components/Signup";
+import {
+  signInWithGithub,
+  signInWithGoogle,
+  signupWithEmail,
+} from "../config/auth";
+import { sendEmailVerification } from "firebase/auth";
+import { handleOAuthSign } from "../utils/Oauth";
 
 const SignupPage = () => {
   const navigate = useNavigate();
   const { setUser } = useUser();
+  const url = `${import.meta.env.VITE_BACKEND_URL}/auth/sign-up`;
 
-  const signupSubmit = async (formData, setError, setIsSigning) => {
+  const handleEmailSignup = async (formData, setError) => {
     // eslint-disable-next-line no-unused-vars
-    const { confirmPassword, image, ...submissionData } = formData;
+    const { image, email, password, ...submissionData } = formData;
+    const userData = new FormData();
+    userData.append("image", image);
 
-    const submissionDataWithFile = new FormData();
-    Object.keys(submissionData).forEach((key) => {
-      submissionDataWithFile.append(key, formData[key]);
-    });
-
-    if (image) {
-      submissionDataWithFile.append("image", image);
-    }
-
-    setIsSigning(true);
     try {
-      const url = `${import.meta.env.VITE_BACKEND_URL}/sign-up`;
-      const res = await fetch(url, {
-        method: "POST",
-        body: submissionDataWithFile,
-      });
+      const user = await signupWithEmail(email, password);
 
-      if (!res.ok) {
-        const error = await res.json();
-        setError(error.mssg || "Signup failed");
-      } else {
-        const { insertedId: id, name } = await res.json();
-        setUser({ id, name });
+      await sendEmailVerification(user);
 
-        const trim = name.trim().split(" ")[0];
-        const firstName =
-          trim.charAt(0).toUpperCase() + trim.slice(1) || "User";
-
-        navigate(`/home/${id}/?signerName=${firstName}`);
-      }
+      navigate("/verify-email");
     } catch (error) {
-      console.error("An unexpected error occured", error);
-      setError("An unexpected error occurred. Please try again later.");
-    } finally {
-      setIsSigning(false);
+      console.error("Could not Sign-up", error);
+      setError(error.code || error.message || "An unexpected error occured");
     }
   };
 
-  return <Signup signupSubmit={signupSubmit} />;
+  const handleGoogleSignup = (setError) =>
+    handleOAuthSign(
+      "Sign-up",
+      signInWithGoogle,
+      "Google",
+      setError,
+      navigate,
+      url,
+      setUser
+    );
+
+  const handleGithubSignup = (setError) =>
+    handleOAuthSign(
+      "Sign-up",
+      signInWithGithub,
+      "GitHub",
+      setError,
+      navigate,
+      url,
+      setUser
+    );
+
+  return (
+    <Signup
+      emailSignup={handleEmailSignup}
+      githubSignup={handleGithubSignup}
+      googleSignup={handleGoogleSignup}
+    />
+  );
 };
 
 export default SignupPage;

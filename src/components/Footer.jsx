@@ -6,11 +6,10 @@ import {
 } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
 import { FaArrowUp } from "react-icons/fa";
-import { useUser } from "../context/UserContext";
+import { signOut } from "firebase/auth";
+import { auth } from "../config/firebase";
 
 const Footer = () => {
-  const { user } = useUser();
-  const id = user?.id;
   const navigate = useNavigate();
 
   const handleUpArrow = () => {
@@ -22,7 +21,7 @@ const Footer = () => {
       <div className="relative flex items-center justify-around text-sm font-bold md:py-4 md:flex-row-reverse">
         <div className="flex flex-col items-center space-y-2">
           <NavLink
-            to={`/manage-your-acc/${id}`}
+            to="/manage-account"
             className="mt-2 hover:text-blue-400 sm:hidden"
           >
             Manage your account
@@ -51,16 +50,13 @@ const Footer = () => {
         </div>
         <div className="hidden sm:block">
           <div className="flex flex-col items-center space-y-2 sm:mt-2">
-            <NavLink
-              to={`/manage-your-acc/${id}`}
-              className="hover:text-blue-400"
-            >
+            <NavLink to="/manage-account" className="hover:text-blue-400">
               Manage your account
             </NavLink>
-            <NavLink to={`/about-us/${id}`} className="hover:text-blue-400">
+            <NavLink to="/about-us" className="hover:text-blue-400">
               About us
             </NavLink>
-            <NavLink to={`/contact-us/${id}`} className="hover:text-blue-400">
+            <NavLink to="/contact-us" className="hover:text-blue-400">
               contact us
             </NavLink>
           </div>
@@ -78,7 +74,10 @@ const Footer = () => {
         title="log out"
         size={18}
         className="absolute z-10 text-yellow-600 right-4 bottom-1"
-        onClick={() => navigate("/")}
+        onClick={() => {
+          signOut(auth);
+          navigate("/");
+        }}
       />
     </footer>
   );
