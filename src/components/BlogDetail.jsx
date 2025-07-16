@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
 import PropTypes from "prop-types";
 import axios from "axios";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchData } from "../utils/fetchBlogs";
 import { isObjectId } from "../utils/isObjectId";
 import BlogDetailView from "./BlogDetailView";
+import { useUser } from "../context/UserContext";
 
 function BlogDetail(data) {
   const {
@@ -33,8 +33,9 @@ function BlogDetail(data) {
   const [isSendingComment, setIsSendingComment] = useState(false);
   const commentRef = useRef(null);
   const pTagRef = useRef(null);
-  const { id } = useParams();
   const queryClient = useQueryClient();
+  const { user } = useUser();
+  const id = user?.id;
 
   const {
     data: comments,

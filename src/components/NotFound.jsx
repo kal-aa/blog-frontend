@@ -16,7 +16,7 @@ const NotFound = () => {
           : "The page you are looking for not found or needs authorization."}
       </p>
       <Link
-        to={user?.name ? `/home/${user?.id}` : "/"}
+        to={user?.id ? "/home" : "/"}
         className="px-4 py-2 font-medium text-white transition bg-blue-600 rounded hover:bg-blue-700"
       >
         Go Back Home

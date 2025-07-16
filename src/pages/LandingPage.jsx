@@ -36,7 +36,7 @@ const LandingPage = () => {
       </div>
 
       {/* Get Started button */}
-      <div className="mt-16 text-center">
+      <div className="text-center">
         <NavLink
           to="/sign-up"
           className="px-4 py-3 text-white bg-blue-500 rounded-md hover:bg-blue-500/80"

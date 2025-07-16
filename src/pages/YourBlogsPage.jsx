@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { NavLink, useParams } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { RingLoader } from "react-spinners";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchData } from "../utils/fetchBlogs";
@@ -7,15 +7,15 @@ import { isObjectId } from "../utils/isObjectId";
 import BlogFetchError from "../components/BlogFetchError";
 import Pagination from "../components/Pagination";
 import BlogCard from "../components/BlogCard";
-import NoInternetConnection from "../components/ConnectionMonitor";
+import { useUser } from "../context/UserContext";
 
 const YourBlogsPage = () => {
   const [blogs, setBlogs] = useState([]);
   const [updateError, setUpdateError] = useState("");
   const [limit, setLimit] = useState(0);
-  const { id } = useParams();
   const queryclient = useQueryClient();
-  const isOnline = navigator.onLine;
+  const { user } = useUser();
+  const id = user?.id;
 
   const { data, isFetching, isRefetching, isError, refetch } = useQuery({
     queryKey: ["your-blogs", { route: `your-blogs/${id}?page=${limit}` }],
@@ -136,10 +136,6 @@ const YourBlogsPage = () => {
 
   return (
     <div>
-      <div className="px-[15%] sm:px-[20%] md:px-[25%] lg:px-[30%]">
-        {!isOnline && <NoInternetConnection />}
-      </div>
-
       {/* Check the fetching status and give info accordingly */}
       {isFetching && !isRefetching ? (
         <div className="flex flex-col justify-center items-center text-blue-800 min-h-[50vh]">
@@ -151,7 +147,7 @@ const YourBlogsPage = () => {
           <p className="text-xl text-center">
             Add your
             <NavLink
-              to={`/add-blog/${id}`}
+              to="/add-blog"
               className="mx-1 text-blue-800 underline underline-offset-2 hover:text-blue-700"
             >
               First

@@ -3,17 +3,13 @@ import { useEffect, useRef, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import { BeatLoader } from "react-spinners";
 
-const ManageYourAcc = (props) => {
-  const {
-    manageError,
-    formData,
-    handleChange,
-    handleManageSubmit,
-    setFormData,
-  } = props;
+const ManageAccount = (props) => {
+  const { formData, handleManageSubmit, manageError, providerId, setFormData } =
+    props;
   const [preview, setPreview] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [changePassword, setChangePassword] = useState(false);
   const fullNameRef = useRef(null);
 
   useEffect(() => {
@@ -22,7 +18,12 @@ const ManageYourAcc = (props) => {
     }
   }, []);
 
-  const matched = formData.password === formData.confirmPassword;
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const matched = formData.newPassword === formData.confirmPassword;
 
   // hanlde the input image
   const handleImageUpload = (e) => {
@@ -47,10 +48,16 @@ const ManageYourAcc = (props) => {
 
   return (
     <form
+      className="flex flex-col max-w-xl gap-5 p-10 mt-5 rounded-md bg-stone-50 drop-shadow-2xl"
       onSubmit={(e) =>
-        handleManageSubmit(e, fullNameRef, setIsDeleting, setIsUpdating)
+        handleManageSubmit(
+          e,
+          fullNameRef,
+          setIsDeleting,
+          setIsUpdating,
+          "update"
+        )
       }
-      className="max-w-xl p-10 mt-5 rounded-md bg-stone-50 drop-shadow-2xl"
     >
       <div className="flex flex-col items-center justify-center gap-2">
         <input
@@ -72,8 +79,7 @@ const ManageYourAcc = (props) => {
                 ? preview
                 : formData.image
                 ? formData.image
-                : // ? `data:${data.mimetype};base64,${data.buffer}`
-                  import.meta.env.VITE_PUBLIC_URL +
+                : import.meta.env.VITE_PUBLIC_URL +
                   "assets/images/unknown-user.jpg"
             }
             alt="user"
@@ -97,10 +103,13 @@ const ManageYourAcc = (props) => {
           </button>
         )}
       </div>
-      <div>
-        <label htmlFor="name" ref={fullNameRef}>
-          Full Name:
-        </label>
+
+      <label
+        htmlFor="name"
+        ref={fullNameRef}
+        className="manage-acc-label gap-x-[91px]"
+      >
+        <p>Full Name:</p>
         <input
           type="text"
           id="name"
@@ -110,63 +119,75 @@ const ManageYourAcc = (props) => {
           placeholder="Your name"
           disabled={isDeleting || isUpdating}
           required
-          className="manage-acc-input md:ml-[76px]"
+          className="manage-acc-input"
         />
-      </div>
-      <div>
-        <label htmlFor="email">Email: </label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          placeholder="Your email"
-          disabled={isDeleting || isUpdating}
-          required
-          className="manage-acc-input md:ml-[100px]"
-        />
-      </div>
-      <div className="relative">
-        <label htmlFor="password">Password:</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          placeholder="Your password"
-          disabled={isDeleting || isUpdating}
-          required
-          className="manage-acc-input md:ml-[80px]"
-        />
-      </div>
-      <div className="relative">
-        <label htmlFor="confirmPassword">
-          Confirm password:{" "}
-          {matched && formData.password.length > 7 && (
-            <FaCheck className="inline mb-0.5" />
-          )}{" "}
-        </label>
-        <input
-          type="password"
-          id="confirmPassword"
-          name="confirmPassword"
-          value={formData.confirmPassword}
-          onChange={handleChange}
-          placeholder="Confirm password"
-          disabled={isDeleting || isUpdating}
-          required
-          className={`manage-acc-input md:-ml-[1px] ${
-            !matched ? "md:ml-[19px]" : ""
-          }`}
-        />
-      </div>
+      </label>
 
-      <div className="relative flex flex-col items-center justify-center pt-8 space-y-3 md:flex-row-reverse md:space-y-0">
-        <p className="absolute text-sm text-center text-red-500 top-0 bottom-[60%] text-wrap">
-          {manageError || "\u00A0"}
-        </p>
+      {providerId === "password" && (
+        <div>
+          {changePassword ? (
+            <div className="flex flex-col gap-5">
+              <label
+                htmlFor="newPassword"
+                className="manage-acc-label gap-x-[63px]"
+              >
+                New Password:
+                <input
+                  type="password"
+                  id="newPassword"
+                  name="newPassword"
+                  value={formData.newPassword}
+                  onChange={handleChange}
+                  placeholder="New password"
+                  disabled={isDeleting || isUpdating}
+                  required
+                  className="manage-acc-input"
+                />
+              </label>
+
+              <label
+                htmlFor="confirmPassword"
+                className="manage-acc-label gap-x-10"
+              >
+                <div className="relative">
+                  Confirm password:
+                  <div className="absolute top-0 -right-5">
+                    {matched && formData.newPassword?.length > 7 && (
+                      <FaCheck className="inline mb-0.5" />
+                    )}
+                  </div>
+                </div>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="Confirm password"
+                  disabled={isDeleting || isUpdating}
+                  required
+                  className="manage-acc-input"
+                />
+              </label>
+            </div>
+          ) : (
+            <div className="md:flex md:justify-end">
+              <button
+                type="button"
+                onClick={() => setChangePassword(true)}
+                className="btn-style md:p-2"
+              >
+                Change Password
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+      <p className="max-w-xs mx-auto text-sm text-center text-red-500 break-words">
+        {manageError}
+      </p>
+
+      <div className="flex flex-col items-center justify-center gap-3 md:flex-row-reverse">
         <button
           type="submit"
           name="update"
@@ -183,7 +204,15 @@ const ManageYourAcc = (props) => {
           )}
         </button>
         <button
-          type="submit"
+          onClick={(e) =>
+            handleManageSubmit(
+              e,
+              fullNameRef,
+              setIsDeleting,
+              setIsUpdating,
+              "delete"
+            )
+          }
           name="delete"
           className="manage-acc-btn md:mr-5"
           disabled={isDeleting}
@@ -202,12 +231,12 @@ const ManageYourAcc = (props) => {
   );
 };
 
-ManageYourAcc.propTypes = {
+ManageAccount.propTypes = {
   formData: PropTypes.object.isRequired,
-  handleChange: PropTypes.func.isRequired,
   handleManageSubmit: PropTypes.func.isRequired,
   manageError: PropTypes.string,
+  providerId: PropTypes.string,
   setFormData: PropTypes.func,
 };
 
-export default ManageYourAcc;
+export default ManageAccount;

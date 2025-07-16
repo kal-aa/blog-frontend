@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useLocation, NavLink, useNavigate, useParams } from "react-router-dom";
+import { useLocation, NavLink, useNavigate } from "react-router-dom";
 import { RingLoader } from "react-spinners";
 import { toast } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
@@ -8,7 +8,7 @@ import { isObjectId } from "../utils/isObjectId";
 import BlogFetchError from "../components/BlogFetchError";
 import BlogCard from "../components/BlogCard";
 import Pagination from "../components/Pagination";
-import ConnectionMonitor from "../components/ConnectionMonitor";
+import { useUser } from "../context/UserContext";
 
 const HomePage = () => {
   const [limit, setLimit] = useState(0);
@@ -17,8 +17,8 @@ const HomePage = () => {
   const hasShownSignupToast = useRef(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { id } = useParams();
-  const isOnline = navigator.onLine;
+  const { user } = useUser();
+  const id = user?.id;
 
   useEffect(() => {
     const incomingUser = location.state?.userOfInterest;
@@ -87,10 +87,6 @@ const HomePage = () => {
 
   return (
     <div>
-      <div className="px-[15%] sm:px-[20%] md:px-[25%] lg:px-[30%]">
-        {!isOnline && <ConnectionMonitor />}
-      </div>
-
       {/* Check fetching and connection status and give response */}
       {isFetching && !isRefetching ? (
         <div className="flex flex-col justify-center items-center text-blue-800 min-h-[50vh]">
@@ -113,7 +109,7 @@ const HomePage = () => {
           <p className="text-xl text-center">
             No Blogs Available yet, be the
             <NavLink
-              to={`/add-blog/${id}`}
+              to="/add-blog"
               className="mx-1 text-blue-800 underline underline-offset-2 hover:text-blue-700"
             >
               First

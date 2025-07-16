@@ -1,5 +1,5 @@
 import { lazy, memo, Suspense, useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { MdExpandLess, MdExpandMore } from "react-icons/md";
 import {
   FaCheckCircle,
@@ -14,6 +14,7 @@ import { formatNumber } from "../utils/formatNumber";
 import { relativeTime } from "../utils/relativeTime";
 import SuspenseFallback from "./SuspenseFallback";
 import { useQueryClient } from "@tanstack/react-query";
+import { useUser } from "../context/UserContext";
 const BlogDetail = lazy(() => import("./BlogDetail"));
 
 function BlogCard(data) {
@@ -25,7 +26,6 @@ function BlogCard(data) {
     setUserOfInterest, // isHome
     updateError, // !isHome
   } = data;
-  const { id } = useParams();
   const [thumbsUp, setThumbsUp] = useState(false);
   const [thumbsDown, setThumbsDown] = useState(false);
   const [viewCount, setViewCount] = useState();
@@ -44,6 +44,8 @@ function BlogCard(data) {
   const updateBtnRef = useRef(null);
   const titleInpRef = useRef(null);
   const queryClient = useQueryClient();
+  const { user } = useUser();
+  const id = user?.id;
 
   useEffect(() => {
     setViewCount(blog.views.length);
@@ -137,7 +139,7 @@ function BlogCard(data) {
             if (id !== blog.authorId) {
               setUserOfInterest(blog.authorId);
             } else {
-              navigate(`/your-blogs/${id}`);
+              navigate("/your-blogs");
             }
           }}
           src={

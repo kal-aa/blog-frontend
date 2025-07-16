@@ -1,5 +1,5 @@
 import { lazy, memo, Suspense, useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   FaRegThumbsDown,
   FaRegThumbsUp,
@@ -48,9 +48,9 @@ function CommentCard(data) {
   const [isSendingReply, setIsSendingReply] = useState(false);
   const navigate = useNavigate();
   const inputRef = useRef(null);
-  const { id } = useParams();
-  const { user } = useUser();
   const commentValue = optimComment.comment;
+  const { user } = useUser();
+  const id = user?.id;
 
   const {
     data: replies,
@@ -101,11 +101,11 @@ function CommentCard(data) {
             <img
               onClick={() => {
                 if (isHome && id === optimComment.commenterId) {
-                  navigate(`/your-blogs/${id}`);
+                  navigate(`/your-blogs`);
                 } else if (isHome && id !== optimComment.commenterId) {
                   setUserOfInterest(optimComment.commenterId);
                 } else if (!isHome && id !== optimComment.commenterId) {
-                  navigate(`/home/${id}`, {
+                  navigate(`/home`, {
                     state: { userOfInterest: optimComment.commenterId },
                   });
                 }
