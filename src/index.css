@@ -46,7 +46,7 @@ input {
 
 /* password lock icon */
 .lock-style {
-  @apply absolute top-[34px] left-2 text-slate-500 md:top-4;
+  @apply absolute top-[34px] md:top-[38px] left-2 text-slate-500;
 }
 
 .error-style {
