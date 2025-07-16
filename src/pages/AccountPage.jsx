@@ -2,13 +2,14 @@ import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FaLock } from "react-icons/fa";
-import { BeatLoader } from "react-spinners";
+import { BarLoader, BeatLoader } from "react-spinners";
 import { useQueryClient } from "@tanstack/react-query";
-import { auth } from "../config/firebase";
+import { auth, githubProvider, googleProvider } from "../config/firebase";
 import {
   deleteUser,
   EmailAuthProvider,
   reauthenticateWithCredential,
+  reauthenticateWithPopup,
   updatePassword,
 } from "firebase/auth";
 import { useUser } from "../context/UserContext";
@@ -34,43 +35,63 @@ const AccountPage = () => {
   const authInputRef = useRef(null);
   const [originalEmail, setOriginalEmail] = useState("");
   const queryClient = useQueryClient();
+  const firebaseUser = auth.currentUser;
+  const providerId = firebaseUser?.providerData[0]?.providerId;
   const { user } = useUser();
   const id = user?.id;
 
   useEffect(() => {
-    if (authError || authInputRef.current) {
-      authInputRef.current.focus();
+    if (providerId === "password") {
+      if (authError || authInputRef.current) {
+        authInputRef.current.focus();
+      }
     }
-  }, [authError]);
+  }, [authError, providerId]);
 
   //  check the mini Authentication's password and fetch the data
   const handleAuthenticate = async (e) => {
     e.preventDefault();
 
-    if (authPassword.length < 8) {
-      setAuthError("Must be greater than 8 characters");
-      return;
-    }
-
     try {
       setIsAuthenticating(true);
       setAuthError("");
 
-      const user = auth.currentUser;
-
-      if (!user || !user.email) {
-        setAuthError("Session expired. Please log in again.");
+      if (!firebaseUser || !firebaseUser.email) {
+        setAuthError("Session expired. Please Re-authenticate.");
         return;
       }
 
-      const credential = EmailAuthProvider.credential(user.email, authPassword);
+      if (providerId === "password") {
+        if (authPassword.length < 8) {
+          setAuthError("Must be greater than 8 characters");
+          return;
+        }
 
-      await reauthenticateWithCredential(user, credential);
-      setFormData((prev) => ({ ...prev, currentPassword: authPassword }));
+        const credential = EmailAuthProvider.credential(
+          firebaseUser.email,
+          authPassword
+        );
+
+        await reauthenticateWithCredential(firebaseUser, credential);
+        setFormData((prev) => ({ ...prev, currentPassword: authPassword }));
+      } else {
+        let provider;
+
+        if (providerId === "google.com") {
+          provider = googleProvider;
+        } else if (providerId === "github.com") {
+          provider = githubProvider;
+        } else {
+          setAuthError("Unsupported provider. Please log in again.");
+          return;
+        }
+
+        await reauthenticateWithPopup(firebaseUser, provider);
+      }
 
       setIsAuthorized(true);
 
-      const idToken = await user.getIdToken();
+      const idToken = await firebaseUser.getIdToken();
       const url = `${import.meta.env.VITE_BACKEND_URL}/account/data/${id}`;
 
       const res = await fetch(url, {
@@ -152,7 +173,6 @@ const AccountPage = () => {
           }
 
           await deleteUser(auth.currentUser);
-          await auth.signOut();
 
           navigate("/");
         } catch (error) {
@@ -247,7 +267,7 @@ const AccountPage = () => {
           return;
         }
 
-        toast("Updated successfully!");
+        toast.success("Account updated successfully!");
         queryClient.invalidateQueries(["all-blogs"]);
         navigate(`/home`);
       } catch (error) {
@@ -266,41 +286,42 @@ const AccountPage = () => {
           <div className="absolute inset-0 -bottom-[105%] bg-gradient-to-br from-black/20 via-black/30 to-black/40 blur-3xl -top-28"></div>
           <form
             onSubmit={handleAuthenticate}
-            className="p-10 bg-black/90 shadow-black drop-shadow-xl rounded-xl"
+            className="p-10 bg-black/90 min-w-[400px] shadow-black drop-shadow-xl rounded-xl"
           >
-            <label htmlFor="auth-password" className="flex text-white">
-              Password:
-              <p className="inline-block mt-1 ml-2 text-xs text-center text-red-400 max-w-60 md:max-w-80">
-                {authError}
-              </p>
-            </label>
-            <div className="relative group">
-              <input
-                ref={authInputRef}
-                type="password"
-                id="auth-password"
-                name="auth-password"
-                value={authPassword}
-                onChange={(e) => setAuthPassword(e.target.value)}
-                placeholder="Your password"
-                required
-                disabled={isAuthenticating}
-                className="input-style hover:border-blue-300"
-              />
-              <FaLock className="absolute top-3.5 md:top-4 left-2 group-hover:animate-pulse" />
-            </div>
+            {providerId === "password" && (
+              <div>
+                <label htmlFor="auth-password" className="flex text-white">
+                  Password:
+                  <p className="inline-block mt-1 ml-2 text-xs text-center text-red-400 max-w-60 md:max-w-80">
+                    {authError}
+                  </p>
+                </label>
+
+                <div className="relative group">
+                  <input
+                    ref={authInputRef}
+                    type="password"
+                    id="auth-password"
+                    name="auth-password"
+                    value={authPassword}
+                    onChange={(e) => setAuthPassword(e.target.value)}
+                    placeholder="Your password"
+                    required
+                    disabled={isAuthenticating}
+                    className="input-style hover:border-blue-300"
+                  />
+                  <FaLock className="absolute top-3.5 md:top-4 left-2 group-hover:animate-pulse" />
+                </div>
+              </div>
+            )}
             <button
               type="submit"
               disabled={isAuthenticating}
               className="w-full px-5 py-1 mt-2 text-center text-white bg-blue-900 rounded-lg hover:scale-105 disabled:hover:scale-100"
             >
-              {isAuthenticating ? (
-                <div className="flex items-end justify-center">
-                  <span>go</span>
-                  <BeatLoader size={5} color="white" className="ml-0.5" />
-                </div>
-              ) : (
-                "Go"
+              <span>Autheticate</span>
+              {isAuthenticating && (
+                <BarLoader width={20} color="white" className="ml-0.5" />
               )}
             </button>
           </form>
@@ -312,6 +333,7 @@ const AccountPage = () => {
             formData={formData}
             handleManageSubmit={handleManageSubmit}
             manageError={manageError}
+            providerId={providerId}
             setFormData={setFormData}
           />
         </Suspense>

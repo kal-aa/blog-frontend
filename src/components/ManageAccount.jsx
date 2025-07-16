@@ -4,7 +4,8 @@ import { FaCheck } from "react-icons/fa";
 import { BeatLoader } from "react-spinners";
 
 const ManageAccount = (props) => {
-  const { manageError, formData, handleManageSubmit, setFormData } = props;
+  const { formData, handleManageSubmit, manageError, providerId, setFormData } =
+    props;
   const [preview, setPreview] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -122,60 +123,64 @@ const ManageAccount = (props) => {
         />
       </label>
 
-      {changePassword ? (
-        <div className="flex flex-col gap-5">
-          <label
-            htmlFor="newPassword"
-            className="manage-acc-label gap-x-[63px]"
-          >
-            New Password:
-            <input
-              type="password"
-              id="newPassword"
-              name="newPassword"
-              value={formData.newPassword}
-              onChange={handleChange}
-              placeholder="New password"
-              disabled={isDeleting || isUpdating}
-              required
-              className="manage-acc-input"
-            />
-          </label>
+      {providerId === "password" && (
+        <div>
+          {changePassword ? (
+            <div className="flex flex-col gap-5">
+              <label
+                htmlFor="newPassword"
+                className="manage-acc-label gap-x-[63px]"
+              >
+                New Password:
+                <input
+                  type="password"
+                  id="newPassword"
+                  name="newPassword"
+                  value={formData.newPassword}
+                  onChange={handleChange}
+                  placeholder="New password"
+                  disabled={isDeleting || isUpdating}
+                  required
+                  className="manage-acc-input"
+                />
+              </label>
 
-          <label
-            htmlFor="confirmPassword"
-            className="manage-acc-label gap-x-10"
-          >
-            <div className="relative">
-              Confirm password:
-              <div className="absolute top-0 -right-5">
-                {matched && formData.newPassword?.length > 7 && (
-                  <FaCheck className="inline mb-0.5" />
-                )}
-              </div>
+              <label
+                htmlFor="confirmPassword"
+                className="manage-acc-label gap-x-10"
+              >
+                <div className="relative">
+                  Confirm password:
+                  <div className="absolute top-0 -right-5">
+                    {matched && formData.newPassword?.length > 7 && (
+                      <FaCheck className="inline mb-0.5" />
+                    )}
+                  </div>
+                </div>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="Confirm password"
+                  disabled={isDeleting || isUpdating}
+                  required
+                  className="manage-acc-input"
+                />
+              </label>
             </div>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              placeholder="Confirm password"
-              disabled={isDeleting || isUpdating}
-              required
-              className="manage-acc-input"
-            />
-          </label>
-        </div>
-      ) : (
-        <div className="md:flex md:justify-end">
-          <button
-            type="button"
-            onClick={() => setChangePassword(true)}
-            className="btn-style md:p-2"
-          >
-            Change Password
-          </button>
+          ) : (
+            <div className="md:flex md:justify-end">
+              <button
+                type="button"
+                onClick={() => setChangePassword(true)}
+                className="btn-style md:p-2"
+              >
+                Change Password
+              </button>
+            </div>
+          )}
         </div>
       )}
       <p className="max-w-xs mx-auto text-sm text-center text-red-500 break-words">
@@ -230,6 +235,7 @@ ManageAccount.propTypes = {
   formData: PropTypes.object.isRequired,
   handleManageSubmit: PropTypes.func.isRequired,
   manageError: PropTypes.string,
+  providerId: PropTypes.string,
   setFormData: PropTypes.func,
 };
 
