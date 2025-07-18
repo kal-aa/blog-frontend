@@ -8,6 +8,7 @@ import { auth, githubProvider, googleProvider } from "../config/firebase";
 import {
   deleteUser,
   EmailAuthProvider,
+  onAuthStateChanged,
   reauthenticateWithCredential,
   reauthenticateWithPopup,
   updatePassword,
@@ -27,7 +28,7 @@ const AccountPage = () => {
   });
   const [data, setData] = useState({});
   const [authPassword, setAuthPassword] = useState("");
-  const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [isAuthenticating, setisAuthenticating] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [authError, setAuthError] = useState("");
   const [manageError, setManageError] = useState("");
@@ -36,12 +37,23 @@ const AccountPage = () => {
   const [originalEmail, setOriginalEmail] = useState("");
   const queryClient = useQueryClient();
   const firebaseUser = auth.currentUser;
-  const providerId = firebaseUser?.providerData[0]?.providerId;
+  const [providerId, setProviderId] = useState(null);
   const { user } = useUser();
   const id = user?.id;
 
   useEffect(() => {
-    if (providerId === "password") {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        const pid = firebaseUser.providerData[0]?.providerId;
+        setProviderId(pid);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (providerId?.includes("password")) {
       if (authError || authInputRef.current) {
         authInputRef.current.focus();
       }
@@ -53,18 +65,18 @@ const AccountPage = () => {
     e.preventDefault();
 
     try {
-      setIsAuthenticating(true);
+      setisAuthenticating(true);
       setAuthError("");
 
       if (!firebaseUser || !firebaseUser.email) {
-        setAuthError("Session expired. Please Re-authenticate.");
-        return;
+        throw new Error(
+          "Session expired. Please Login again or Re-authenticate."
+        );
       }
 
-      if (providerId === "password") {
+      if (providerId?.includes("password")) {
         if (authPassword.length < 8) {
-          setAuthError("Must be greater than 8 characters");
-          return;
+          throw new Error("Must be greater than 8 characters");
         }
 
         const credential = EmailAuthProvider.credential(
@@ -82,8 +94,7 @@ const AccountPage = () => {
         } else if (providerId === "github.com") {
           provider = githubProvider;
         } else {
-          setAuthError("Unsupported provider. Please log in again.");
-          return;
+          throw new Error("Unsupported provider. Please log in again.");
         }
 
         await reauthenticateWithPopup(firebaseUser, provider);
@@ -114,7 +125,10 @@ const AccountPage = () => {
 
       setAuthError(message);
     } finally {
-      setIsAuthenticating(false);
+      setisAuthenticating(false);
+
+      // 3, show appropriate error messages on blog pages when the id from the context is not available
+
       setAuthPassword("");
     }
   };
@@ -288,13 +302,10 @@ const AccountPage = () => {
             onSubmit={handleAuthenticate}
             className="p-10 bg-black/90 min-w-[400px] shadow-black drop-shadow-xl rounded-xl"
           >
-            {providerId === "password" && (
+            {providerId?.includes("password") && (
               <div>
                 <label htmlFor="auth-password" className="flex text-white">
                   Password:
-                  <p className="inline-block mt-1 ml-2 text-xs text-center text-red-400 max-w-60 md:max-w-80">
-                    {authError}
-                  </p>
                 </label>
 
                 <div className="relative group">
@@ -314,10 +325,11 @@ const AccountPage = () => {
                 </div>
               </div>
             )}
+            <p className="text-xs text-center text-red-400">{authError}</p>
             <button
               type="submit"
               disabled={isAuthenticating}
-              className="w-full px-5 py-1 mt-2 text-center text-white bg-blue-900 rounded-lg hover:scale-105 disabled:hover:scale-100"
+              className="manage-auth-btn"
             >
               <span>Autheticate</span>
               {isAuthenticating && (
@@ -328,10 +340,18 @@ const AccountPage = () => {
         </div>
       )}
       {isAuthorized && (
-        <Suspense fallback={<BeatLoader />}>
+        <Suspense
+          fallback={
+            <div className="flex flex-col items-center gap-2 mt-4">
+              <BeatLoader />
+              <p className="text-sm">Loading component...</p>
+            </div>
+          }
+        >
           <ManageAccount
             formData={formData}
             handleManageSubmit={handleManageSubmit}
+            isAuthenticating={isAuthenticating}
             manageError={manageError}
             providerId={providerId}
             setFormData={setFormData}

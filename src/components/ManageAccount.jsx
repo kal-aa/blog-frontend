@@ -1,11 +1,17 @@
 import PropTypes from "prop-types";
 import { useEffect, useRef, useState } from "react";
 import { FaCheck } from "react-icons/fa";
-import { BeatLoader } from "react-spinners";
+import { BarLoader, BeatLoader } from "react-spinners";
 
 const ManageAccount = (props) => {
-  const { formData, handleManageSubmit, manageError, providerId, setFormData } =
-    props;
+  const {
+    formData,
+    handleManageSubmit,
+    isAuthenticating,
+    manageError,
+    providerId,
+    setFormData,
+  } = props;
   const [preview, setPreview] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -60,18 +66,28 @@ const ManageAccount = (props) => {
       }
     >
       <div className="flex flex-col items-center justify-center gap-2">
+        {isAuthenticating && (
+          <div className="flex flex-col items-center gap-2 text-sm">
+            <BarLoader />
+            <p>Fetching user data....</p>
+          </div>
+        )}
         <input
           type="file"
           accept="image/*"
           className="hidden"
           id="fileInput"
           onChange={handleImageUpload}
-          disabled={isDeleting || isUpdating}
+          disabled={isDeleting || isUpdating || isAuthenticating}
         />
         <label
           htmlFor="fileInput"
-          className="cursor-pointer"
-          title="Change Your Profile Picture"
+          className={isAuthenticating ? "" : "cursor-pointer"}
+          title={
+            isAuthenticating
+              ? "Wait till data is fetched..."
+              : "Change your Profile Picture"
+          }
         >
           <img
             src={
@@ -117,13 +133,13 @@ const ManageAccount = (props) => {
           value={formData.name}
           onChange={handleChange}
           placeholder="Your name"
-          disabled={isDeleting || isUpdating}
+          disabled={isDeleting || isUpdating || isAuthenticating}
           required
           className="manage-acc-input"
         />
       </label>
 
-      {providerId === "password" && (
+      {providerId?.includes("password") && (
         <div>
           {changePassword ? (
             <div className="flex flex-col gap-5">
@@ -139,7 +155,7 @@ const ManageAccount = (props) => {
                   value={formData.newPassword}
                   onChange={handleChange}
                   placeholder="New password"
-                  disabled={isDeleting || isUpdating}
+                  disabled={isDeleting || isUpdating || isAuthenticating}
                   required
                   className="manage-acc-input"
                 />
@@ -164,7 +180,7 @@ const ManageAccount = (props) => {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   placeholder="Confirm password"
-                  disabled={isDeleting || isUpdating}
+                  disabled={isDeleting || isUpdating || isAuthenticating}
                   required
                   className="manage-acc-input"
                 />
@@ -174,6 +190,7 @@ const ManageAccount = (props) => {
             <div className="md:flex md:justify-end">
               <button
                 type="button"
+                disabled={isAuthenticating}
                 onClick={() => setChangePassword(true)}
                 className="btn-style md:p-2"
               >
@@ -187,11 +204,11 @@ const ManageAccount = (props) => {
         {manageError}
       </p>
 
-      <div className="flex flex-col items-center justify-center gap-3 md:flex-row-reverse">
+      <div className="flex flex-col items-center justify-center gap-y-3 gap-x-5 md:flex-row-reverse">
         <button
           type="submit"
           name="update"
-          disabled={isUpdating}
+          disabled={isUpdating || isAuthenticating}
           className="manage-acc-btn"
         >
           {isUpdating ? (
@@ -214,8 +231,8 @@ const ManageAccount = (props) => {
             )
           }
           name="delete"
-          className="manage-acc-btn md:mr-5"
-          disabled={isDeleting}
+          className="manage-acc-btn"
+          disabled={isDeleting || isAuthenticating}
         >
           {isDeleting ? (
             <div className="flex items-end justify-center gap-0.5">
@@ -234,6 +251,7 @@ const ManageAccount = (props) => {
 ManageAccount.propTypes = {
   formData: PropTypes.object.isRequired,
   handleManageSubmit: PropTypes.func.isRequired,
+  isAuthenticating: PropTypes.bool,
   manageError: PropTypes.string,
   providerId: PropTypes.string,
   setFormData: PropTypes.func,
