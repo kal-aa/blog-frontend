@@ -15,6 +15,8 @@ import { relativeTime } from "../utils/relativeTime";
 import SuspenseFallback from "./SuspenseFallback";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUser } from "../context/UserContext";
+import { useDispatch, useSelector } from "react-redux";
+import { setUserOfInterest } from "../features/blogSlice";
 const BlogDetail = lazy(() => import("./BlogDetail"));
 
 function BlogCard(data) {
@@ -22,8 +24,6 @@ function BlogCard(data) {
     blog,
     handleDelete, // !isHome
     handleUpdate, // !isHome
-    isHome = false,
-    setUserOfInterest, // isHome
     updateError, // !isHome
   } = data;
   const [thumbsUp, setThumbsUp] = useState(false);
@@ -46,6 +46,9 @@ function BlogCard(data) {
   const queryClient = useQueryClient();
   const { user } = useUser();
   const id = user?.id;
+
+  const isHome = useSelector((state) => state.blog.isHome);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     setViewCount(blog.views.length);
@@ -117,13 +120,11 @@ function BlogCard(data) {
     editBodyPen,
     editBodyValue,
     expand,
-    isHome,
     readyToUpdate,
     setEditBodyPen,
     setEditBodyValue,
     setThumbsDown,
     setThumbsUp,
-    setUserOfInterest,
     thumbsDown,
     thumbsUp,
     updateBtnRef,
@@ -137,7 +138,7 @@ function BlogCard(data) {
           onClick={() => {
             // navigate to the clicked user's blogs
             if (id !== blog.authorId) {
-              setUserOfInterest(blog.authorId);
+              dispatch(setUserOfInterest(blog.authorId));
             } else {
               navigate("/your-blogs");
             }
@@ -350,8 +351,6 @@ BlogCard.propTypes = {
   blog: PropTypes.object.isRequired,
   handleDelete: PropTypes.func,
   handleUpdate: PropTypes.func,
-  isHome: PropTypes.bool,
-  setUserOfInterest: PropTypes.func,
   updateError: PropTypes.string,
 };
 

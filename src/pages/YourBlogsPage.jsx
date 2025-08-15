@@ -8,6 +8,8 @@ import BlogFetchError from "../components/BlogFetchError";
 import Pagination from "../components/Pagination";
 import BlogCard from "../components/BlogCard";
 import { useUser } from "../context/UserContext";
+import { useDispatch } from "react-redux";
+import { setIsHome } from "../features/blogSlice";
 
 const YourBlogsPage = () => {
   const [blogs, setBlogs] = useState([]);
@@ -16,6 +18,12 @@ const YourBlogsPage = () => {
   const queryclient = useQueryClient();
   const { user } = useUser();
   const id = user?.id;
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(setIsHome(false));
+  }, [dispatch]);
 
   const { data, isFetching, isRefetching, isError, refetch } = useQuery({
     queryKey: ["your-blogs", { route: `your-blogs/${id}?page=${limit}` }],

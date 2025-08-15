@@ -17,6 +17,8 @@ import { useUser } from "../context/UserContext";
 import { isObjectId } from "../utils/isObjectId";
 import { fetchData } from "../utils/fetchBlogs";
 import { useQuery } from "@tanstack/react-query";
+import { useDispatch, useSelector } from "react-redux";
+import { setUserOfInterest } from "../features/blogSlice";
 const ReplyList = lazy(() => import("./ReplyList"));
 
 function CommentCard(data) {
@@ -28,9 +30,7 @@ function CommentCard(data) {
     handleSendReply,
     handleThumbsDownClick,
     handleThumbsupClick,
-    isHome,
     optimComment,
-    setUserOfInterest,
   } = data;
 
   const [optimReplies, setOptimReplies] = useState([]);
@@ -51,6 +51,9 @@ function CommentCard(data) {
   const commentValue = optimComment.comment;
   const { user } = useUser();
   const id = user?.id;
+
+  const isHome = useSelector((state) => state.blog.isHome);
+  const dispatch = useDispatch();
 
   const {
     data: replies,
@@ -103,11 +106,10 @@ function CommentCard(data) {
                 if (isHome && id === optimComment.commenterId) {
                   navigate(`/your-blogs`);
                 } else if (isHome && id !== optimComment.commenterId) {
-                  setUserOfInterest(optimComment.commenterId);
+                  dispatch(setUserOfInterest(optimComment.commenterId));
                 } else if (!isHome && id !== optimComment.commenterId) {
-                  navigate(`/home`, {
-                    state: { userOfInterest: optimComment.commenterId },
-                  });
+                  dispatch(setUserOfInterest(optimComment.commenterId));
+                  navigate("/home");
                 }
               }}
               src={
@@ -294,12 +296,10 @@ function CommentCard(data) {
           ) : (
             <Suspense fallback={<SuspenseFallback />}>
               <ReplyList
-                isHome={isHome}
                 optimComment={optimComment}
                 optimReplies={optimReplies}
                 setOptimReplies={setOptimReplies}
                 setReplyCount={setReplyCount}
-                setUserOfInterest={setUserOfInterest}
               />
             </Suspense>
           )
@@ -319,9 +319,7 @@ CommentCard.propTypes = {
   handleSendReply: PropTypes.func,
   handleThumbsDownClick: PropTypes.func,
   handleThumbsupClick: PropTypes.func,
-  isHome: PropTypes.bool,
   optimComment: PropTypes.object,
-  setUserOfInterest: PropTypes.func,
 };
 
 export default memo(CommentCard);

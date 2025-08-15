@@ -13,13 +13,11 @@ function BlogDetail(data) {
     editBodyPen,
     editBodyValue,
     expand,
-    isHome,
     readyToUpdate,
     setEditBodyPen,
     setEditBodyValue,
     setThumbsDown,
     setThumbsUp,
-    setUserOfInterest,
     thumbsDown,
     thumbsUp,
     updateBtnRef,
@@ -292,7 +290,6 @@ function BlogDetail(data) {
       handleSendComment={handleSendComment}
       handleThumbsDownClick={handleThumbsDownClick}
       handleThumbsupClick={handleThumbsupClick}
-      isHome={isHome}
       isSendingComment={isSendingComment}
       likeCount={likeCount}
       optimComments={optimComments}
@@ -304,7 +301,6 @@ function BlogDetail(data) {
       setEditBodyValue={setEditBodyValue}
       setOptimComments={setOptimComments}
       setShowComments={setShowComments}
-      setUserOfInterest={setUserOfInterest}
       showComments={showComments}
       thumbsDown={thumbsDown}
       thumbsUp={thumbsUp}
@@ -318,13 +314,11 @@ BlogDetail.propTypes = {
   editBodyPen: PropTypes.bool,
   editBodyValue: PropTypes.string,
   expand: PropTypes.bool,
-  isHome: PropTypes.bool,
   readyToUpdate: PropTypes.bool,
   setEditBodyPen: PropTypes.func,
   setEditBodyValue: PropTypes.func,
   setThumbsDown: PropTypes.func,
   setThumbsUp: PropTypes.func,
-  setUserOfInterest: PropTypes.func,
   thumbsDown: PropTypes.bool,
   thumbsUp: PropTypes.bool,
   updateBtnRef: PropTypes.object,

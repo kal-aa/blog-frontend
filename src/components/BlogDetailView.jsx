@@ -11,6 +11,7 @@ import {
 import PropTypes from "prop-types";
 import { formatNumber } from "../utils/formatNumber";
 import SuspenseFallback from "./SuspenseFallback";
+import { useSelector } from "react-redux";
 const CommentList = lazy(() => import("./CommentList"));
 
 function BlogDetailView(data) {
@@ -28,7 +29,6 @@ function BlogDetailView(data) {
     handleSendComment,
     handleThumbsDownClick,
     handleThumbsupClick,
-    isHome,
     isSendingComment,
     likeCount,
     optimComments,
@@ -40,7 +40,6 @@ function BlogDetailView(data) {
     setEditBodyValue,
     setOptimComments,
     setShowComments,
-    setUserOfInterest,
     showComments,
     thumbsDown,
     thumbsUp,
@@ -50,6 +49,8 @@ function BlogDetailView(data) {
   const [commentError, setCommentError] = useState("");
   const inputRef = useRef(null);
   const bodyInpRef = useRef(null);
+
+  const isHome = useSelector((state) => state.blog.isHome);
 
   // comment Input focus
   useEffect(() => {
@@ -162,11 +163,9 @@ function BlogDetailView(data) {
                 <Suspense fallback={<SuspenseFallback />}>
                   <CommentList
                     blog={blog}
-                    isHome={isHome}
                     optimComments={optimComments}
                     setCommentCount={setCommentCount}
                     setOptimComments={setOptimComments}
-                    setUserOfInterest={setUserOfInterest}
                   />
                 </Suspense>
               )}
@@ -244,7 +243,6 @@ BlogDetailView.propTypes = {
   handleSendComment: PropTypes.func,
   handleThumbsDownClick: PropTypes.func,
   handleThumbsupClick: PropTypes.func,
-  isHome: PropTypes.bool,
   isSendingComment: PropTypes.bool,
   likeCount: PropTypes.number,
   optimComments: PropTypes.array,
@@ -256,7 +254,6 @@ BlogDetailView.propTypes = {
   setEditBodyValue: PropTypes.func,
   setOptimComments: PropTypes.func,
   setShowComments: PropTypes.func,
-  setUserOfInterest: PropTypes.func,
   showComments: PropTypes.bool,
   thumbsDown: PropTypes.bool,
   thumbsUp: PropTypes.bool,

@@ -6,14 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useUser } from "../context/UserContext";
 
 function CommentList(data) {
-  const {
-    blog,
-    optimComments,
-    isHome,
-    setCommentCount,
-    setOptimComments,
-    setUserOfInterest,
-  } = data;
+  const { blog, optimComments, setCommentCount, setOptimComments } = data;
   const queryClient = useQueryClient();
   const { user } = useUser();
   const id = user?.id;
@@ -349,9 +342,7 @@ function CommentList(data) {
           handleSendReply={handleSendReply}
           handleThumbsDownClick={handleThumbsDownClick}
           handleThumbsupClick={handleThumbsupClick}
-          isHome={isHome}
           optimComment={c}
-          setUserOfInterest={setUserOfInterest}
         />
       ))}
     </>
@@ -361,10 +352,8 @@ function CommentList(data) {
 CommentList.propTypes = {
   blog: PropTypes.object.isRequired,
   optimComments: PropTypes.array.isRequired,
-  isHome: PropTypes.bool,
   setCommentCount: PropTypes.func,
   setOptimComments: PropTypes.func,
-  setUserOfInterest: PropTypes.func,
 };
 
 export default memo(CommentList);

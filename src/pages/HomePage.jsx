@@ -9,10 +9,11 @@ import BlogFetchError from "../components/BlogFetchError";
 import BlogCard from "../components/BlogCard";
 import Pagination from "../components/Pagination";
 import { useUser } from "../context/UserContext";
+import { useDispatch, useSelector } from "react-redux";
+import { setIsHome, setUserOfInterest } from "../features/blogSlice";
 
 const HomePage = () => {
   const [limit, setLimit] = useState(0);
-  const [userOfInterest, setUserOfInterest] = useState("");
   const hasShownLoginToast = useRef(false);
   const hasShownSignupToast = useRef(false);
   const location = useLocation();
@@ -20,12 +21,12 @@ const HomePage = () => {
   const { user } = useUser();
   const id = user?.id;
 
+  const dispatch = useDispatch();
+  const { userOfInterest } = useSelector((state) => state.blog);
+
   useEffect(() => {
-    const incomingUser = location.state?.userOfInterest;
-    if (incomingUser) {
-      setUserOfInterest(incomingUser);
-    }
-  }, [location.state]);
+    dispatch(setIsHome(true));
+  }, [dispatch]);
 
   // one-time-toast for login/signup welcome
   useEffect(() => {
@@ -99,7 +100,7 @@ const HomePage = () => {
           <p className="text-xl text-center">
             This user has no blogs yet, go
             <NavLink
-              onClick={() => setUserOfInterest("")}
+              onClick={() => dispatch(setUserOfInterest(""))}
               className="mx-1 text-blue-800 underline underline-offset-2 hover:text-blue-700"
             >
               back
@@ -128,20 +129,14 @@ const HomePage = () => {
             )}
             {blogs.map((blog) => (
               <div key={blog._id}>
-                <BlogCard
-                  blog={blog}
-                  isHome={true}
-                  setUserOfInterest={setUserOfInterest}
-                />
+                <BlogCard blog={blog} />
               </div>
             ))}
           </section>
           {/* Link to go back to view all blogs when the user is viewing a single user's blog(s)*/}
           {userOfInterest && (
             <p
-              onClick={() => {
-                setUserOfInterest("");
-              }}
+              onClick={() => dispatch(setUserOfInterest(""))}
               className="mb-5 text-center cursor-pointer"
             >
               <span className="mr-1 font-bold text-blue-800 hover:text-blue-600">

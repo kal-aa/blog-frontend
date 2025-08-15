@@ -4,14 +4,7 @@ import PropTypes from "prop-types";
 import ReplyCard from "./ReplyCard";
 
 function ReplyList(data) {
-  const {
-    isHome,
-    optimComment,
-    optimReplies,
-    setOptimReplies,
-    setReplyCount,
-    setUserOfInterest,
-  } = data;
+  const { optimComment, optimReplies, setOptimReplies, setReplyCount } = data;
   const queryClient = useQueryClient();
 
   // !isHome
@@ -66,9 +59,7 @@ function ReplyList(data) {
         <ReplyCard
           key={r._id}
           handleDeleteReply={handleDeleteReply}
-          isHome={isHome}
           optimReply={{ ...r, authorId: optimComment.authorId }}
-          setUserOfInterest={setUserOfInterest}
         />
       ))}
     </>
@@ -76,12 +67,10 @@ function ReplyList(data) {
 }
 
 ReplyList.propTypes = {
-  isHome: PropTypes.bool,
   optimComment: PropTypes.object,
   optimReplies: PropTypes.array,
   setOptimReplies: PropTypes.func,
   setReplyCount: PropTypes.func,
-  setUserOfInterest: PropTypes.func,
 };
 
 export default ReplyList;

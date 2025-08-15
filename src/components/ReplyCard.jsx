@@ -5,14 +5,19 @@ import PropTypes from "prop-types";
 import { relativeTime } from "../utils/relativeTime";
 import { useUser } from "../context/UserContext";
 import SeeMore from "./SeeMore";
+import { useDispatch, useSelector } from "react-redux";
+import { setUserOfInterest } from "../features/blogSlice";
 
 function ReplyCard(data) {
-  const { handleDeleteReply, isHome, optimReply, setUserOfInterest } = data;
+  const { handleDeleteReply, optimReply } = data;
   const [isFullReply, setIsFullReply] = useState(false);
   const [isDeletingReply, setIsDeletingReply] = useState(false);
   const navigate = useNavigate();
   const { user } = useUser();
   const id = user?.id;
+
+  const isHome = useSelector((state) => state.blog.isHome);
+  const dispatch = useDispatch();
 
   const replyValue = optimReply.reply;
   const replierName = optimReply.replierName || user.name || "Unkonwn user";
@@ -30,11 +35,10 @@ function ReplyCard(data) {
             if (isHome && id === optimReply.replierId) {
               navigate(`/your-blogs`);
             } else if (isHome && id !== optimReply.replierId) {
-              setUserOfInterest(optimReply.replierId);
+              dispatch(setUserOfInterest(optimReply.replierId));
             } else {
-              navigate(`/home`, {
-                state: { userOfInterest: optimReply.replierId },
-              });
+              dispatch(setUserOfInterest(optimReply.replierId));
+              navigate("/home");
             }
           }}
           src={
@@ -76,9 +80,7 @@ function ReplyCard(data) {
 
 ReplyCard.propTypes = {
   handleDeleteReply: PropTypes.func,
-  isHome: PropTypes.bool,
   optimReply: PropTypes.object,
-  setUserOfInterest: PropTypes.func,
 };
 
 export default memo(ReplyCard);
