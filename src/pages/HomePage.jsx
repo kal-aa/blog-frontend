@@ -11,6 +11,7 @@ import Pagination from "../components/Pagination";
 import { useUser } from "../context/UserContext";
 import { useDispatch, useSelector } from "react-redux";
 import { setIsHome, setUserOfInterest } from "../features/blogSlice";
+import { setGlobalError } from "../features/errorSlice";
 
 const HomePage = () => {
   const [limit, setLimit] = useState(0);
@@ -79,6 +80,12 @@ const HomePage = () => {
       (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
     );
   }, [blogsWithAuthors, userOfInterest]);
+
+  useEffect(() => {
+    if (!isFetching && (isError || !isObjectId(id))) {
+      dispatch(setGlobalError("Failed to fetch blogs."));
+    }
+  }, [dispatch, id, isError, isFetching]);
 
   if (isError || !isObjectId(id)) {
     return <BlogFetchError refetch={refetch} isError={isError} />;

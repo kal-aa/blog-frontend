@@ -24,7 +24,6 @@ function BlogCard(data) {
     blog,
     handleDelete, // !isHome
     handleUpdate, // !isHome
-    updateError, // !isHome
   } = data;
   const [thumbsUp, setThumbsUp] = useState(false);
   const [thumbsDown, setThumbsDown] = useState(false);
@@ -281,10 +280,6 @@ function BlogCard(data) {
       {/* Update and Delete btns, along with update Error */}
       {!isHome && (
         <div>
-          <div className="-mt-1 -mb-3 text-sm leading-4 text-center text-red-500">
-            {updateError || "\u00A0"}
-          </div>
-
           <div className="flex justify-around mt-5">
             {/* update btn */}
             <button
@@ -351,7 +346,6 @@ BlogCard.propTypes = {
   blog: PropTypes.object.isRequired,
   handleDelete: PropTypes.func,
   handleUpdate: PropTypes.func,
-  updateError: PropTypes.string,
 };
 
 export default memo(BlogCard);

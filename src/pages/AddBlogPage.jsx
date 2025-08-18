@@ -5,6 +5,7 @@ import CreateBlogForm from "../components/CreateBlogForm";
 import { useUser } from "../context/UserContext";
 import { useDispatch } from "react-redux";
 import { setGlobalError } from "../features/errorSlice";
+import { toast } from "react-toastify";
 
 const AddBlogPage = () => {
   const navigate = useNavigate();
@@ -30,6 +31,8 @@ const AddBlogPage = () => {
           dispatch(setGlobalError(error.mssg));
           return;
         }
+
+        toast.success("Blog posted successfully!");
 
         queryClient.invalidateQueries(["your-blogs"]);
         queryClient.invalidateQueries(["all-blogs"]);

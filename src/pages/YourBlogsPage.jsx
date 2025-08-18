@@ -10,10 +10,12 @@ import BlogCard from "../components/BlogCard";
 import { useUser } from "../context/UserContext";
 import { useDispatch } from "react-redux";
 import { setIsHome } from "../features/blogSlice";
+import { setGlobalError } from "../features/errorSlice";
+import { toast } from "react-toastify";
 
 const YourBlogsPage = () => {
   const [blogs, setBlogs] = useState([]);
-  const [updateError, setUpdateError] = useState("");
+  // const [updateError, setUpdateError] = useState("");
   const [limit, setLimit] = useState(0);
   const queryclient = useQueryClient();
   const { user } = useUser();
@@ -64,6 +66,8 @@ const YourBlogsPage = () => {
 
         queryclient.invalidateQueries(["all-blogs"]);
         queryclient.invalidateQueries(["your-blogs"]);
+
+        toast.success("Blog deleted successfully!");
       } catch (error) {
         console.error("Error deleting blog", error);
         if (deleteCandidate) setBlogs((prev) => [...prev, deleteCandidate]);
@@ -89,7 +93,6 @@ const YourBlogsPage = () => {
       const { editTitleValue: title, editBodyValue: body, _id: blogId } = blog;
 
       setIsUpdating(true);
-      setUpdateError("");
 
       const updateCandidate = blogs.find((b) => b._id === blog._id);
       setBlogs((prev) =>
@@ -108,7 +111,9 @@ const YourBlogsPage = () => {
 
         if (!res.ok) {
           const err = await res.json();
-          setUpdateError(err.mssg || "An unexpected error occured");
+          const message =
+            err.mssg || "An unexpected error occured during update";
+          dispatch(setGlobalError(message));
 
           // Reset to orginal values
           setEditBodyValue(originalBodyRef.current);
@@ -116,6 +121,8 @@ const YourBlogsPage = () => {
 
           throw new Error(err.mssg || "An unexpected error occured");
         }
+
+        toast.success("Blog updated successfully!");
 
         queryclient.invalidateQueries(["all-blogs"]);
         queryclient.invalidateQueries(["your-blogs"]);
@@ -135,8 +142,14 @@ const YourBlogsPage = () => {
         setEditBodyPen(false);
       }
     },
-    [blogs, id, queryclient]
+    [blogs, id, queryclient, dispatch]
   );
+
+  useEffect(() => {
+    if (!isFetching && (isError || !isObjectId(id))) {
+      dispatch(setGlobalError("Failed to fetch blogs."));
+    }
+  }, [dispatch, id, isError, isFetching]);
 
   if (isError || !isObjectId(id)) {
     return <BlogFetchError refetch={refetch} isError={isError} />;
@@ -175,7 +188,6 @@ const YourBlogsPage = () => {
               comments={blog.comments}
               handleDelete={handleDelete}
               handleUpdate={handleUpdate}
-              updateError={updateError}
             />
           ))}
 
