@@ -60,7 +60,7 @@ const ResetPassword = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            placeholder="E.g. sadkalshayee@gmail.com"
+            placeholder="yourname@example.com"
             disabled={isResetting}
             className="input-style"
           />

@@ -41,7 +41,7 @@ const Login = ({ emailLogin, googleSignIn, githubSignIn }) => {
     try {
       setIsLogging(true);
       setIsLogWithEmail(true);
-      await emailLogin(formData, setError);
+      await emailLogin(formData);
     } catch (error) {
       console.error(error);
     } finally {
@@ -53,7 +53,7 @@ const Login = ({ emailLogin, googleSignIn, githubSignIn }) => {
   const handleLoginWithPopup = async (method) => {
     try {
       setIsLogging(true);
-      await method(setError);
+      await method();
     } catch (error) {
       console.error(error);
     } finally {
@@ -78,7 +78,7 @@ const Login = ({ emailLogin, googleSignIn, githubSignIn }) => {
             value={formData.email}
             onChange={handleChange}
             required
-            placeholder="E.g. sadkalshayee@gmail.com"
+            placeholder="yourname@example.com"
             disabled={isLogging}
             className="input-style"
           />

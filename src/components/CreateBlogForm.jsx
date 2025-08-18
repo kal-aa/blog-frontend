@@ -7,7 +7,6 @@ const CreateBlogForm = ({ hanldeBlogPost }) => {
   const [isPosting, setIsPosting] = useState(false);
   const [bodyError, setBodyError] = useState(false);
   const [passCheck, setPassCheck] = useState(false);
-  const [error, setError] = useState("");
   const [formData, setFormData] = useState({ title: "", body: "" });
   const inputRef = useRef(null);
 
@@ -39,16 +38,11 @@ const CreateBlogForm = ({ hanldeBlogPost }) => {
       return;
     }
 
-    hanldeBlogPost(formData, setIsPosting, setError);
+    hanldeBlogPost(formData, setIsPosting);
   };
 
   return (
     <div className="signup-container">
-      {/* check whether user is online */}
-
-      {/* show Error */}
-      <div className={error ? "error-style" : undefined}>{error}</div>
-
       <h1 className="text-3xl font-bold">Share your ideas</h1>
       <form onSubmit={handleSubmit} className="w-full">
         <label htmlFor="title">Title:</label>

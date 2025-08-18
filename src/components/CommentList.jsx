@@ -4,12 +4,16 @@ import axios from "axios";
 import CommentCard from "./CommentCard";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUser } from "../context/UserContext";
+import { setGlobalError } from "../features/errorSlice";
+import { useDispatch } from "react-redux";
 
 function CommentList(data) {
   const { blog, optimComments, setCommentCount, setOptimComments } = data;
   const queryClient = useQueryClient();
   const { user } = useUser();
   const id = user?.id;
+
+  const dispatch = useDispatch();
 
   const url = (optimComment) =>
     `${import.meta.env.VITE_BACKEND_URL}/interaction/${optimComment._id}`;
@@ -260,12 +264,10 @@ function CommentList(data) {
       setOptimReplies,
       setReplyCount,
       setReplyValue,
-      setShowReplies,
-      setReplyError
+      setShowReplies
     ) => {
       e.preventDefault();
       setIsSendingReply(true);
-      setReplyError("");
 
       // Temporary optimisitc comment
       const tempId = new Date().getTime().toString();
@@ -304,7 +306,8 @@ function CommentList(data) {
 
         if (!res.ok) {
           const err = await res.json();
-          setReplyError(err?.mssg || "Something wrong happened");
+          const message = err?.mssg || "Something wrong happened";
+          dispatch(setGlobalError(message));
           throw new Error(err?.mssg || "Reply failed");
         }
 
@@ -327,7 +330,7 @@ function CommentList(data) {
         setIsSendingReply(false);
       }
     },
-    [id, queryClient, blog._id]
+    [id, queryClient, blog._id, dispatch]
   );
 
   return (

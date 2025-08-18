@@ -13,7 +13,6 @@ const Signup = ({ emailSignup, googleSignup, githubSignup }) => {
   });
   const [passwordMatched, setPasswordMatched] = useState("");
   const [isPasswordConfirmed, setIsPasswordConfirmed] = useState(false);
-  const [error, setError] = useState("");
   const [isSigning, setIsSigning] = useState(false);
   const [isSignWithEmail, setIsSignWithEmail] = useState(false);
   const emailInputRef = useRef(null);
@@ -45,7 +44,6 @@ const Signup = ({ emailSignup, googleSignup, githubSignup }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setPasswordMatched("");
-    setError("");
 
     if (formData.password.length < 8) {
       setPasswordMatched("Password must be greater than 8 characters");
@@ -57,7 +55,7 @@ const Signup = ({ emailSignup, googleSignup, githubSignup }) => {
     try {
       setIsSigning(true);
       setIsSignWithEmail(true);
-      await emailSignup(formData, setError);
+      await emailSignup(formData);
     } catch (error) {
       console.error(error);
     } finally {
@@ -69,7 +67,7 @@ const Signup = ({ emailSignup, googleSignup, githubSignup }) => {
   const handleLoginWithPopup = async (method) => {
     try {
       setIsSigning(true);
-      await method(setError);
+      await method();
     } catch (error) {
       console.error(error);
     } finally {
@@ -79,7 +77,6 @@ const Signup = ({ emailSignup, googleSignup, githubSignup }) => {
 
   return (
     <div className="relative signup-container">
-      <div className={error ? "error-style" : undefined}>{error}</div>
       <h1 className="text-3xl font-bold">Welcome</h1>
       {/* signup form */}
       <form onSubmit={handleSubmit} className="w-full">
@@ -93,7 +90,7 @@ const Signup = ({ emailSignup, googleSignup, githubSignup }) => {
             value={formData.email}
             onChange={handleChange}
             required
-            placeholder="E.g. sadkalshayee@gmail.com"
+            placeholder="yourname@example.com"
             disabled={isSigning}
             className="input-style"
           />

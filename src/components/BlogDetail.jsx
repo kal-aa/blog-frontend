@@ -6,6 +6,8 @@ import { fetchData } from "../utils/fetchBlogs";
 import { isObjectId } from "../utils/isObjectId";
 import BlogDetailView from "./BlogDetailView";
 import { useUser } from "../context/UserContext";
+import { setGlobalError } from "../features/errorSlice";
+import { useDispatch } from "react-redux";
 
 function BlogDetail(data) {
   const {
@@ -34,6 +36,8 @@ function BlogDetail(data) {
   const queryClient = useQueryClient();
   const { user } = useUser();
   const id = user?.id;
+
+  const dispatch = useDispatch();
 
   const {
     data: comments,
@@ -206,10 +210,9 @@ function BlogDetail(data) {
 
   // send comment
   const handleSendComment = useCallback(
-    async (e, setCommentError) => {
+    async (e) => {
       e.preventDefault();
       setIsSendingComment(true);
-      setCommentError("");
 
       // Temporary optimisitc comment
       const tempId = Date.now().toString();
@@ -245,7 +248,8 @@ function BlogDetail(data) {
 
         if (!res.ok) {
           const err = await res.json();
-          setCommentError(err?.mssg || "Something wrong happened");
+          const message = err?.mssg || "Something wrong happened";
+          dispatch(setGlobalError(message));
           setShowComments(false);
           throw new Error(err?.mssg || "Comment failed");
         }
@@ -272,7 +276,7 @@ function BlogDetail(data) {
         setIsSendingComment(false);
       }
     },
-    [blog._id, id, commentValue, queryClient]
+    [blog._id, id, commentValue, queryClient, dispatch]
   );
 
   return (

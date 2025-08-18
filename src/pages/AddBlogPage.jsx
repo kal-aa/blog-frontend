@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import CreateBlogForm from "../components/CreateBlogForm";
 import { useUser } from "../context/UserContext";
+import { useDispatch } from "react-redux";
+import { setGlobalError } from "../features/errorSlice";
 
 const AddBlogPage = () => {
   const navigate = useNavigate();
@@ -10,10 +12,11 @@ const AddBlogPage = () => {
   const { user } = useUser();
   const id = user?.id;
 
+  const dispatch = useDispatch();
+
   const hanldeBlogPost = useCallback(
-    async (formData, setIsPosting, setError) => {
+    async (formData, setIsPosting) => {
       setIsPosting(true);
-      setError("");
 
       const url = `${import.meta.env.VITE_BACKEND_URL}/add-blog/${id}`;
       try {
@@ -24,8 +27,8 @@ const AddBlogPage = () => {
         });
         if (!res.ok) {
           const error = await res.json();
-          setError(error.mssg);
-          throw new Error(error.mssg);
+          dispatch(setGlobalError(error.mssg));
+          return;
         }
 
         queryClient.invalidateQueries(["your-blogs"]);
@@ -37,7 +40,7 @@ const AddBlogPage = () => {
         setIsPosting(false);
       }
     },
-    [id, navigate, queryClient]
+    [id, navigate, queryClient, dispatch]
   );
 
   return <CreateBlogForm hanldeBlogPost={hanldeBlogPost} />;

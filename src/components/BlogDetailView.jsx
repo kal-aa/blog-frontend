@@ -46,7 +46,6 @@ function BlogDetailView(data) {
     updateBtnRef,
   } = data;
   const [showCommentForm, setShowCommentForm] = useState(false);
-  const [commentError, setCommentError] = useState("");
   const inputRef = useRef(null);
   const bodyInpRef = useRef(null);
 
@@ -191,7 +190,7 @@ function BlogDetailView(data) {
       {showCommentForm && (
         <div className="flex flex-col items-center pt-5 md:pt-10 my-2 mx-[10%] bg-gray-400 rounded-xl">
           <form
-            onSubmit={(e) => handleSendComment(e, setCommentError)}
+            onSubmit={handleSendComment}
             className="flex justify-around w-full"
           >
             <input
@@ -211,9 +210,7 @@ function BlogDetailView(data) {
               post
             </button>
           </form>
-          <p className="text-sm mt-1 text-red-700 w-[80%] text-center">
-            {commentError}
-          </p>
+
           <p
             onClick={() => setShowComments((prev) => !prev)}
             className="my-2 cursor-pointer hover:underline underline-offset-2"

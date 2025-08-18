@@ -4,6 +4,8 @@ import { deleteUser, onAuthStateChanged } from "firebase/auth";
 import ClipLoader from "react-spinners/ClipLoader";
 import { useUser } from "../context/UserContext";
 import { auth } from "../config/firebase";
+import { setGlobalError } from "../features/errorSlice";
+import { useDispatch } from "react-redux";
 
 const CompleteProfile = () => {
   const [user, setUser] = useState(null);
@@ -16,6 +18,8 @@ const CompleteProfile = () => {
   const fullnameRef = useRef(null);
   const navigate = useNavigate();
   const { setUser: contextUser } = useUser();
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -89,10 +93,11 @@ const CompleteProfile = () => {
       if (!res.ok) {
         console.error("Signup failed with status:", res.status);
         const { mssg } = await res.json();
-        setError(mssg || "Signup failed");
+        const message = mssg || "Signup failed";
 
+        dispatch(setGlobalError(message));
         await deleteUser(user);
-        throw new Error(mssg);
+        return;
       }
 
       const { id, name: name2 } = await res.json();

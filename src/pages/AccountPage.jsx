@@ -14,6 +14,9 @@ import {
   updatePassword,
 } from "firebase/auth";
 import { useUser } from "../context/UserContext";
+import { setGlobalError } from "../features/errorSlice";
+import { useDispatch } from "react-redux";
+import { getErrorMessage } from "../utils/firebaseAuthErrorMap";
 const ManageAccount = lazy(() => import("../components/ManageAccount"));
 
 const AccountPage = () => {
@@ -30,7 +33,6 @@ const AccountPage = () => {
   const [authPassword, setAuthPassword] = useState("");
   const [isAuthenticating, setisAuthenticating] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState(false);
-  const [authError, setAuthError] = useState("");
   const [manageError, setManageError] = useState("");
   const navigate = useNavigate();
   const authInputRef = useRef(null);
@@ -40,6 +42,8 @@ const AccountPage = () => {
   const [providerId, setProviderId] = useState(null);
   const { user } = useUser();
   const id = user?.id;
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -54,11 +58,11 @@ const AccountPage = () => {
 
   useEffect(() => {
     if (providerId?.includes("password")) {
-      if (authError || authInputRef.current) {
+      if (authInputRef.current) {
         authInputRef.current.focus();
       }
     }
-  }, [authError, providerId]);
+  }, [providerId]);
 
   //  check the mini Authentication's password and fetch the data
   const handleAuthenticate = async (e) => {
@@ -66,12 +70,12 @@ const AccountPage = () => {
 
     try {
       setisAuthenticating(true);
-      setAuthError("");
 
       if (!firebaseUser || !firebaseUser.email) {
-        throw new Error(
-          "Session expired. Please Login again or Re-authenticate."
-        );
+        const message =
+          "Session expired. Please Login again or Re-authenticate.";
+        dispatch(setGlobalError(message));
+        return;
       }
 
       if (providerId?.includes("password")) {
@@ -94,7 +98,9 @@ const AccountPage = () => {
         } else if (providerId === "github.com") {
           provider = githubProvider;
         } else {
-          throw new Error("Unsupported provider. Please log in again.");
+          const message = "Unsupported provider. Please log in again.";
+          dispatch(setGlobalError(message));
+          return;
         }
 
         await reauthenticateWithPopup(firebaseUser, provider);
@@ -114,21 +120,19 @@ const AccountPage = () => {
 
       const userData = await res.json();
       if (!res.ok) {
-        setAuthError(userData.mssg);
-        throw new Error(userData.mssg);
+        const message = userData.mssg || "failed to fetch user data";
+        dispatch(setGlobalError(message));
+        return;
       }
 
       setData(userData);
     } catch (err) {
       console.error("Error during re-authentication or data fetch", err);
-      const message = err.code || err.message || "Authentication failed";
+      const message = getErrorMessage(err, "Authentication failed");
 
-      setAuthError(message);
+      dispatch(setGlobalError(message));
     } finally {
       setisAuthenticating(false);
-
-      // 3, show appropriate error messages on blog pages when the id from the context is not available
-
       setAuthPassword("");
     }
   };
@@ -147,7 +151,7 @@ const AccountPage = () => {
         image,
         removeImage: false,
       }));
-      setOriginalEmail(data?.email || "Unkonwn email");
+      setOriginalEmail(data?.email || "Unknown email");
     }
   }, [data]);
 
@@ -169,7 +173,8 @@ const AccountPage = () => {
       );
 
       if (!auth.currentUser) {
-        setManageError("Your session has expired. Please log in again.");
+        const message = "Your session has expired. Please log in again.";
+        dispatch(setGlobalError(message));
         return;
       }
 
@@ -182,8 +187,10 @@ const AccountPage = () => {
 
           if (!res.ok) {
             const error = await res.json();
-            setManageError(error.mssg);
-            throw new Error(error.mssg);
+            const message = error.mssg || "Failed to delete account";
+
+            dispatch(setGlobalError(message));
+            return;
           }
 
           await deleteUser(auth.currentUser);
@@ -271,13 +278,16 @@ const AccountPage = () => {
         const data = await res.json();
 
         if (!res.ok) {
-          setManageError(data.mssg);
-          throw new Error(`Error updating client data ${data.mssg}`);
+          const message = data.mssg || "Failed to update account";
+          dispatch(setGlobalError(message));
+          return;
         }
         //  already up-to-date
         if (res.status === 200) {
+          const message = data.mssg || "Account already up-to-date";
+
+          toast.info(message);
           setIsUpdating(false);
-          setManageError(data.mssg);
           return;
         }
 
@@ -294,7 +304,7 @@ const AccountPage = () => {
 
   return (
     <div className="relative flex items-center justify-center">
-      {/* The mini authuntication card */}
+      {/* The mini authentication card */}
       {!isAuthorized && (
         <div>
           <div className="absolute inset-0 -bottom-[105%] bg-gradient-to-br from-black/20 via-black/30 to-black/40 blur-3xl -top-28"></div>
@@ -325,7 +335,7 @@ const AccountPage = () => {
                 </div>
               </div>
             )}
-            <p className="text-xs text-center text-red-400">{authError}</p>
+
             <button
               type="submit"
               disabled={isAuthenticating}

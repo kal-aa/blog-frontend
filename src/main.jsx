@@ -7,6 +7,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { UserProvider } from "./context/UserProvider.jsx";
 import { Provider } from "react-redux";
 import { store } from "./store/store.js";
+import { ToastContainer } from "react-toastify";
+import GlobalErrorHandler from "./components/GlobalErrorHandler.jsx";
 
 const queryClient = new QueryClient();
 
@@ -17,6 +19,8 @@ createRoot(document.getElementById("root")).render(
       <QueryClientProvider client={queryClient}>
         <UserProvider>
           <Provider store={store}>
+            <ToastContainer />
+            <GlobalErrorHandler />
             <App />
           </Provider>
         </UserProvider>

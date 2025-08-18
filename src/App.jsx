@@ -1,5 +1,4 @@
 import { Routes, Route, useLocation } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
@@ -60,7 +59,6 @@ const App = () => {
       {!noFooterAndHeader.includes(location.pathname) && user?.name && (
         <Footer />
       )}
-      <ToastContainer />
     </div>
   );
 };

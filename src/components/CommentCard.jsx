@@ -40,7 +40,6 @@ function CommentCard(data) {
   const [likeCount, setLikeCount] = useState(0);
   const [dislikeCount, setDislikeCount] = useState(0);
   const [replyValue, setReplyValue] = useState("");
-  const [replyError, setReplyError] = useState("");
   const [replyCount, setReplyCount] = useState(0);
   const [isFullComment, setIsFullComment] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
@@ -249,8 +248,7 @@ function CommentCard(data) {
                 setOptimReplies,
                 setReplyCount,
                 setReplyValue,
-                setShowReplies,
-                setReplyError
+                setShowReplies
               )
             }
             className="flex justify-around w-full"
@@ -272,9 +270,7 @@ function CommentCard(data) {
               reply
             </button>
           </form>
-          <p className="text-sm mt-1 text-red-400 w-[80%] text-center">
-            {replyError}
-          </p>
+
           <p
             onClick={() => setShowReplies((prev) => !prev)}
             className="my-2 cursor-pointer hover:underline underline-offset-2"
