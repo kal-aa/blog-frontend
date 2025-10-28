@@ -1,10 +1,14 @@
+import { NavigateFunction } from "react-router-dom";
+import { UserType } from "../types";
+import { User } from "firebase/auth";
+
 export const handleOAuthSign = async (
-  purpose,
-  signFunction,
-  providerName,
-  navigate,
-  url,
-  setUser
+  purpose: string,
+  signFunction: () => Promise<User>,
+  providerName: string,
+  navigate: NavigateFunction,
+  url: string,
+  setUser: (user: UserType) => void
 ) => {
   const user = await signFunction();
   const idToken = await user.getIdToken();

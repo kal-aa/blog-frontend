@@ -1,4 +1,4 @@
-export const formatNumber = (x) => {
+export const formatNumber = (x: number): string => {
   if (x > 1_000_000_000) {
     return (x / 1_000_000_000).toFixed(1) + "B";
   } else if (x >= 1_000_000) {
@@ -6,5 +6,5 @@ export const formatNumber = (x) => {
   } else if (x >= 1_000) {
     return (x / 1_000).toFixed(1) + "K";
   }
-  return x;
+  return x.toString();
 };

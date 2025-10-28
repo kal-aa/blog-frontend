@@ -1,13 +1,14 @@
-import { useState, useEffect } from "react";
-import PropTypes from "prop-types";
+import { useState, useEffect, ReactNode } from "react";
 import { UserContext } from "./UserContext";
 import { useLocation } from "react-router-dom";
+import { UserType } from "../types";
 
-export const UserProvider = ({ children }) => {
+export const UserProvider = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
-  const [user, setUser] = useState(() => {
+  const [user, setUser] = useState<UserType>(() => {
     try {
-      return JSON.parse(localStorage.getItem("user")) || null;
+      const storedUser = localStorage.getItem("user");
+      return storedUser ? JSON.parse(storedUser) : null;
     } catch {
       return null;
     }
@@ -21,8 +22,11 @@ export const UserProvider = ({ children }) => {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (user) localStorage.setItem("user", JSON.stringify(user));
-    else localStorage.removeItem("user");
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("user");
+    }
   }, [user]);
 
   return (
@@ -30,8 +34,4 @@ export const UserProvider = ({ children }) => {
       {children}
     </UserContext.Provider>
   );
-};
-
-UserProvider.propTypes = {
-  children: PropTypes.node.isRequired,
 };

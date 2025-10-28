@@ -7,7 +7,7 @@ import {
   FaRegEdit,
   FaRegHeart,
 } from "react-icons/fa";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 
 function BlogPostCard() {
   const [thumbsUp, setThumbsUp] = useState(true);
@@ -21,7 +21,7 @@ function BlogPostCard() {
   );
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     navigate("/sign-up");
   };
@@ -31,6 +31,7 @@ function BlogPostCard() {
       <img
         src={import.meta.env.VITE_PUBLIC_URL + "assets/images/unknown-user.jpg"}
         alt="user"
+        title="Explore more from KALAB"
         className="absolute top-0 left-0 w-10 h-10 rounded-br-2xl"
       />
 

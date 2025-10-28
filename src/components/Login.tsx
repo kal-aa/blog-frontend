@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 import { FaGithub, FaLock } from "react-icons/fa";
-import PropTypes from "prop-types";
 import { FcGoogle } from "react-icons/fc";
+import { LoginProps } from "../types";
 
-const Login = ({ emailLogin, googleSignIn, githubSignIn }) => {
+const Login = ({ emailLogin, googleSignIn, githubSignIn }: LoginProps) => {
   const [isLogging, setIsLogging] = useState(false);
   const [isLogWithEmail, setIsLogWithEmail] = useState(false);
   const [passwordError, setPasswordError] = useState("");
@@ -14,7 +14,7 @@ const Login = ({ emailLogin, googleSignIn, githubSignIn }) => {
     email: "",
     password: "",
   });
-  const emailInputRef = useRef(null);
+  const emailInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (emailInputRef.current) {
@@ -22,12 +22,12 @@ const Login = ({ emailLogin, googleSignIn, githubSignIn }) => {
     }
   }, []);
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setPasswordError("");
@@ -50,7 +50,7 @@ const Login = ({ emailLogin, googleSignIn, githubSignIn }) => {
     }
   };
 
-  const handleLoginWithPopup = async (method) => {
+  const handleLoginWithPopup = async (method: () => Promise<void>) => {
     try {
       setIsLogging(true);
       await method();
@@ -157,12 +157,6 @@ const Login = ({ emailLogin, googleSignIn, githubSignIn }) => {
       </NavLink>
     </div>
   );
-};
-
-Login.propTypes = {
-  emailLogin: PropTypes.func,
-  googleSignIn: PropTypes.func,
-  githubSignIn: PropTypes.func,
 };
 
 export default Login;

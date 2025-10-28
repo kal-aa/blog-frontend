@@ -1,34 +1,35 @@
 import { auth, githubProvider, googleProvider } from "./firebase";
 import {
+  AuthProvider,
   createUserWithEmailAndPassword,
   fetchSignInMethodsForEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
 } from "firebase/auth";
 
-export async function signupWithEmail(email, password) {
-  const emailClean = email.trim().toLowerCase();
+export async function signupWithEmail(email: string, password: string) {
+  const cleanEmail = email.trim().toLowerCase();
 
   try {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
-      emailClean,
+      cleanEmail,
       password
     );
     return userCredential.user;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Sign in error:", error.code, error.message);
     throw error;
   }
 }
 
-async function handleSignIn(provider, providerName) {
+async function handleSignIn(provider: AuthProvider, providerName: string) {
   try {
     const result = await signInWithPopup(auth, provider);
 
     const user = result.user;
     return user;
-  } catch (error) {
+  } catch (error: any) {
     console.error(
       `${providerName} sign-in error:", ${error.code}, ${error.message}`
     );
@@ -40,11 +41,11 @@ export const signInWithGoogle = () => handleSignIn(googleProvider, "Google");
 
 export const signInWithGithub = () => handleSignIn(githubProvider, "Github");
 
-export async function logInWithEmail(email, password) {
-  const emailClean = email.trim().toLowerCase();
+export async function logInWithEmail(email: string, password: string) {
+  const cleanEmail = email.trim().toLowerCase();
 
   try {
-    const methods = await fetchSignInMethodsForEmail(auth, emailClean);
+    const methods = await fetchSignInMethodsForEmail(auth, cleanEmail);
 
     if (methods.length > 0 && !methods.includes("password")) {
       throw new Error(
@@ -54,11 +55,11 @@ export async function logInWithEmail(email, password) {
 
     const userCredential = await signInWithEmailAndPassword(
       auth,
-      emailClean,
+      cleanEmail,
       password
     );
     return userCredential.user;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Login error:", error.code, error.message);
     throw error;
   }

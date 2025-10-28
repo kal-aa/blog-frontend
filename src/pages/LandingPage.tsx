@@ -22,7 +22,7 @@ const LandingPage = () => {
 
       <div className="px-[10%] md:px-[20%] lg-[25%]">
         {/* Welcome message for new users */}
-        <p className="bg-gradient-to-tr from-red-200 via-slate-400 to-stone-500 py-[8%] px-[10%] indent-1 font-bold text-sm rounded-[25%] md:text-base md:rounded-full">
+        <p className="bg-gradient-to-tr from-red-200 via-slate-400 to-stone-500 py-[8%] px-[10%] indent-1 font-bold text-sm rounded-[25%] md:text-base md:rounded-full text-center">
           Welcome to BlogSphere, your go-to platform for sharing ideas, stories,
           and creativity with the world! Whether you&apos;re a seasoned writer
           or just getting started, our user-friendly tools make it easy to

@@ -1,10 +1,13 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { ErrorState } from "../types";
+
+const initialState: ErrorState = { message: null };
 
 const errorSlice = createSlice({
   name: "error",
-  initialState: { message: null },
+  initialState,
   reducers: {
-    setGlobalError: (state, action) => {
+    setGlobalError: (state, action: PayloadAction<string>) => {
       state.message = action.payload;
     },
     clearGlobalError: (state) => {

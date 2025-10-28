@@ -2,35 +2,42 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
-import SignupPage from "./pages/SignupPage";
-import HomePage from "./pages/HomePage";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import AddBlogPage from "./pages/AddBlogPage";
-import YourBlogsPage from "./pages/YourBlogsPage";
-import ContactUsPage from "./pages/ContactUsPage";
-import AboutUsPage from "./pages/AboutUsPage";
-import AccountPage from "./pages/AccountPage";
-import NotFound from "./components/NotFound";
-import { useUser } from "./context/UserContext";
-import VerfyEmail from "./pages/VerfiyEmail";
-import CompleteProfile from "./pages/CompleteProfile";
-import ResetPassword from "./pages/ResetPassword";
+// import SignupPage from "./pages/SignupPage";
+// import HomePage from "./pages/HomePage";
+// import Header from "./components/Header";
+// import Footer from "./components/Footer";
+// import AddBlogPage from "./pages/AddBlogPage";
+// import YourBlogsPage from "./pages/YourBlogsPage";
+// import ContactUsPage from "./pages/ContactUsPage";
+// import AboutUsPage from "./pages/AboutUsPage";
+// import AccountPage from "./pages/AccountPage";
+// import NotFound from "./components/NotFound";
+// import { useUser } from "./context/UserContext";
+// import VerfyEmail from "./pages/VerfiyEmail";
+// import CompleteProfile from "./pages/CompleteProfile";
+// import ResetPassword from "./pages/ResetPassword";
 
 const App = () => {
   const location = useLocation();
-  const { user } = useUser();
+  // const { user } = useUser();
 
   const noFooterAndHeader = ["/", "/sign-up", "/log-in"];
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-200">
-      {!noFooterAndHeader.includes(location.pathname) && user?.name && (
+      {/* {!noFooterAndHeader.includes(location.pathname) && user?.name && (
         <Header />
-      )}
+      )} */}
+
+      <div className="flex-grow mt-28">
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/log-in" element={<LoginPage />} />
+        </Routes>
+      </div>
 
       {/* Routes */}
-      <div className="flex-grow mt-28">
+      {/* <div className="flex-grow mt-28">
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/log-in" element={<LoginPage />} />
@@ -54,11 +61,11 @@ const App = () => {
           <Route path="/about-us" element={<AboutUsPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </div>
+      </div> */}
 
-      {!noFooterAndHeader.includes(location.pathname) && user?.name && (
+      {/* {!noFooterAndHeader.includes(location.pathname) && user?.name && (
         <Footer />
-      )}
+      )} */}
     </div>
   );
 };

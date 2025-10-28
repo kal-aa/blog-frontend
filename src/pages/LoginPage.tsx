@@ -10,6 +10,7 @@ import { handleOAuthSign } from "../utils/Oauth";
 import { setGlobalError } from "../features/errorSlice";
 import { useDispatch } from "react-redux";
 import { getErrorMessage } from "../utils/firebaseAuthErrorMap";
+import { EmailLoginFormData } from "../types";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ const LoginPage = () => {
 
   const url = `${import.meta.env.VITE_BACKEND_URL}/auth/log-in`;
 
-  const handleEmailLogin = async (formData) => {
+  const handleEmailLogin = async (formData: EmailLoginFormData) => {
     try {
       const user = await logInWithEmail(formData.email, formData.password);
       const idToken = await user.getIdToken();
@@ -46,7 +47,7 @@ const LoginPage = () => {
       const firstName = trim.charAt(0).toUpperCase() + trim.slice(1) || "User";
 
       navigate(`/home?loggerName=${firstName}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Could not log-in", error);
 
       const message =
@@ -65,7 +66,7 @@ const LoginPage = () => {
         url,
         setUser
       );
-    } catch (error) {
+    } catch (error: any) {
       const message = getErrorMessage(
         error,
         "An unexpected error occured during Google sign-in"
@@ -84,7 +85,7 @@ const LoginPage = () => {
         url,
         setUser
       );
-    } catch (error) {
+    } catch (error: any) {
       const message = getErrorMessage(
         error,
         "An unexpected error occured during GitHub sign-in"
