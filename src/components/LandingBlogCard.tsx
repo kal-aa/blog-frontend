@@ -29,7 +29,7 @@ function BlogPostCard() {
   return (
     <div className="relative p-6 pr-2 mt-10 overflow-hidden bg-gray-400 rounded-2xl">
       <img
-        src={import.meta.env.VITE_PUBLIC_URL + "assets/images/unknown-user.jpg"}
+        src={"assets/images/unknown-user.jpg"}
         alt="user"
         title="Explore more from KALAB"
         className="absolute top-0 left-0 w-10 h-10 rounded-br-2xl"

@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { deleteUser, onAuthStateChanged } from "firebase/auth";
+import { deleteUser, onAuthStateChanged, User } from "firebase/auth";
 import ClipLoader from "react-spinners/ClipLoader";
 import { useUser } from "../context/UserContext";
 import { auth } from "../config/firebase";
@@ -8,14 +8,14 @@ import { setGlobalError } from "../features/errorSlice";
 import { useDispatch } from "react-redux";
 
 const CompleteProfile = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [name, setName] = useState("");
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState("");
   const [error, setError] = useState("");
   const [isuserLoading, setIsUserLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const fullnameRef = useRef(null);
+  const fullnameRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { setUser: contextUser } = useUser();
 
@@ -48,27 +48,29 @@ const CompleteProfile = () => {
     }
   }, [user, isuserLoading, navigate]);
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
+  const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
     setImage(file);
 
     if (file) {
       const reader = new FileReader();
-      reader.onload = () => setPreview(reader.result);
+      reader.onload = () => setPreview(reader.result as string);
       reader.readAsDataURL(file);
     } else {
       setPreview("");
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!user) return;
 
     const fullName = name.trim().split(" ");
 
-    if (fullName.length !== 2) {
-      fullnameRef.current.focus();
-      setError("Please prvide your full name: 'John Doe'");
+    if (fullName.length < 2) {
+      fullnameRef.current?.focus();
+      setError("Please provide your full name: (first and last).");
       return;
     }
 
@@ -94,7 +96,6 @@ const CompleteProfile = () => {
         console.error("Signup failed with status:", res.status);
         const { mssg } = await res.json();
         const message = mssg || "Signup failed";
-
         dispatch(setGlobalError(message));
         await deleteUser(user);
         return;
@@ -107,7 +108,7 @@ const CompleteProfile = () => {
       const firstName = trim.charAt(0).toUpperCase() + trim.slice(1) || "User";
 
       navigate(`/home?signerName=${firstName}`);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error completing profile:", err);
       setError(err.message || "Unexpected error");
     } finally {

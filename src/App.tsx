@@ -2,7 +2,9 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
-// import SignupPage from "./pages/SignupPage";
+import SignupPage from "./pages/SignupPage";
+import VerfyEmail from "./pages/VerfiyEmail";
+import CompleteProfile from "./pages/CompleteProfile";
 // import HomePage from "./pages/HomePage";
 // import Header from "./components/Header";
 // import Footer from "./components/Footer";
@@ -13,8 +15,6 @@ import LoginPage from "./pages/LoginPage";
 // import AccountPage from "./pages/AccountPage";
 // import NotFound from "./components/NotFound";
 // import { useUser } from "./context/UserContext";
-// import VerfyEmail from "./pages/VerfiyEmail";
-// import CompleteProfile from "./pages/CompleteProfile";
 // import ResetPassword from "./pages/ResetPassword";
 
 const App = () => {
@@ -33,6 +33,9 @@ const App = () => {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/log-in" element={<LoginPage />} />
+          <Route path="/sign-up" element={<SignupPage />} />
+          <Route path="/verify-email" element={<VerfyEmail />} />
+          <Route path="/complete-profile" element={<CompleteProfile />} />
         </Routes>
       </div>
 

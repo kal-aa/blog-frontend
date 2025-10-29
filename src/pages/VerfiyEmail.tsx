@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { onAuthStateChanged, sendEmailVerification } from "firebase/auth";
+import { onAuthStateChanged, sendEmailVerification, User } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../config/firebase";
 
 function VerifyEmail() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [checking, setChecking] = useState(false);
@@ -27,32 +27,64 @@ function VerifyEmail() {
     }
   }, [user, loading, navigate]);
 
-  const checkVerification = async () => {
-    setChecking(true);
-    await user.reload();
-    if (user.emailVerified) {
-      setMessage("Email verified! Redirecting...");
-      navigate("/complete-profile");
-    } else {
-      setMessage(
-        "Email not verified yet. Please check your inbox and spam folder."
-      );
+  const runWithFeedback = async (
+    action: () => Promise<void>,
+    setLoading: (value: boolean) => void,
+    setMessage: (msg: string) => void,
+    errorMsg = "Something went wrong. Try again later."
+  ) => {
+    setLoading(true);
+    try {
+      await action();
+    } catch (error: any) {
+      console.error(error);
+      setMessage(errorMsg);
+    } finally {
+      setLoading(false);
     }
-    setChecking(false);
+  };
+
+  const checkVerification = async () => {
+    if (!user) {
+      setMessage("No user is logged in. Cannot check verification status.");
+      return;
+    }
+
+    await runWithFeedback(
+      async () => {
+        await user.reload();
+        if (user.emailVerified) {
+          setMessage("Email verified! Redirecting...");
+          navigate("/complete-profile");
+        } else {
+          setMessage(
+            "Email not verified yet. Please check your inbox and spam folder."
+          );
+        }
+      },
+      setChecking,
+      setMessage,
+      "Failed to check verification status."
+    );
   };
 
   const resendVerification = async () => {
-    setResending(true);
-    try {
-      await sendEmailVerification(user);
-      setMessage(
-        "Verification email resent. Check your inbox and spam folder!"
-      );
-    } catch {
-      setMessage("Failed to resend verification email.");
-    } finally {
-      setResending(false);
+    if (!user) {
+      setMessage("No user is logged in. Cannot resend verification email.");
+      return;
     }
+
+    await runWithFeedback(
+      async () => {
+        await sendEmailVerification(user);
+        setMessage(
+          "Verification email resent. Check your inbox and spam folder!"
+        );
+      },
+      setResending,
+      setMessage,
+      "Failed to resend verification email."
+    );
   };
 
   return (
@@ -85,8 +117,15 @@ function VerifyEmail() {
         </button>
 
         <button
+          title={
+            resending
+              ? "resending..."
+              : user?.emailVerified
+              ? "Email Verified"
+              : "Resend Verification Email"
+          }
           onClick={resendVerification}
-          disabled={resending || !user}
+          disabled={resending || !user || user?.emailVerified}
           className="w-full py-2 mt-3 text-black transition border border-black rounded hover:bg-gray-200/50 disabled:opacity-50"
         >
           {resending ? "Resending..." : "Resend Verification Email"}

@@ -5,7 +5,7 @@ import { FaGithub, FaLock } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { LoginProps } from "../types";
 
-const Login = ({ emailLogin, googleSignIn, githubSignIn }: LoginProps) => {
+const Login = ({ emailLogin, googleSignin, githubSignin }: LoginProps) => {
   const [isLogging, setIsLogging] = useState(false);
   const [isLogWithEmail, setIsLogWithEmail] = useState(false);
   const [passwordError, setPasswordError] = useState("");
@@ -17,14 +17,12 @@ const Login = ({ emailLogin, googleSignIn, githubSignIn }: LoginProps) => {
   const emailInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (emailInputRef.current) {
-      emailInputRef.current.focus();
-    }
+    emailInputRef.current?.focus();
   }, []);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -130,7 +128,7 @@ const Login = ({ emailLogin, googleSignIn, githubSignIn }: LoginProps) => {
       <div className="flex flex-wrap justify-center w-full gap-4 mt-3">
         <button
           disabled={isLogging}
-          onClick={() => handleLoginWithPopup(googleSignIn)}
+          onClick={() => handleLoginWithPopup(googleSignin)}
           className="sign-btn"
         >
           Log in with
@@ -138,7 +136,7 @@ const Login = ({ emailLogin, googleSignIn, githubSignIn }: LoginProps) => {
         </button>
         <button
           disabled={isLogging}
-          onClick={() => handleLoginWithPopup(githubSignIn)}
+          onClick={() => handleLoginWithPopup(githubSignin)}
           className="sign-btn"
         >
           Log in with <FaGithub className="ml-2" size={24} />

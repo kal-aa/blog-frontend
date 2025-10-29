@@ -6,7 +6,7 @@ const LandingPage = () => {
     <section className="landing-container">
       <div className="flex items-center justify-between pt-8 mr-5 px-[5%] md:px-[15%]">
         <img
-          src={import.meta.env.VITE_PUBLIC_URL + "assets/images/blog.jpeg"}
+          src={"assets/images/blog.jpeg"}
           alt="Blog.jpeg"
           className="w-16"
         />

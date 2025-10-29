@@ -11,6 +11,7 @@ import { handleOAuthSign } from "../utils/Oauth";
 import { getErrorMessage } from "../utils/firebaseAuthErrorMap";
 import { setGlobalError } from "../features/errorSlice";
 import { useDispatch } from "react-redux";
+import { EmailSignupFormData } from "../types";
 
 const SignupPage = () => {
   const navigate = useNavigate();
@@ -19,18 +20,18 @@ const SignupPage = () => {
 
   const dispatch = useDispatch();
 
-  const handleEmailSignup = async (formData) => {
+  const handleEmailSignup = async (formData: EmailSignupFormData) => {
     // eslint-disable-next-line no-unused-vars
     const { image, email, password, ...submissionData } = formData;
     const userData = new FormData();
-    userData.append("image", image);
+    image && userData.append("image", image);
 
     try {
       const user = await signupWithEmail(email, password);
       await sendEmailVerification(user);
 
       navigate("/verify-email");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Could not Sign-up", error);
 
       const message = getErrorMessage(
@@ -51,7 +52,7 @@ const SignupPage = () => {
         url,
         setUser
       );
-    } catch (error) {
+    } catch (error: any) {
       const message = getErrorMessage(
         error,
         "An unexpected error occured during GitHub sign-up"
@@ -70,7 +71,7 @@ const SignupPage = () => {
         url,
         setUser
       );
-    } catch (error) {
+    } catch (error: any) {
       const message = getErrorMessage(
         error,
         "An unexpected error occured during GitHub sign-up"

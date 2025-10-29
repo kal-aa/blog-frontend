@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { FaCheck, FaGithub, FaLock } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import ClipLoader from "react-spinners/ClipLoader";
 import { NavLink } from "react-router-dom";
-import PropTypes from "prop-types";
+import { SignupProps } from "../types";
 
-const Signup = ({ emailSignup, googleSignup, githubSignup }) => {
+const Signup = ({ emailSignup, googleSignup, githubSignup }: SignupProps) => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -15,17 +15,15 @@ const Signup = ({ emailSignup, googleSignup, githubSignup }) => {
   const [isPasswordConfirmed, setIsPasswordConfirmed] = useState(false);
   const [isSigning, setIsSigning] = useState(false);
   const [isSignWithEmail, setIsSignWithEmail] = useState(false);
-  const emailInputRef = useRef(null);
+  const emailInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (emailInputRef.current) {
-      emailInputRef.current.focus();
-    }
+    emailInputRef.current?.focus();
   }, []);
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   // Show check icon when password and confirmPassword match
@@ -41,17 +39,15 @@ const Signup = ({ emailSignup, googleSignup, githubSignup }) => {
     }
   }, [formData]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setPasswordMatched("");
 
-    if (formData.password.length < 8) {
-      setPasswordMatched("Password must be greater than 8 characters");
-    } else if (formData.password !== formData.confirmPassword) {
-      setPasswordMatched("Password does not match");
-      return;
-    }
-
+    if (formData.password.length < 8)
+      return setPasswordMatched("Password must be greater than 8 characters");
+    if (formData.password !== formData.confirmPassword)
+      return setPasswordMatched("Password does not match");
+    
     try {
       setIsSigning(true);
       setIsSignWithEmail(true);
@@ -64,7 +60,7 @@ const Signup = ({ emailSignup, googleSignup, githubSignup }) => {
     }
   };
 
-  const handleLoginWithPopup = async (method) => {
+  const handleLoginWithPopup = async (method: () => Promise<void>) => {
     try {
       setIsSigning(true);
       await method();
@@ -173,12 +169,6 @@ const Signup = ({ emailSignup, googleSignup, githubSignup }) => {
       </NavLink>
     </div>
   );
-};
-
-Signup.propTypes = {
-  emailSignup: PropTypes.func,
-  googleSignup: PropTypes.func,
-  githubSignup: PropTypes.func,
 };
 
 export default Signup;

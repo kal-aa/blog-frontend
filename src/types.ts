@@ -12,6 +12,8 @@ export type EmailLoginFormData = {
   password: string;
 };
 
+export type EmailSignupFormData = EmailLoginFormData & { image?: File | null };
+
 // User context type
 export type UserType = {
   id: string;
@@ -25,6 +27,12 @@ export type UserContextType = {
 
 export type LoginProps = {
   emailLogin: (formData: EmailLoginFormData) => Promise<void>;
-  googleSignIn: () => Promise<void>;
-  githubSignIn: () => Promise<void>;
+  googleSignin: () => Promise<void>;
+  githubSignin: () => Promise<void>;
+};
+
+export type SignupProps = {
+  emailSignup: (formData: EmailLoginFormData) => Promise<void>;
+  googleSignup: () => Promise<void>;
+  githubSignup: () => Promise<void>;
 };

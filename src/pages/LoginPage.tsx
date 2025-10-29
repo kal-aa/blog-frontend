@@ -56,7 +56,7 @@ const LoginPage = () => {
     }
   };
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogleSignin = async () => {
     try {
       await handleOAuthSign(
         "Log-in",
@@ -75,7 +75,7 @@ const LoginPage = () => {
     }
   };
 
-  const handleGithubSignIn = async () => {
+  const handleGithubSignin = async () => {
     try {
       await handleOAuthSign(
         "Log-in",
@@ -97,8 +97,8 @@ const LoginPage = () => {
   return (
     <Login
       emailLogin={handleEmailLogin}
-      googleSignIn={handleGoogleSignIn}
-      githubSignIn={handleGithubSignIn}
+      googleSignin={handleGoogleSignin}
+      githubSignin={handleGithubSignin}
     />
   );
 };
