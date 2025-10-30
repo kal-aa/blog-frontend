@@ -1,6 +1,7 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { BlogState } from "../types";
 
-const initialState = {
+const initialState: BlogState = {
   userOfInterest: "",
   isHome: true,
 };
@@ -9,10 +10,10 @@ const blogSlice = createSlice({
   name: "blog",
   initialState,
   reducers: {
-    setUserOfInterest: (state, action) => {
+    setUserOfInterest: (state, action: PayloadAction<string>) => {
       state.userOfInterest = action.payload;
     },
-    setIsHome: (state, action) => {
+    setIsHome: (state, action: PayloadAction<boolean>) => {
       state.isHome = action.payload;
     },
   },

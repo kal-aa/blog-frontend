@@ -84,10 +84,10 @@ const YourBlogsPage = () => {
       blog,
       originalBodyRef,
       originalTitleRef,
-      setEditBodyPen,
-      setEditBodyValue,
       setEditTitlePen,
+      setEditBodyPen,
       setEditTitleValue,
+      setEditBodyValue,
       setIsUpdating
     ) => {
       const { editTitleValue: title, editBodyValue: body, _id: blogId } = blog;

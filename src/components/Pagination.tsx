@@ -1,17 +1,21 @@
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import PropTypes from "prop-types";
+import { PaginationProps } from "../types";
 
-export default function Pagination({ limit, setLimit, totalPages }) {
+export default function Pagination({
+  limit,
+  setLimit,
+  totalPages,
+}: PaginationProps) {
   return (
     <section className="flex justify-center space-x-[25%] md:space-x-[20%]">
       <FaArrowLeft
         aria-label="Previous page"
         title="Previous page"
-        className={limit < 1 && "text-gray-300 pointer-events-none"}
+        className={
+          limit < 1 ? "text-gray-300 pointer-events-none" : "cursor-pointer"
+        }
         onClick={() => {
-          if (limit > 0) {
-            setLimit((prev) => prev - 1);
-          }
+          if (limit > 0) setLimit(limit - 1);
         }}
       />
       <p className="px-2 text-white rounded-full bg-slate-600">
@@ -21,20 +25,16 @@ export default function Pagination({ limit, setLimit, totalPages }) {
         aria-label="Next page"
         title="Next page"
         className={`${
-          limit >= totalPages - 1 && "text-gray-300 pointer-events-none"
+          limit >= totalPages - 1
+            ? "text-gray-300 pointer-events-none"
+            : "cursor-pointer"
         }`}
         onClick={() => {
           if (limit < totalPages - 1) {
-            setLimit((prev) => prev + 1);
+            setLimit(limit + 1);
           }
         }}
       />
     </section>
   );
 }
-
-Pagination.propTypes = {
-  limit: PropTypes.number,
-  setLimit: PropTypes.func,
-  totalPages: PropTypes.number,
-};

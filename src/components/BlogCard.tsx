@@ -9,7 +9,6 @@ import {
 } from "react-icons/fa";
 import { BeatLoader } from "react-spinners";
 import axios from "axios";
-import PropTypes from "prop-types";
 import { formatNumber } from "../utils/formatNumber";
 import { relativeTime } from "../utils/relativeTime";
 import SuspenseFallback from "./SuspenseFallback";
@@ -17,17 +16,18 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useUser } from "../context/UserContext";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserOfInterest } from "../features/blogSlice";
+import { BlogCardProps } from "../types";
+import { RootState } from "../store/store";
 const BlogDetail = lazy(() => import("./BlogDetail"));
 
-function BlogCard(data) {
-  const {
-    blog,
-    handleDelete, // !isHome
-    handleUpdate, // !isHome
-  } = data;
+function BlogCard({
+  blog,
+  handleDelete, // !isHome
+  handleUpdate, // !isHome
+}: BlogCardProps) {
   const [thumbsUp, setThumbsUp] = useState(false);
   const [thumbsDown, setThumbsDown] = useState(false);
-  const [viewCount, setViewCount] = useState();
+  const [viewCount, setViewCount] = useState<number>(0);
   const [expand, setExpand] = useState(false);
   const navigate = useNavigate();
   //  for the YourtodosPage
@@ -40,50 +40,42 @@ function BlogCard(data) {
   const [readyToUpdate, setReadyToUpdate] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const updateBtnRef = useRef(null);
-  const titleInpRef = useRef(null);
+  const updateBtnRef = useRef<HTMLButtonElement>(null);
+  const titleInpRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
   const { user } = useUser();
   const id = user?.id;
-
-  const isHome = useSelector((state) => state.blog.isHome);
+  const isHome = useSelector((state: RootState) => state.blog.isHome);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    setViewCount(blog.views.length);
-  }, [blog.views.length]);
+    setViewCount(blog.views?.length ?? 0);
+  }, [blog.views]);
 
   // for isHome = the like and dislike icons
   useEffect(() => {
-    const liked = blog.likes.includes(id);
-    setThumbsUp(liked);
-
-    const disliked = blog.dislikes.includes(id);
-    setThumbsDown(disliked);
-  }, [blog, id]);
+    if (!id) return;
+    setThumbsUp(blog.likes?.includes(id) ?? false);
+    setThumbsDown(blog.dislikes?.includes(id) ?? false);
+  }, [blog.likes, blog.dislikes, id]);
 
   // For !isHOme = check if it's valid to be updated,
   useEffect(() => {
-    if (!isHome) {
-      if (
-        (editTitleValue.trim() !== blog.title ||
-          editBodyValue.trim() !== blog.body) &&
-        editBodyValue.length >= 100 &&
-        editTitleValue !== ""
-      ) {
-        setReadyToUpdate(true);
-        blog.editTitleValue = editTitleValue;
-        blog.editBodyValue = editBodyValue;
-      } else {
-        setReadyToUpdate(false);
-      }
-    }
-  }, [blog, editTitleValue, editBodyValue, editTitlePen, editBodyPen, isHome]);
+    if (isHome) return;
+
+    const trimmedTitle = editTitleValue.trim();
+    const trimmedBody = editBodyValue.trim();
+
+    const hasChanged = trimmedTitle !== blog.title || trimmedBody !== blog.body;
+    const meetsLength = trimmedTitle.length >= 1 && trimmedBody.length >= 100;
+
+    setReadyToUpdate(hasChanged && meetsLength);
+  }, [blog.body, blog.title, editTitleValue, editBodyValue, isHome]);
 
   useEffect(() => {
-    if (editTitlePen && titleInpRef.current) {
-      titleInpRef.current.focus();
-      titleInpRef.current.select?.();
+    if (editTitlePen) {
+      titleInpRef.current?.focus();
+      titleInpRef.current?.select?.();
     }
   }, [editTitlePen]);
 
@@ -95,6 +87,7 @@ function BlogCard(data) {
   const handleSeeMore = async () => {
     setExpand(true);
 
+    if (!id) return;
     if (blog.views.includes(id)) return;
 
     setViewCount((prev) => prev + 1);
@@ -105,8 +98,8 @@ function BlogCard(data) {
         userId: id,
       });
 
-      queryClient.invalidateQueries(["all-blogs"]);
-      queryClient.invalidateQueries(["your-blogs"]);
+      queryClient.invalidateQueries({ queryKey: ["all-blogs"] });
+      queryClient.invalidateQueries({ queryKey: ["your-blogs"] });
     } catch (error) {
       console.error("Error adding view:", error);
       setViewCount((prev) => prev - 1);
@@ -174,8 +167,7 @@ function BlogCard(data) {
                 className="w-[80%] px-2 rounded-md outline-none ring-2 hover:rounded-lg focus:bg-gray-100"
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && readyToUpdate) {
-                    if (updateBtnRef.current && readyToUpdate)
-                      updateBtnRef.current.click();
+                    if (readyToUpdate) updateBtnRef.current?.click();
                   }
                 }}
               />
@@ -185,8 +177,7 @@ function BlogCard(data) {
                 readyToUpdate ? (
                   <FaCheckCircle
                     onClick={() => {
-                      if (updateBtnRef.current && readyToUpdate)
-                        updateBtnRef.current.click();
+                      if (readyToUpdate) updateBtnRef.current?.click();
                     }}
                     size={18}
                     className="inline text-red-600/60 hover:text-red-600/50"
@@ -285,16 +276,16 @@ function BlogCard(data) {
             <button
               ref={updateBtnRef}
               onClick={() =>
-                handleUpdate(
+                handleUpdate?.({
                   blog,
                   originalBodyRef,
                   originalTitleRef,
-                  setEditBodyPen,
-                  setEditBodyValue,
                   setEditTitlePen,
+                  setEditBodyPen,
                   setEditTitleValue,
-                  setIsUpdating
-                )
+                  setEditBodyValue,
+                  setIsUpdating,
+                })
               }
               disabled={!readyToUpdate || isUpdating}
               className={`text-white px-3 py-1 rounded-lg ${
@@ -316,7 +307,7 @@ function BlogCard(data) {
             </button>
             {/* delete btn */}
             <button
-              onClick={() => handleDelete(blog._id, setIsDeleting)}
+              onClick={() => handleDelete?.(blog._id, setIsDeleting)}
               disabled={isDeleting}
               className="px-3 py-1 text-white bg-gray-600 rounded-lg hover:bg-gray-800"
             >
@@ -341,11 +332,5 @@ function BlogCard(data) {
     </section>
   );
 }
-
-BlogCard.propTypes = {
-  blog: PropTypes.object.isRequired,
-  handleDelete: PropTypes.func,
-  handleUpdate: PropTypes.func,
-};
 
 export default memo(BlogCard);

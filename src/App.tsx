@@ -5,7 +5,7 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import VerfyEmail from "./pages/VerfiyEmail";
 import CompleteProfile from "./pages/CompleteProfile";
-// import HomePage from "./pages/HomePage";
+import HomePage from "./pages/HomePage";
 // import Header from "./components/Header";
 // import Footer from "./components/Footer";
 // import AddBlogPage from "./pages/AddBlogPage";
@@ -36,6 +36,7 @@ const App = () => {
           <Route path="/sign-up" element={<SignupPage />} />
           <Route path="/verify-email" element={<VerfyEmail />} />
           <Route path="/complete-profile" element={<CompleteProfile />} />
+          <Route path="/home" element={<HomePage />} />
         </Routes>
       </div>
 

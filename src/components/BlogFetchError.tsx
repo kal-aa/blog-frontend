@@ -1,7 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import PropTypes from "prop-types";
+import { BlogFetchErrorProps } from "../types";
 
-export default function BlogFetchError({ refetch, isError }) {
+export default function BlogFetchError({
+  refetch,
+  isError,
+}: BlogFetchErrorProps) {
   const navigate = useNavigate();
 
   return (
@@ -32,8 +35,3 @@ export default function BlogFetchError({ refetch, isError }) {
     </div>
   );
 }
-
-BlogFetchError.propTypes = {
-  refetch: PropTypes.func,
-  isError: PropTypes.bool,
-};

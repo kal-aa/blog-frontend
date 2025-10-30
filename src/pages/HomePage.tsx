@@ -12,6 +12,8 @@ import { useUser } from "../context/UserContext";
 import { useDispatch, useSelector } from "react-redux";
 import { setIsHome, setUserOfInterest } from "../features/blogSlice";
 import { setGlobalError } from "../features/errorSlice";
+import { RootState } from "../store/store";
+import { BlogsResponse } from "../types";
 
 const HomePage = () => {
   const [limit, setLimit] = useState(0);
@@ -23,7 +25,7 @@ const HomePage = () => {
   const id = user?.id;
 
   const dispatch = useDispatch();
-  const { userOfInterest } = useSelector((state) => state.blog);
+  const { userOfInterest } = useSelector((state: RootState) => state.blog);
 
   useEffect(() => {
     dispatch(setIsHome(true));
@@ -56,19 +58,22 @@ const HomePage = () => {
     isRefetching,
     isError,
     refetch,
-  } = useQuery({
+  } = useQuery<
+    BlogsResponse,
+    Error,
+    BlogsResponse,
+    [string, { route: string }]
+  >({
     queryKey: ["all-blogs", { route: `blogs/${id}?page=${limit}` }],
     queryFn: fetchData,
-    enabled: isObjectId(id),
+    enabled: !!id && isObjectId(id),
     staleTime: 1000 * 60 * 5,
-    keepPreviousData: true,
+    placeholderData: (prev) => prev,
   });
 
   const { blogsWithAuthors = [], totalPages = 0 } = blogData || {};
 
   const blogs = useMemo(() => {
-    if (!blogsWithAuthors) return [];
-
     const filtered =
       userOfInterest === ""
         ? blogsWithAuthors
@@ -77,17 +82,18 @@ const HomePage = () => {
           );
 
     return filtered.sort(
-      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
   }, [blogsWithAuthors, userOfInterest]);
 
   useEffect(() => {
-    if (!isFetching && (isError || !isObjectId(id))) {
+    if (!isFetching && (isError || !id || !isObjectId(id))) {
       dispatch(setGlobalError("Failed to fetch blogs."));
     }
   }, [dispatch, id, isError, isFetching]);
 
-  if (isError || !isObjectId(id)) {
+  if (isError || !id || !isObjectId(id)) {
     return <BlogFetchError refetch={refetch} isError={isError} />;
   }
 
@@ -106,12 +112,12 @@ const HomePage = () => {
         userOfInterest ? (
           <p className="text-xl text-center">
             This user has no blogs yet, go
-            <NavLink
+            <button
               onClick={() => dispatch(setUserOfInterest(""))}
               className="mx-1 text-blue-800 underline underline-offset-2 hover:text-blue-700"
             >
               back
-            </NavLink>
+            </button>
           </p>
         ) : (
           <p className="text-xl text-center">
