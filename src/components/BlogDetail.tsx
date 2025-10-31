@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import PropTypes from "prop-types";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchData } from "../utils/fetchBlogs";
@@ -8,35 +7,35 @@ import BlogDetailView from "./BlogDetailView";
 import { useUser } from "../context/UserContext";
 import { setGlobalError } from "../features/errorSlice";
 import { useDispatch } from "react-redux";
+import { Blog, BlogDetailProps, Comment } from "../types";
+import { invalidateBlogQueries } from "../utils/InvalidateBlogQueries";
 
-function BlogDetail(data) {
-  const {
-    blog,
-    editBodyPen,
-    editBodyValue,
-    expand,
-    readyToUpdate,
-    setEditBodyPen,
-    setEditBodyValue,
-    setThumbsDown,
-    setThumbsUp,
-    thumbsDown,
-    thumbsUp,
-    updateBtnRef,
-  } = data;
-  const [optimComments, setOptimComments] = useState([]);
+function BlogDetail({
+  blog,
+  editBodyPen,
+  editBodyValue,
+  expand,
+  readyToUpdate,
+  setEditBodyPen,
+  setEditBodyValue,
+  setThumbsDown,
+  setThumbsUp,
+  thumbsDown,
+  thumbsUp,
+  updateBtnRef,
+}: BlogDetailProps) {
+  const [optimComments, setOptimComments] = useState<Comment[]>([]);
   const [showComments, setShowComments] = useState(false);
   const [commentValue, setCommentValue] = useState("");
   const [likeCount, setLikeCount] = useState(0);
   const [dislikeCount, setDislikeCount] = useState(0);
   const [commentCount, setCommentCount] = useState(0);
   const [isSendingComment, setIsSendingComment] = useState(false);
-  const commentRef = useRef(null);
-  const pTagRef = useRef(null);
+  const commentRef = useRef<HTMLDivElement>(null);
+  const pTagRef = useRef<HTMLParagraphElement>(null);
   const queryClient = useQueryClient();
   const { user } = useUser();
   const id = user?.id;
-
   const dispatch = useDispatch();
 
   const {
@@ -45,10 +44,10 @@ function BlogDetail(data) {
     // refetch,
   } = useQuery({
     queryKey: ["comments", { route: `blogs/${blog._id}/comments` }],
-    queryFn: fetchData,
+    queryFn: fetchData<Comment[]>,
     enabled: isObjectId(blog._id),
     staleTime: 1000 * 60 * 5,
-    keepPreviousData: true,
+    placeholderData: (prev) => prev,
   });
 
   useEffect(() => {
@@ -58,19 +57,17 @@ function BlogDetail(data) {
 
   useEffect(() => {
     if (isSuccess) {
-      setOptimComments(comments);
-      setCommentCount(comments.length || 0);
+      setOptimComments(comments ?? []);
+      setCommentCount(comments?.length ?? 0);
     }
   }, [comments, isSuccess]);
 
   // Check if the click was outside the comments section and the p tag
   useEffect(() => {
-    const handleClickOutside = (e) => {
+    const handleClickOutside = (e: MouseEvent) => {
       if (
-        commentRef.current &&
-        !commentRef.current.contains(e.target) &&
-        pTagRef.current &&
-        !pTagRef.current.contains(e.target)
+        !commentRef.current?.contains(e.target as Node) &&
+        !pTagRef.current?.contains(e.target as Node)
       ) {
         setShowComments(false);
       }
@@ -115,8 +112,7 @@ function BlogDetail(data) {
         userId: id,
       });
 
-      queryClient.invalidateQueries(["all-blogs"]);
-      queryClient.invalidateQueries(["your-blogs"]);
+      invalidateBlogQueries(queryClient);
     } catch (error) {
       console.error("Error updating like/dislike:", error);
       // Rollback optimistic updates
@@ -136,7 +132,7 @@ function BlogDetail(data) {
   ]);
 
   //  setThumbsUp(false) remove like
-  const handleThumbsupClick = useCallback(async () => {
+  const handleThumbsUpClick = useCallback(async () => {
     setThumbsUp(false);
     setLikeCount((prev) => prev - 1);
 
@@ -146,8 +142,7 @@ function BlogDetail(data) {
         userId: id,
       });
 
-      queryClient.invalidateQueries(["all-blogs"]);
-      queryClient.invalidateQueries(["your-blogs"]);
+      invalidateBlogQueries(queryClient);
     } catch (error) {
       console.error("Error removing like:", error);
       // Rollback
@@ -175,8 +170,7 @@ function BlogDetail(data) {
       }
       await axios.patch(url, { action: "addDislike", userId: id });
 
-      queryClient.invalidateQueries(["all-blogs"]);
-      queryClient.invalidateQueries(["your-blogs"]);
+      invalidateBlogQueries(queryClient);
     } catch (error) {
       console.error("Error removing like and or adding dislike:", error);
       // Rollback
@@ -198,8 +192,7 @@ function BlogDetail(data) {
         userId: id,
       });
 
-      queryClient.invalidateQueries(["all-blogs"]);
-      queryClient.invalidateQueries(["your-blogs"]);
+      invalidateBlogQueries(queryClient);
     } catch (error) {
       console.error("Error removing dislike:", error);
       // Rollback
@@ -210,20 +203,21 @@ function BlogDetail(data) {
 
   // send comment
   const handleSendComment = useCallback(
-    async (e) => {
+    async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       setIsSendingComment(true);
 
       // Temporary optimisitc comment
       const tempId = Date.now().toString();
-      const tempComment = {
+      const tempComment: Comment = {
         _id: tempId,
         blogId: blog._id,
-        commenterId: id,
+        commenterId: id || "temp-id",
         comment: commentValue,
         timeStamp: new Date().toISOString(),
         likes: [],
         dislikes: [],
+        commenterName: user?.name || "Unknown User",
       };
 
       setOptimComments((prev) => [tempComment, ...prev]);
@@ -258,7 +252,7 @@ function BlogDetail(data) {
         if (!newComment) throw new Error("No new comment returned");
 
         // Replace temp comment with real one directly in cache
-        queryClient.setQueryData(
+        queryClient.setQueryData<Comment[]>(
           ["comments", { route: `blogs/${blog._id}/comments` }],
           (old) => {
             if (!old) return [newComment];
@@ -266,7 +260,7 @@ function BlogDetail(data) {
           }
         );
 
-        queryClient.invalidateQueries(["your-blogs"]);
+        invalidateBlogQueries(queryClient, ["your-blogs"]);
       } catch (error) {
         console.error("Error comming", error);
         // Rollback optimistic comment
@@ -293,7 +287,7 @@ function BlogDetail(data) {
       handleRegThumbsDownClick={handleRegThumbsDownClick}
       handleSendComment={handleSendComment}
       handleThumbsDownClick={handleThumbsDownClick}
-      handleThumbsupClick={handleThumbsupClick}
+      handleThumbsUpClick={handleThumbsUpClick}
       isSendingComment={isSendingComment}
       likeCount={likeCount}
       optimComments={optimComments}
@@ -312,20 +306,5 @@ function BlogDetail(data) {
     />
   );
 }
-
-BlogDetail.propTypes = {
-  blog: PropTypes.object.isRequired,
-  editBodyPen: PropTypes.bool,
-  editBodyValue: PropTypes.string,
-  expand: PropTypes.bool,
-  readyToUpdate: PropTypes.bool,
-  setEditBodyPen: PropTypes.func,
-  setEditBodyValue: PropTypes.func,
-  setThumbsDown: PropTypes.func,
-  setThumbsUp: PropTypes.func,
-  thumbsDown: PropTypes.bool,
-  thumbsUp: PropTypes.bool,
-  updateBtnRef: PropTypes.object,
-};
 
 export default BlogDetail;

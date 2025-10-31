@@ -1,36 +1,56 @@
 import { memo, useCallback } from "react";
-import PropTypes from "prop-types";
 import axios from "axios";
 import CommentCard from "./CommentCard";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUser } from "../context/UserContext";
 import { setGlobalError } from "../features/errorSlice";
 import { useDispatch } from "react-redux";
+import {
+  Comment,
+  CommentListProps,
+  handleDeleteCommentParams,
+  handleUndislikeParams,
+  handleUnlikeParams,
+  handleSendReplyParams,
+  handleDislikeParams,
+  handleLikeParams,
+  Reply,
+} from "../types";
 
-function CommentList(data) {
-  const { blog, optimComments, setCommentCount, setOptimComments } = data;
+function CommentList({
+  blog,
+  optimComments,
+  setCommentCount,
+  setOptimComments,
+}: CommentListProps) {
   const queryClient = useQueryClient();
   const { user } = useUser();
   const id = user?.id;
-
   const dispatch = useDispatch();
 
-  const url = (optimComment) =>
-    `${import.meta.env.VITE_BACKEND_URL}/interaction/${optimComment._id}`;
+  const updateComment = async (optimComment: Comment, action: string) => {
+    await axios.patch(
+      `${import.meta.env.VITE_BACKEND_URL}/interaction/${optimComment._id}`,
+      {
+        action,
+        userId: id,
+      }
+    );
+  };
 
   // setThumbsUp(true) Add like
-  const handleRegThumbsUpClick = useCallback(
-    async (
-      dislikeCount,
+  const handleLike = useCallback(
+    async ({
       optimComment,
+      dislikeCount,
       setDislikeCount,
       setLikeCount,
       setThumbsDown,
       setThumbsUp,
-      thumbsDown
-    ) => {
+      thumbsDown,
+    }: handleLikeParams) => {
       setThumbsUp(true);
-      setLikeCount((prev) => prev + 1);
+      setLikeCount((prev: number) => prev + 1);
 
       // Save previous state for rollback
       const prevThumbsDown = thumbsDown;
@@ -41,20 +61,12 @@ function CommentList(data) {
       }
       try {
         // Remove dislike first
-        if (thumbsDown) {
-          await axios.patch(url(optimComment), {
-            action: "removeCommentDislike",
-            userId: id,
-          });
-        }
+        if (thumbsDown)
+          await updateComment(optimComment, "removeCommentDislike");
 
         //Add like
-        await axios.patch(url(optimComment), {
-          action: "addCommentLike",
-          userId: id,
-        });
-
-        queryClient.setQueryData(
+        await updateComment(optimComment, "addCommentLike");
+        queryClient.setQueryData<Comment[]>(
           ["comments", { route: `blogs/${blog._id}/comments` }],
           (old) => {
             if (!old) return old;
@@ -62,7 +74,11 @@ function CommentList(data) {
               c._id === optimComment._id
                 ? {
                     ...c,
-                    likes: c.likes.includes(id) ? c.likes : [...c.likes, id],
+                    likes: c.likes.includes(id!)
+                      ? c.likes
+                      : id
+                      ? [...c.likes, id]
+                      : c.likes,
                     dislikes: c.dislikes.filter((d) => d !== id),
                   }
                 : c
@@ -81,18 +97,14 @@ function CommentList(data) {
   );
 
   //  setThumbsUp(false) remove like
-  const handleThumbsupClick = useCallback(
-    async (optimComment, setThumbsUp, setLikeCount) => {
+  const handleUnlike = useCallback(
+    async ({ optimComment, setThumbsUp, setLikeCount }: handleUnlikeParams) => {
       setThumbsUp(false);
       setLikeCount((prev) => prev - 1);
 
       try {
-        await axios.patch(url(optimComment), {
-          action: "removeCommentLike",
-          userId: id,
-        });
-
-        queryClient.setQueryData(
+        await updateComment(optimComment, "removeCommentLike");
+        queryClient.setQueryData<Comment[]>(
           ["comments", { route: `blogs/${blog._id}/comments` }],
           (old) => {
             if (!old) return old;
@@ -116,16 +128,16 @@ function CommentList(data) {
   );
 
   //  setThumbsDown(true) add dislike
-  const handleRegThumbsDownClick = useCallback(
-    async (
+  const handleDislike = useCallback(
+    async ({
       likeCount,
       optimComment,
       setDislikeCount,
       setLikeCount,
       setThumbsUp,
       setThumbsDown,
-      thumbsUp
-    ) => {
+      thumbsUp,
+    }: handleDislikeParams) => {
       setThumbsDown(true);
       setDislikeCount((prev) => prev + 1);
 
@@ -139,19 +151,11 @@ function CommentList(data) {
 
       try {
         // remove like first
-        if (thumbsUp)
-          await axios.patch(url(optimComment), {
-            action: "removeCommentLike",
-            userId: id,
-          });
+        if (thumbsUp) await updateComment(optimComment, "removeCommentLike");
 
         // add dislike
-        await axios.patch(url(optimComment), {
-          action: "addCommentDislike",
-          userId: id,
-        });
-
-        queryClient.setQueryData(
+        await updateComment(optimComment, "addCommentDislike");
+        queryClient.setQueryData<Comment[]>(
           ["comments", { route: `blogs/${blog._id}/comments` }],
           (old) => {
             if (!old) return old;
@@ -160,9 +164,11 @@ function CommentList(data) {
                 ? {
                     ...c,
                     likes: c.likes.filter((l) => l !== id),
-                    dislikes: c.dislikes.includes(id)
+                    dislikes: c.dislikes.includes(id!)
                       ? c.dislikes
-                      : [...c.dislikes, id],
+                      : id
+                      ? [...c.dislikes, id]
+                      : c.dislikes,
                   }
                 : c
             );
@@ -180,18 +186,18 @@ function CommentList(data) {
   );
 
   //  setThumbsDown(false)  remove dislike
-  const handleThumbsDownClick = useCallback(
-    async (optimComment, setDislikeCount, setThumbsDown) => {
+  const handleUndislike = useCallback(
+    async ({
+      optimComment,
+      setDislikeCount,
+      setThumbsDown,
+    }: handleUndislikeParams) => {
       setThumbsDown(false);
       setDislikeCount((prev) => prev - 1);
 
       try {
-        await axios.patch(url(optimComment), {
-          action: "removeCommentDislike",
-          userId: id,
-        });
-
-        queryClient.setQueryData(
+        await updateComment(optimComment, "removeCommentDislike");
+        queryClient.setQueryData<Comment[]>(
           ["comments", { route: `blogs/${blog._id}/comments` }],
           (old) => {
             if (!old) return old;
@@ -216,7 +222,10 @@ function CommentList(data) {
 
   // !isHome
   const handleDeleteComment = useCallback(
-    async (optimComment, setIsDeletingComment) => {
+    async ({
+      optimComment,
+      setIsDeletingComment,
+    }: handleDeleteCommentParams) => {
       setIsDeletingComment(true);
 
       setOptimComments((prev) =>
@@ -230,7 +239,7 @@ function CommentList(data) {
 
       try {
         await axios.delete(delUrl);
-        queryClient.setQueryData(
+        queryClient.setQueryData<Comment[]>(
           ["comments", { route: `blogs/${blog._id}/comments` }],
           (old) => {
             if (!old) return old;
@@ -243,7 +252,9 @@ function CommentList(data) {
         if (optimComment) {
           setOptimComments((prev) =>
             [...prev, optimComment].sort(
-              (a, b) => new Date(b.timeStamp) - new Date(a.timeStamp)
+              (a, b) =>
+                new Date(b.timeStamp).getTime() -
+                new Date(a.timeStamp).getTime()
             )
           );
           setCommentCount((prev) => prev + 1);
@@ -256,7 +267,7 @@ function CommentList(data) {
   );
 
   const handleSendReply = useCallback(
-    async (
+    async ({
       e,
       optimComment,
       replyValue,
@@ -264,23 +275,27 @@ function CommentList(data) {
       setOptimReplies,
       setReplyCount,
       setReplyValue,
-      setShowReplies
-    ) => {
+      setShowReplies,
+    }: handleSendReplyParams) => {
       e.preventDefault();
       setIsSendingReply(true);
 
       // Temporary optimisitc comment
       const tempId = new Date().getTime().toString();
-      const tempReply = {
+      const tempReply: Reply = {
         _id: tempId,
-        replierId: id,
+        blogId: blog._id,
+        commentId: optimComment._id,
+        replierId: id || "temp-id",
         reply: replyValue,
         timeStamp: new Date().toISOString(),
+        replierName: user?.name || "Unknown User",
       };
 
       setOptimReplies((prev) =>
         [...prev, tempReply].sort(
-          (a, b) => new Date(b.timeStamp) - new Date(a.timeStamp)
+          (a, b) =>
+            new Date(b.timeStamp).getTime() - new Date(a.timeStamp).getTime()
         )
       );
 
@@ -314,7 +329,7 @@ function CommentList(data) {
         const { newReply } = await res.json();
         if (!newReply) throw new Error("No new reply returned");
 
-        queryClient.setQueryData(
+        queryClient.setQueryData<Reply[]>(
           ["replies", { route: `comments/${optimComment._id}/replies` }],
           (old) => {
             if (!old) return [newReply];
@@ -338,25 +353,18 @@ function CommentList(data) {
       {optimComments.map((c) => (
         <CommentCard
           key={`${c._id}`}
+          optimComment={c}
           authorId={blog.authorId}
           handleDeleteComment={handleDeleteComment}
-          handleRegThumbsDownClick={handleRegThumbsDownClick}
-          handleRegThumbsUpClick={handleRegThumbsUpClick}
           handleSendReply={handleSendReply}
-          handleThumbsDownClick={handleThumbsDownClick}
-          handleThumbsupClick={handleThumbsupClick}
-          optimComment={c}
+          handleUndislike={handleUndislike}
+          handleUnlike={handleUnlike}
+          handleDislike={handleDislike}
+          handleLike={handleLike}
         />
       ))}
     </>
   );
 }
-
-CommentList.propTypes = {
-  blog: PropTypes.object.isRequired,
-  optimComments: PropTypes.array.isRequired,
-  setCommentCount: PropTypes.func,
-  setOptimComments: PropTypes.func,
-};
 
 export default memo(CommentList);

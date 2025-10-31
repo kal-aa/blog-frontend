@@ -8,58 +8,57 @@ import {
   FaCheckCircle,
   FaTimesCircle,
 } from "react-icons/fa";
-import PropTypes from "prop-types";
 import { formatNumber } from "../utils/formatNumber";
 import SuspenseFallback from "./SuspenseFallback";
 import { useSelector } from "react-redux";
+import { BlogDetailViewProps } from "../types";
+import { RootState } from "../store/store";
 const CommentList = lazy(() => import("./CommentList"));
 
-function BlogDetailView(data) {
-  const {
-    blog,
-    commentCount,
-    commentRef,
-    commentValue,
-    dislikeCount,
-    editBodyPen,
-    editBodyValue,
-    expand,
-    handleRegThumbsUpClick,
-    handleRegThumbsDownClick,
-    handleSendComment,
-    handleThumbsDownClick,
-    handleThumbsupClick,
-    isSendingComment,
-    likeCount,
-    optimComments,
-    pTagRef,
-    readyToUpdate,
-    setCommentCount,
-    setCommentValue,
-    setEditBodyPen,
-    setEditBodyValue,
-    setOptimComments,
-    setShowComments,
-    showComments,
-    thumbsDown,
-    thumbsUp,
-    updateBtnRef,
-  } = data;
+function BlogDetailView({
+  blog,
+  commentCount,
+  commentRef,
+  commentValue,
+  dislikeCount,
+  editBodyPen,
+  editBodyValue,
+  expand,
+  handleRegThumbsUpClick,
+  handleRegThumbsDownClick,
+  handleSendComment,
+  handleThumbsDownClick,
+  handleThumbsUpClick,
+  isSendingComment,
+  likeCount,
+  optimComments,
+  pTagRef,
+  readyToUpdate,
+  setCommentCount,
+  setCommentValue,
+  setEditBodyPen,
+  setEditBodyValue,
+  setOptimComments,
+  setShowComments,
+  showComments,
+  thumbsDown,
+  thumbsUp,
+  updateBtnRef,
+}: BlogDetailViewProps) {
   const [showCommentForm, setShowCommentForm] = useState(false);
-  const inputRef = useRef(null);
-  const bodyInpRef = useRef(null);
-
-  const isHome = useSelector((state) => state.blog.isHome);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const bodyInpRef = useRef<HTMLTextAreaElement>(null);
+  const isHome = useSelector((state: RootState) => state.blog.isHome);
 
   // comment Input focus
   useEffect(() => {
-    if (showCommentForm && inputRef.current) inputRef.current.focus();
+    if (showCommentForm) inputRef.current?.focus();
   }, [showCommentForm]);
 
   useEffect(() => {
-    if (editBodyPen && bodyInpRef.current) {
-      bodyInpRef.current.focus();
-      bodyInpRef.current.select?.();
+    if (editBodyPen) {
+      bodyInpRef.current?.focus();
+      bodyInpRef.current?.select?.();
     }
   }, [bodyInpRef, editBodyPen]);
 
@@ -82,9 +81,7 @@ function BlogDetailView(data) {
           (editBodyPen ? (
             readyToUpdate ? (
               <FaCheckCircle
-                onClick={() => {
-                  if (updateBtnRef.current) updateBtnRef.current.click();
-                }}
+                onClick={() => updateBtnRef.current?.click()}
                 size={18}
                 className="inline mb-1 ml-2 text-red-600/60 hover:text-red-600/50"
               />
@@ -99,7 +96,7 @@ function BlogDetailView(data) {
             <FaRegEdit
               title="Edit the body"
               size={18}
-              onClick={() => setEditBodyPen((prev) => !prev)}
+              onClick={() => setEditBodyPen(!editBodyPen)}
               className="inline ml-1 text-red-600 hover:text-red-600/80"
             />
           ))}
@@ -110,7 +107,7 @@ function BlogDetailView(data) {
           {thumbsUp ? (
             <FaHeart
               className="cursor-pointer hover:text-blue-900"
-              onClick={handleThumbsupClick}
+              onClick={handleThumbsUpClick}
             />
           ) : (
             <FaRegHeart
@@ -174,7 +171,7 @@ function BlogDetailView(data) {
           {/* Comments count */}
           {!showCommentForm && (
             <p
-              onClick={() => setShowComments((prev) => !prev)}
+              onClick={() => setShowComments(!showComments)}
               className="ml-2 cursor-pointer hover:underline"
               ref={pTagRef}
             >
@@ -212,7 +209,7 @@ function BlogDetailView(data) {
           </form>
 
           <p
-            onClick={() => setShowComments((prev) => !prev)}
+            onClick={() => setShowComments(!showComments)}
             className="my-2 cursor-pointer hover:underline underline-offset-2"
             ref={pTagRef}
           >
@@ -225,36 +222,5 @@ function BlogDetailView(data) {
     </div>
   );
 }
-
-BlogDetailView.propTypes = {
-  blog: PropTypes.object,
-  commentCount: PropTypes.number,
-  commentRef: PropTypes.object,
-  commentValue: PropTypes.string,
-  dislikeCount: PropTypes.number,
-  editBodyPen: PropTypes.bool,
-  editBodyValue: PropTypes.string,
-  expand: PropTypes.bool,
-  handleRegThumbsDownClick: PropTypes.func,
-  handleRegThumbsUpClick: PropTypes.func,
-  handleSendComment: PropTypes.func,
-  handleThumbsDownClick: PropTypes.func,
-  handleThumbsupClick: PropTypes.func,
-  isSendingComment: PropTypes.bool,
-  likeCount: PropTypes.number,
-  optimComments: PropTypes.array,
-  pTagRef: PropTypes.object,
-  readyToUpdate: PropTypes.bool,
-  setCommentCount: PropTypes.func,
-  setCommentValue: PropTypes.func,
-  setEditBodyPen: PropTypes.func,
-  setEditBodyValue: PropTypes.func,
-  setOptimComments: PropTypes.func,
-  setShowComments: PropTypes.func,
-  showComments: PropTypes.bool,
-  thumbsDown: PropTypes.bool,
-  thumbsUp: PropTypes.bool,
-  updateBtnRef: PropTypes.object,
-};
 
 export default memo(BlogDetailView);

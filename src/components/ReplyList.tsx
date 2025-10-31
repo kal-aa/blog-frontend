@@ -1,6 +1,5 @@
 import { useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import PropTypes from "prop-types";
 import ReplyCard from "./ReplyCard";
 
 function ReplyList(data) {
@@ -65,12 +64,5 @@ function ReplyList(data) {
     </>
   );
 }
-
-ReplyList.propTypes = {
-  optimComment: PropTypes.object,
-  optimReplies: PropTypes.array,
-  setOptimReplies: PropTypes.func,
-  setReplyCount: PropTypes.func,
-};
 
 export default ReplyList;

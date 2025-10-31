@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import ClipLoader from "react-spinners/ClipLoader";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../config/firebase";
@@ -11,15 +11,13 @@ const ResetPassword = () => {
   const [email, setEmail] = useState(initialEmail);
   const [isResetting, setIsResetting] = useState(false);
   const [error, setError] = useState("");
-  const emailInputRef = useRef(null);
+  const emailInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (emailInputRef.current) {
-      emailInputRef.current.focus();
-    }
+    emailInputRef.current?.focus();
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setError("");
@@ -27,7 +25,9 @@ const ResetPassword = () => {
 
     try {
       await sendPasswordResetEmail(auth, email);
-      const toastId = toast.success("Reset link sent! Check your email.");
+      const toastId = toast.success(
+        "If an account exists for this email, a reset link has been sent."
+      );
       setTimeout(() => {
         toast.update(toastId, {
           render: "Don't forget to check the spam folder.",
@@ -36,9 +36,11 @@ const ResetPassword = () => {
           isLoading: false,
         });
       }, 4000);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error sending password reset link: ", error);
-      setError("Error sending reset link.");
+      if (error?.code === "auth/invalid-email")
+        setError("Please enter a valid email address.");
+      else setError("Unable to send reset link. Please try again later.");
     } finally {
       setIsResetting(false);
     }

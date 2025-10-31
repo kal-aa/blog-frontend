@@ -58,14 +58,9 @@ const HomePage = () => {
     isRefetching,
     isError,
     refetch,
-  } = useQuery<
-    BlogsResponse,
-    Error,
-    BlogsResponse,
-    [string, { route: string }]
-  >({
+  } = useQuery({
     queryKey: ["all-blogs", { route: `blogs/${id}?page=${limit}` }],
-    queryFn: fetchData,
+    queryFn: fetchData<BlogsResponse>,
     enabled: !!id && isObjectId(id),
     staleTime: 1000 * 60 * 5,
     placeholderData: (prev) => prev,

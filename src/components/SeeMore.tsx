@@ -1,6 +1,4 @@
-import PropTypes from "prop-types";
-
-function SeeMore({ value, isFull }) {
+function SeeMore({ value, isFull }: { value: string; isFull: boolean }) {
   return (
     <>
       {value.length < 15 ? value : isFull ? value : value.slice(0, 15) + "..."}
@@ -13,10 +11,5 @@ function SeeMore({ value, isFull }) {
     </>
   );
 }
-
-SeeMore.propTypes = {
-  value: PropTypes.string,
-  isFull: PropTypes.bool,
-};
 
 export default SeeMore;

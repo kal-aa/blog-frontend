@@ -8,7 +8,6 @@ import {
   FaReply,
   FaTrashAlt,
 } from "react-icons/fa";
-import PropTypes from "prop-types";
 import { relativeTime } from "../utils/relativeTime";
 import { formatNumber } from "../utils/formatNumber";
 import SeeMore from "./SeeMore";
@@ -19,21 +18,21 @@ import { fetchData } from "../utils/fetchBlogs";
 import { useQuery } from "@tanstack/react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserOfInterest } from "../features/blogSlice";
+import { CommentCardProps, Reply } from "../types";
+import { RootState } from "../store/store";
 const ReplyList = lazy(() => import("./ReplyList"));
 
-function CommentCard(data) {
-  const {
-    authorId,
-    handleDeleteComment,
-    handleRegThumbsDownClick,
-    handleRegThumbsUpClick,
-    handleSendReply,
-    handleThumbsDownClick,
-    handleThumbsupClick,
-    optimComment,
-  } = data;
-
-  const [optimReplies, setOptimReplies] = useState([]);
+function CommentCard({
+  optimComment,
+  authorId,
+  handleDeleteComment,
+  handleSendReply,
+  handleUndislike,
+  handleUnlike,
+  handleDislike,
+  handleLike,
+}: CommentCardProps) {
+  const [optimReplies, setOptimReplies] = useState<Reply[]>([]);
   const [ShowReplyForm, setShowReplyForm] = useState(false);
   const [thumbsUp, setThumbsUp] = useState(false);
   const [thumbsDown, setThumbsDown] = useState(false);
@@ -46,46 +45,40 @@ function CommentCard(data) {
   const [isDeletingComment, setIsDeletingComment] = useState(false);
   const [isSendingReply, setIsSendingReply] = useState(false);
   const navigate = useNavigate();
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const commentValue = optimComment.comment;
   const { user } = useUser();
   const id = user?.id;
 
-  const isHome = useSelector((state) => state.blog.isHome);
+  const isHome = useSelector((state: RootState) => state.blog.isHome);
   const dispatch = useDispatch();
 
   const {
     data: replies,
-    isSuccess,
+    // isSuccess,
     // refetch,
   } = useQuery({
     queryKey: ["replies", { route: `comments/${optimComment._id}/replies` }],
-    queryFn: fetchData,
+    queryFn: fetchData<Reply[]>,
     enabled: isObjectId(optimComment._id),
     staleTime: 1000 * 60 * 5,
-    keepPreviousData: true,
+    placeholderData: (prev) => prev,
   });
 
   useEffect(() => {
+    if (!id) return;
     setLikeCount(optimComment.likes.length);
     setDislikeCount(optimComment.dislikes.length);
+    setThumbsUp(optimComment.likes.includes(id));
+    setThumbsDown(optimComment.dislikes.includes(id));
   }, [optimComment.likes, optimComment.dislikes]);
 
   useEffect(() => {
-    if (isSuccess) {
+    if (replies) {
       setOptimReplies(replies);
       setReplyCount(replies.length || 0);
     }
-  }, [replies, isSuccess]);
-
-  // for the like and dislike icons
-  useEffect(() => {
-    const liked = optimComment.likes.includes(id);
-    const disliked = optimComment.dislikes.includes(id);
-
-    setThumbsUp(liked);
-    setThumbsDown(disliked);
-  }, [optimComment, id]);
+  }, [replies]);
 
   // reply input focus
   useEffect(() => {
@@ -93,7 +86,7 @@ function CommentCard(data) {
   }, [ShowReplyForm]);
 
   const commenterName =
-    optimComment.commenterName || user.name || "Unknown user";
+    optimComment.commenterName || user?.name || "Unknown user";
 
   return (
     <section className="bg-black rounded-xl">
@@ -150,7 +143,7 @@ function CommentCard(data) {
                 size={12}
                 className="cursor-pointer hover:text-slate-400"
                 onClick={() =>
-                  handleThumbsupClick(optimComment, setThumbsUp, setLikeCount)
+                  handleUnlike({ optimComment, setThumbsUp, setLikeCount })
                 }
               />
             ) : (
@@ -158,15 +151,15 @@ function CommentCard(data) {
                 size={12}
                 className="cursor-pointer hover:text-slate-400"
                 onClick={() =>
-                  handleRegThumbsUpClick(
+                  handleLike({
                     dislikeCount,
                     optimComment,
                     setDislikeCount,
                     setLikeCount,
                     setThumbsDown,
                     setThumbsUp,
-                    thumbsDown
-                  )
+                    thumbsDown,
+                  })
                 }
               />
             )}
@@ -179,11 +172,11 @@ function CommentCard(data) {
                 size={12}
                 className="cursor-pointer hover:text-slate-400"
                 onClick={() =>
-                  handleThumbsDownClick(
+                  handleUndislike({
                     optimComment,
                     setDislikeCount,
-                    setThumbsDown
-                  )
+                    setThumbsDown,
+                  })
                 }
               />
             ) : (
@@ -191,15 +184,15 @@ function CommentCard(data) {
                 size={12}
                 className="cursor-pointer hover:text-slate-400"
                 onClick={() =>
-                  handleRegThumbsDownClick(
+                  handleDislike({
                     likeCount,
                     optimComment,
                     setDislikeCount,
                     setLikeCount,
                     setThumbsUp,
                     setThumbsDown,
-                    thumbsUp
-                  )
+                    thumbsUp,
+                  })
                 }
               />
             )}
@@ -216,9 +209,7 @@ function CommentCard(data) {
               onClick={() => setShowReplies((prev) => !prev)}
               className="pr-1 -ml-3 cursor-pointer hover:text-blue-400 hover:underline"
             >
-              {!ShowReplyForm && replyCount < 0
-                ? setReplyCount(0)
-                : formatNumber(replyCount)}
+              {formatNumber(replyCount)}
             </p>
           </div>
           {!isHome && (
@@ -228,7 +219,7 @@ function CommentCard(data) {
                 isDeletingComment && "animate-spin"
               }`}
               onClick={() =>
-                handleDeleteComment(optimComment, setIsDeletingComment)
+                handleDeleteComment({ optimComment, setIsDeletingComment })
               }
             />
           )}
@@ -240,7 +231,7 @@ function CommentCard(data) {
         <div className="flex flex-col items-center mx-[10%]">
           <form
             onSubmit={(e) =>
-              handleSendReply(
+              handleSendReply({
                 e,
                 optimComment,
                 replyValue,
@@ -248,8 +239,8 @@ function CommentCard(data) {
                 setOptimReplies,
                 setReplyCount,
                 setReplyValue,
-                setShowReplies
-              )
+                setShowReplies,
+              })
             }
             className="flex justify-around w-full"
           >
@@ -275,9 +266,7 @@ function CommentCard(data) {
             onClick={() => setShowReplies((prev) => !prev)}
             className="my-2 cursor-pointer hover:underline underline-offset-2"
           >
-            {replyCount < 0
-              ? setReplyCount(0)
-              : replyCount !== 1
+            {replyCount !== 1
               ? formatNumber(replyCount) + " Replies"
               : formatNumber(replyCount) + " Reply"}
           </p>
@@ -306,16 +295,5 @@ function CommentCard(data) {
     </section>
   );
 }
-
-CommentCard.propTypes = {
-  authorId: PropTypes.string.isRequired,
-  handleDeleteComment: PropTypes.func,
-  handleRegThumbsDownClick: PropTypes.func,
-  handleRegThumbsUpClick: PropTypes.func,
-  handleSendReply: PropTypes.func,
-  handleThumbsDownClick: PropTypes.func,
-  handleThumbsupClick: PropTypes.func,
-  optimComment: PropTypes.object,
-};
 
 export default memo(CommentCard);
