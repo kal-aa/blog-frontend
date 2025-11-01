@@ -18,12 +18,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { setUserOfInterest } from "../features/blogSlice";
 import { RootState } from "../store/store";
 import { BlogCardProps } from "../types/blog";
+import { invalidateBlogQueries } from "../utils/InvalidateBlogQueries";
 const BlogDetail = lazy(() => import("./BlogDetail"));
 
 function BlogCard({
   blog,
-  handleDelete, // !isHome
-  handleUpdate, // !isHome
+  handleDeleteBlog, // !isHome
+  handleUpdateBlog, // !isHome
 }: BlogCardProps) {
   const [thumbsUp, setThumbsUp] = useState(false);
   const [thumbsDown, setThumbsDown] = useState(false);
@@ -98,8 +99,7 @@ function BlogCard({
         userId: id,
       });
 
-      queryClient.invalidateQueries({ queryKey: ["all-blogs"] });
-      queryClient.invalidateQueries({ queryKey: ["your-blogs"] });
+      invalidateBlogQueries(queryClient);
     } catch (error) {
       console.error("Error adding view:", error);
       setViewCount((prev) => prev - 1);
@@ -276,8 +276,10 @@ function BlogCard({
             <button
               ref={updateBtnRef}
               onClick={() =>
-                handleUpdate?.({
+                handleUpdateBlog?.({
                   blog,
+                  editTitleValue,
+                  editBodyValue,
                   originalBodyRef,
                   originalTitleRef,
                   setEditTitlePen,
@@ -307,7 +309,9 @@ function BlogCard({
             </button>
             {/* delete btn */}
             <button
-              onClick={() => handleDelete?.(blog._id, setIsDeleting)}
+              onClick={() =>
+                handleDeleteBlog?.({ blogId: blog._id, setIsDeleting })
+              }
               disabled={isDeleting}
               className="px-3 py-1 text-white bg-gray-600 rounded-lg hover:bg-gray-800"
             >

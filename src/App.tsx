@@ -7,10 +7,10 @@ import VerfyEmail from "./pages/VerfiyEmail";
 import CompleteProfile from "./pages/CompleteProfile";
 import ResetPassword from "./pages/ResetPassword";
 import HomePage from "./pages/HomePage";
+import YourBlogsPage from "./pages/YourBlogsPage";
 // import Header from "./components/Header";
 // import Footer from "./components/Footer";
 // import AddBlogPage from "./pages/AddBlogPage";
-// import YourBlogsPage from "./pages/YourBlogsPage";
 // import ContactUsPage from "./pages/ContactUsPage";
 // import AboutUsPage from "./pages/AboutUsPage";
 // import AccountPage from "./pages/AccountPage";
@@ -38,6 +38,7 @@ const App = () => {
           <Route path="/complete-profile" element={<CompleteProfile />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/home" element={<HomePage />} />
+          <Route path="/your-blogs" element={<YourBlogsPage />} />
         </Routes>
       </div>
 

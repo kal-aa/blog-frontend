@@ -12,9 +12,16 @@ import { useDispatch } from "react-redux";
 import { setIsHome } from "../features/blogSlice";
 import { setGlobalError } from "../features/errorSlice";
 import { toast } from "react-toastify";
+import {
+  Blog,
+  DeleteBlogParams,
+  UpdateBlogParams,
+  YourBlogsResponse,
+} from "../types/blog";
+import { invalidateBlogQueries } from "../utils/InvalidateBlogQueries";
 
 const YourBlogsPage = () => {
-  const [blogs, setBlogs] = useState([]);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
   // const [updateError, setUpdateError] = useState("");
   const [limit, setLimit] = useState(0);
   const queryclient = useQueryClient();
@@ -29,10 +36,10 @@ const YourBlogsPage = () => {
 
   const { data, isFetching, isRefetching, isError, refetch } = useQuery({
     queryKey: ["your-blogs", { route: `your-blogs/${id}?page=${limit}` }],
-    queryFn: fetchData,
-    enabled: isObjectId(id),
+    queryFn: fetchData<YourBlogsResponse>,
+    enabled: !!id && isObjectId(id),
     staleTime: 1000 * 60 * 5,
-    keepPreviousData: true,
+    placeholderData: (prev) => prev,
   });
 
   const { blogs: paginatedBlogs = [], totalPages = 0 } = data || {};
@@ -44,8 +51,8 @@ const YourBlogsPage = () => {
   }, [paginatedBlogs]);
 
   // Delete blog
-  const handleDelete = useCallback(
-    async (blogId, setIsDeleting) => {
+  const handleDeleteBlog = useCallback(
+    async ({ blogId, setIsDeleting }: DeleteBlogParams) => {
       const confirm = window.confirm(
         "Are you sure you want to delete this blog?"
       );
@@ -59,14 +66,12 @@ const YourBlogsPage = () => {
       try {
         const url = `${
           import.meta.env.VITE_BACKEND_URL
-        }/delete-blog/${encodeURIComponent(id)}?blogId=${encodeURIComponent(
+        }/delete-blog/${encodeURIComponent(id!)}?blogId=${encodeURIComponent(
           blogId
         )}`;
         await fetch(url, { method: "DELETE" });
 
-        queryclient.invalidateQueries(["all-blogs"]);
-        queryclient.invalidateQueries(["your-blogs"]);
-
+        invalidateBlogQueries(queryclient);
         toast.success("Blog deleted successfully!");
       } catch (error) {
         console.error("Error deleting blog", error);
@@ -75,22 +80,24 @@ const YourBlogsPage = () => {
         setIsDeleting(false);
       }
     },
-    [blogs, id, queryclient]
+    [id, queryclient]
   );
 
   // Update blog
-  const handleUpdate = useCallback(
-    async (
+  const handleUpdateBlog = useCallback(
+    async ({
       blog,
+      editTitleValue: title,
+      editBodyValue: body,
       originalBodyRef,
       originalTitleRef,
       setEditTitlePen,
       setEditBodyPen,
       setEditTitleValue,
       setEditBodyValue,
-      setIsUpdating
-    ) => {
-      const { editTitleValue: title, editBodyValue: body, _id: blogId } = blog;
+      setIsUpdating,
+    }: UpdateBlogParams) => {
+      const { _id: blogId } = blog;
 
       setIsUpdating(true);
 
@@ -101,7 +108,7 @@ const YourBlogsPage = () => {
 
       const url = `${
         import.meta.env.VITE_BACKEND_URL
-      }/patch-blog/${encodeURIComponent(id)}`;
+      }/patch-blog/${encodeURIComponent(id!)}`;
       try {
         const res = await fetch(url, {
           method: "PATCH",
@@ -124,8 +131,7 @@ const YourBlogsPage = () => {
 
         toast.success("Blog updated successfully!");
 
-        queryclient.invalidateQueries(["all-blogs"]);
-        queryclient.invalidateQueries(["your-blogs"]);
+        invalidateBlogQueries(queryclient);
 
         originalBodyRef.current = body;
         originalTitleRef.current = title;
@@ -142,16 +148,16 @@ const YourBlogsPage = () => {
         setEditBodyPen(false);
       }
     },
-    [blogs, id, queryclient, dispatch]
+    [id, queryclient, dispatch]
   );
 
   useEffect(() => {
-    if (!isFetching && (isError || !isObjectId(id))) {
+    if (!isFetching && (isError || !id || !isObjectId(id))) {
       dispatch(setGlobalError("Failed to fetch blogs."));
     }
   }, [dispatch, id, isError, isFetching]);
 
-  if (isError || !isObjectId(id)) {
+  if (isError || !id || !isObjectId(id)) {
     return <BlogFetchError refetch={refetch} isError={isError} />;
   }
 
@@ -185,9 +191,8 @@ const YourBlogsPage = () => {
             <BlogCard
               key={blog._id}
               blog={blog}
-              comments={blog.comments}
-              handleDelete={handleDelete}
-              handleUpdate={handleUpdate}
+              handleDeleteBlog={handleDeleteBlog}
+              handleUpdateBlog={handleUpdateBlog}
             />
           ))}
 

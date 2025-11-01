@@ -24,7 +24,7 @@ export interface Blog {
   likes: string[];
   dislikes: string[];
   views: string[];
-  author: string;
+  author?: string;
   buffer?: string | null;
   mimetype?: string | null;
 }
@@ -34,9 +34,22 @@ export interface BlogsResponse {
   totalPages: number;
 }
 
+// YourBlogsPage.tsx
+export interface YourBlogsResponse {
+  blogs: Blog[];
+  totalPages: number;
+}
+
+export interface DeleteBlogParams {
+  blogId: string;
+  setIsDeleting: Dispatch<SetStateAction<boolean>>;
+}
+
 // BlogCard.tsx
-export interface handleUpdateParams {
+export interface UpdateBlogParams {
   blog: Blog;
+  editTitleValue: string;
+  editBodyValue: string;
   originalBodyRef: MutableRefObject<string>;
   originalTitleRef: MutableRefObject<string>;
   setEditTitlePen: (value: boolean) => void;
@@ -48,11 +61,8 @@ export interface handleUpdateParams {
 
 export interface BlogCardProps {
   blog: Blog;
-  handleDelete?: (
-    blogId: string,
-    setIsDeleting: (value: boolean) => void
-  ) => void;
-  handleUpdate?: (params: handleUpdateParams) => void;
+  handleDeleteBlog?: (params: DeleteBlogParams) => void;
+  handleUpdateBlog?: (params: UpdateBlogParams) => void;
 }
 
 // BlogDetail.tsx
