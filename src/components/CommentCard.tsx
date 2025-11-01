@@ -18,8 +18,9 @@ import { fetchData } from "../utils/fetchBlogs";
 import { useQuery } from "@tanstack/react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserOfInterest } from "../features/blogSlice";
-import { CommentCardProps, Reply } from "../types";
 import { RootState } from "../store/store";
+import { Reply } from "../types/reply";
+import { CommentCardProps } from "../types/comment";
 const ReplyList = lazy(() => import("./ReplyList"));
 
 function CommentCard({
@@ -116,7 +117,7 @@ function CommentCard({
 
             <p className="text-xs text-red-200">
               {authorId === optimComment.commenterId
-                ? commenterName + " :The Author"
+                ? commenterName.split(" ")[0] + " (Author)"
                 : commenterName}
             </p>
           </div>
@@ -281,6 +282,7 @@ function CommentCard({
           ) : (
             <Suspense fallback={<SuspenseFallback />}>
               <ReplyList
+                authorId={authorId}
                 optimComment={optimComment}
                 optimReplies={optimReplies}
                 setOptimReplies={setOptimReplies}

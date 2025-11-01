@@ -16,8 +16,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useUser } from "../context/UserContext";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserOfInterest } from "../features/blogSlice";
-import { BlogCardProps } from "../types";
 import { RootState } from "../store/store";
+import { BlogCardProps } from "../types/blog";
 const BlogDetail = lazy(() => import("./BlogDetail"));
 
 function BlogCard({

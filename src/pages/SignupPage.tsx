@@ -11,7 +11,7 @@ import { handleOAuthSign } from "../utils/Oauth";
 import { getErrorMessage } from "../utils/firebaseAuthErrorMap";
 import { setGlobalError } from "../features/errorSlice";
 import { useDispatch } from "react-redux";
-import { EmailSignupFormData } from "../types";
+import { EmailSignupFormData } from "../types/auth";
 
 const SignupPage = () => {
   const navigate = useNavigate();

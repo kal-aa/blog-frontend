@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setIsHome, setUserOfInterest } from "../features/blogSlice";
 import { setGlobalError } from "../features/errorSlice";
 import { RootState } from "../store/store";
-import { BlogsResponse } from "../types";
+import { BlogsResponse } from "../types/blog";
 
 const HomePage = () => {
   const [limit, setLimit] = useState(0);

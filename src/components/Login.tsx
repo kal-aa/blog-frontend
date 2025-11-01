@@ -3,7 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 import { FaGithub, FaLock } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
-import { LoginProps } from "../types";
+import { LoginProps } from "../types/auth";
 
 const Login = ({ emailLogin, googleSignin, githubSignin }: LoginProps) => {
   const [isLogging, setIsLogging] = useState(false);

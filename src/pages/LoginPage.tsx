@@ -10,7 +10,7 @@ import { handleOAuthSign } from "../utils/Oauth";
 import { setGlobalError } from "../features/errorSlice";
 import { useDispatch } from "react-redux";
 import { getErrorMessage } from "../utils/firebaseAuthErrorMap";
-import { EmailLoginFormData } from "../types";
+import { EmailLoginFormData } from "../types/auth";
 
 const LoginPage = () => {
   const navigate = useNavigate();

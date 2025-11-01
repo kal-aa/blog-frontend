@@ -1,33 +1,36 @@
 import { memo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaTrashAlt } from "react-icons/fa";
-import PropTypes from "prop-types";
 import { relativeTime } from "../utils/relativeTime";
 import { useUser } from "../context/UserContext";
 import SeeMore from "./SeeMore";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserOfInterest } from "../features/blogSlice";
+import { RootState } from "../store/store";
+import { ReplyCardProps } from "../types/reply";
 
-function ReplyCard(data) {
-  const { handleDeleteReply, optimReply } = data;
+function ReplyCard({
+  authorId,
+  handleDeleteReply,
+  optimReply,
+}: ReplyCardProps) {
   const [isFullReply, setIsFullReply] = useState(false);
   const [isDeletingReply, setIsDeletingReply] = useState(false);
   const navigate = useNavigate();
   const { user } = useUser();
   const id = user?.id;
-
-  const isHome = useSelector((state) => state.blog.isHome);
+  const isHome = useSelector((state: RootState) => state.blog.isHome);
   const dispatch = useDispatch();
 
   const replyValue = optimReply.reply;
-  const replierName = optimReply.replierName || user.name || "Unkonwn user";
+  const replierName = optimReply.replierName || user?.name || "Unkonwn user";
 
   return (
     <section className="flex flex-col items-center px-10">
       <div className="flex items-center space-x-1">
         <p className="text-xs text-red-200">
-          {optimReply.authorId === optimReply.replierId
-            ? " Author: " + replierName
+          {authorId === optimReply.replierId
+            ? replierName.split(" ")[0] + " (Author)"
             : replierName}
         </p>
         <img
@@ -70,17 +73,14 @@ function ReplyCard(data) {
             className={`hover:animate-pulse mb-1.5 ml-1 ${
               isDeletingReply && "animate-spin"
             }`}
-            onClick={() => handleDeleteReply(optimReply, setIsDeletingReply)}
+            onClick={() =>
+              handleDeleteReply({ optimReply, setIsDeletingReply })
+            }
           />
         )}
       </div>
     </section>
   );
 }
-
-ReplyCard.propTypes = {
-  handleDeleteReply: PropTypes.func,
-  optimReply: PropTypes.object,
-};
 
 export default memo(ReplyCard);

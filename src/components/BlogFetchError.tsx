@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { BlogFetchErrorProps } from "../types";
+import { BlogFetchErrorProps } from "../types/blog";
 
 export default function BlogFetchError({
   refetch,

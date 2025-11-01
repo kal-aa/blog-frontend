@@ -1,5 +1,5 @@
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { PaginationProps } from "../types";
+import { PaginationProps } from "../types/miscellaneous";
 
 export default function Pagination({
   limit,

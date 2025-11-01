@@ -7,8 +7,9 @@ import BlogDetailView from "./BlogDetailView";
 import { useUser } from "../context/UserContext";
 import { setGlobalError } from "../features/errorSlice";
 import { useDispatch } from "react-redux";
-import { Blog, BlogDetailProps, Comment } from "../types";
 import { invalidateBlogQueries } from "../utils/InvalidateBlogQueries";
+import { BlogDetailProps } from "../types/blog";
+import { Comment } from "../types/comment";
 
 function BlogDetail({
   blog,

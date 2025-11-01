@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { BlogState } from "../types";
+import { BlogState } from "../types/blog";
 
 const initialState: BlogState = {
   userOfInterest: "",

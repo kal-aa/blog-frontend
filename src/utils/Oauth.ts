@@ -1,6 +1,6 @@
 import { NavigateFunction } from "react-router-dom";
-import { UserType } from "../types";
 import { User } from "firebase/auth";
+import { UserType } from "../types/auth";
 
 export const handleOAuthSign = async (
   purpose: string,

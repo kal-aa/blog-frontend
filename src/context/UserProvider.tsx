@@ -1,7 +1,7 @@
 import { useState, useEffect, ReactNode } from "react";
 import { UserContext } from "./UserContext";
 import { useLocation } from "react-router-dom";
-import { UserType } from "../types";
+import { UserType } from "../types/auth";
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const location = useLocation();

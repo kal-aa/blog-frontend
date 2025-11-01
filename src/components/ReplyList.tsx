@@ -1,14 +1,20 @@
 import { useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import ReplyCard from "./ReplyCard";
+import { handleDeleteReplyParams, Reply, ReplyListProps } from "../types/reply";
 
-function ReplyList(data) {
-  const { optimComment, optimReplies, setOptimReplies, setReplyCount } = data;
+function ReplyList({
+  authorId,
+  optimComment,
+  optimReplies,
+  setOptimReplies,
+  setReplyCount,
+}: ReplyListProps) {
   const queryClient = useQueryClient();
 
   // !isHome
   const handleDeleteReply = useCallback(
-    async (optimReply, setIsDeletingReply) => {
+    async ({ optimReply, setIsDeletingReply }: handleDeleteReplyParams) => {
       setIsDeletingReply(true);
 
       setOptimReplies((prev) => prev.filter((r) => r._id !== optimReply._id));
@@ -23,14 +29,11 @@ function ReplyList(data) {
           method: "DELETE",
         });
 
-        queryClient.setQueryData(
+        queryClient.setQueryData<Reply[]>(
           ["replies", { route: `comments/${optimComment._id}/replies` }],
           (old) => {
             if (!old) return old;
             return old.filter((r) => {
-              console.log("old reply:", r);
-              console.log("optim reply:", optimReply);
-
               return r._id !== optimReply._id;
             });
           }
@@ -40,7 +43,9 @@ function ReplyList(data) {
         if (optimReply) {
           setOptimReplies((prev) =>
             [...prev, optimReply].sort(
-              (a, b) => new Date(b.timeStamp) - new Date(a.timeStamp)
+              (a, b) =>
+                new Date(b.timeStamp).getTime() -
+                new Date(a.timeStamp).getTime()
             )
           );
           setReplyCount((prev) => prev + 1);
@@ -57,8 +62,9 @@ function ReplyList(data) {
       {optimReplies.map((r) => (
         <ReplyCard
           key={r._id}
+          authorId={authorId}
           handleDeleteReply={handleDeleteReply}
-          optimReply={{ ...r, authorId: optimComment.authorId }}
+          optimReply={r}
         />
       ))}
     </>

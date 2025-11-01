@@ -5,17 +5,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useUser } from "../context/UserContext";
 import { setGlobalError } from "../features/errorSlice";
 import { useDispatch } from "react-redux";
-import {
-  Comment,
-  CommentListProps,
-  handleDeleteCommentParams,
-  handleUndislikeParams,
-  handleUnlikeParams,
-  handleSendReplyParams,
-  handleDislikeParams,
-  handleLikeParams,
-  Reply,
-} from "../types";
+import { Comment, CommentListProps, handleDeleteCommentParams, handleDislikeParams, handleLikeParams, handleUndislikeParams, handleUnlikeParams } from "../types/comment";
+import { handleSendReplyParams, Reply } from "../types/reply";
 
 function CommentList({
   blog,

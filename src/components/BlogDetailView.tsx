@@ -11,8 +11,8 @@ import {
 import { formatNumber } from "../utils/formatNumber";
 import SuspenseFallback from "./SuspenseFallback";
 import { useSelector } from "react-redux";
-import { BlogDetailViewProps } from "../types";
 import { RootState } from "../store/store";
+import { BlogDetailViewProps } from "../types/blog";
 const CommentList = lazy(() => import("./CommentList"));
 
 function BlogDetailView({

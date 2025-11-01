@@ -3,7 +3,7 @@ import { FaCheck, FaGithub, FaLock } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import ClipLoader from "react-spinners/ClipLoader";
 import { NavLink } from "react-router-dom";
-import { SignupProps } from "../types";
+import { SignupProps } from "../types/auth";
 
 const Signup = ({ emailSignup, googleSignup, githubSignup }: SignupProps) => {
   const [formData, setFormData] = useState({
@@ -47,7 +47,7 @@ const Signup = ({ emailSignup, googleSignup, githubSignup }: SignupProps) => {
       return setPasswordMatched("Password must be greater than 8 characters");
     if (formData.password !== formData.confirmPassword)
       return setPasswordMatched("Password does not match");
-    
+
     try {
       setIsSigning(true);
       setIsSignWithEmail(true);
