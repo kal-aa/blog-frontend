@@ -8,19 +8,19 @@ const Header = () => {
   const navigate = useNavigate();
 
   const handleImgClick = () => {
-    const confirm = window.confirm(
+    const confirmed = window.confirm(
       "You are about to navigate to the landing page"
     );
-    if (confirm) {
-      auth.signOut()
+    if (confirmed) {
+      auth.signOut();
       navigate("/");
     }
   };
 
-  const isActive = ({ isActive }) =>
-    isActive
-      ? "header-hover text-black hover:text-black bg-blue-300 py-1 px-2"
-      : "header-hover py-1 px-2";
+  const isActive = ({ isActive }: { isActive: boolean }) =>
+    `header-hover py-1 px-2 ${
+      isActive ? "text-black hover:text-black bg-blue-300" : ""
+    }`;
 
   return (
     <header className="header-container">
@@ -28,26 +28,21 @@ const Header = () => {
       <div className="flex items-center ml-1">
         <img
           onClick={handleImgClick}
+          title="Return to landing page"
           src={import.meta.env.VITE_PUBLIC_URL + "assets/images/blog.jpeg"}
           alt="blog.jpeg"
-          className="w-16"
+          className="w-16 cursor-pointer"
         />
         <FaEllipsisV
           onClick={() => {
             setElipsisClicked((prev) => !prev);
           }}
-          className={
-            elipsisClicked
-              ? "h-5 mr-2 text-yellow-700 hover:text-yellow-600 sm:hidden"
-              : "h-5 mr-2 text-yellow-700 hover:text-yellow-600 sm:hidden hover:"
-          }
+          className="h-5 mr-2 text-yellow-700 hover:text-yellow-600 sm:hidden"
         />
         <div
-          className={
-            elipsisClicked
-              ? "space-y-1 sm:flex sm:flex-row sm:space-x-4 sm:items-center sm:ml-2"
-              : "space-y-1 sm:flex sm:flex-row sm:space-x-4 sm:items-center sm:ml-2 hidden"
-          }
+          className={`space-y-1 sm:flex sm:flex-row sm:space-x-4 sm:items-center sm:ml-2 ${
+            !elipsisClicked ? "hidden" : ""
+          }`}
         >
           <div>
             <NavLink to="/home" className={isActive}>

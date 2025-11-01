@@ -8,26 +8,26 @@ import CompleteProfile from "./pages/CompleteProfile";
 import ResetPassword from "./pages/ResetPassword";
 import HomePage from "./pages/HomePage";
 import YourBlogsPage from "./pages/YourBlogsPage";
-// import Header from "./components/Header";
-// import Footer from "./components/Footer";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 // import AddBlogPage from "./pages/AddBlogPage";
 // import ContactUsPage from "./pages/ContactUsPage";
 // import AboutUsPage from "./pages/AboutUsPage";
 // import AccountPage from "./pages/AccountPage";
 // import NotFound from "./components/NotFound";
-// import { useUser } from "./context/UserContext";
+import { useUser } from "./context/UserContext";
 
 const App = () => {
   const location = useLocation();
-  // const { user } = useUser();
+  const { user } = useUser();
 
   const noFooterAndHeader = ["/", "/sign-up", "/log-in"];
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-200">
-      {/* {!noFooterAndHeader.includes(location.pathname) && user?.name && (
+      {!noFooterAndHeader.includes(location.pathname) && user?.name && (
         <Header />
-      )} */}
+      )}
 
       <div className="flex-grow mt-28">
         <Routes>
@@ -69,9 +69,9 @@ const App = () => {
         </Routes>
       </div> */}
 
-      {/* {!noFooterAndHeader.includes(location.pathname) && user?.name && (
+      {!noFooterAndHeader.includes(location.pathname) && user?.name && (
         <Footer />
-      )} */}
+      )}
     </div>
   );
 };

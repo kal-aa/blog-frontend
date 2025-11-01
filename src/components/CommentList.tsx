@@ -5,8 +5,17 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useUser } from "../context/UserContext";
 import { setGlobalError } from "../features/errorSlice";
 import { useDispatch } from "react-redux";
-import { Comment, CommentListProps, handleDeleteCommentParams, handleDislikeParams, handleLikeParams, handleUndislikeParams, handleUnlikeParams } from "../types/comment";
+import {
+  Comment,
+  CommentListProps,
+  handleDeleteCommentParams,
+  handleDislikeParams,
+  handleLikeParams,
+  handleUndislikeParams,
+  handleUnlikeParams,
+} from "../types/comment";
 import { handleSendReplyParams, Reply } from "../types/reply";
+import { invalidateBlogQueries } from "../utils/InvalidateBlogQueries";
 
 function CommentList({
   blog,
@@ -269,6 +278,12 @@ function CommentList({
       setShowReplies,
     }: handleSendReplyParams) => {
       e.preventDefault();
+      if (!replyValue.trim()) {
+        setIsSendingReply(false);
+        setReplyValue("");
+        return;
+      }
+
       setIsSendingReply(true);
 
       // Temporary optimisitc comment
@@ -289,9 +304,7 @@ function CommentList({
             new Date(b.timeStamp).getTime() - new Date(a.timeStamp).getTime()
         )
       );
-
       setReplyCount((prev) => prev + 1);
-      setReplyValue("");
       setShowReplies(true);
 
       try {
@@ -324,19 +337,22 @@ function CommentList({
           ["replies", { route: `comments/${optimComment._id}/replies` }],
           (old) => {
             if (!old) return [newReply];
-            return [newReply, ...old];
+            return [newReply, ...(old?.filter((r) => r._id !== tempId) || [])];
           }
         );
+
+        invalidateBlogQueries(queryClient);
       } catch (error) {
-        console.error("Error comming", error);
+        console.error("Error sending reply", error);
         // Rollback optimisitc reply
         setOptimReplies((prev) => prev.filter((r) => r._id !== tempId));
         setReplyCount((prev) => prev - 1);
       } finally {
         setIsSendingReply(false);
+        setReplyValue("");
       }
     },
-    [id, queryClient, blog._id, dispatch]
+    [id, queryClient, blog._id, dispatch, user?.name]
   );
 
   return (

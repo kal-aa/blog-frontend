@@ -206,6 +206,12 @@ function BlogDetail({
   const handleSendComment = useCallback(
     async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+      if (!commentValue.trim()) {
+        setIsSendingComment(false);
+        setCommentValue("");
+        return;
+      }
+
       setIsSendingComment(true);
 
       // Temporary optimisitc comment
@@ -223,7 +229,6 @@ function BlogDetail({
 
       setOptimComments((prev) => [tempComment, ...prev]);
       setCommentCount((prev) => prev + 1);
-      setCommentValue("");
       setShowComments(true);
 
       try {
@@ -245,7 +250,6 @@ function BlogDetail({
           const err = await res.json();
           const message = err?.mssg || "Something wrong happened";
           dispatch(setGlobalError(message));
-          setShowComments(false);
           throw new Error(err?.mssg || "Comment failed");
         }
 
@@ -257,21 +261,25 @@ function BlogDetail({
           ["comments", { route: `blogs/${blog._id}/comments` }],
           (old) => {
             if (!old) return [newComment];
-            return [newComment, ...old];
+            return [
+              newComment,
+              ...(old?.filter((c) => c._id !== tempId) || []),
+            ];
           }
         );
 
-        invalidateBlogQueries(queryClient, ["your-blogs"]);
+        invalidateBlogQueries(queryClient);
       } catch (error) {
-        console.error("Error comming", error);
+        console.error("Error sending comment", error);
         // Rollback optimistic comment
         setOptimComments((prev) => prev.filter((c) => c._id !== tempId));
         setCommentCount((prev) => prev - 1);
       } finally {
         setIsSendingComment(false);
+        setCommentValue("");
       }
     },
-    [blog._id, id, commentValue, queryClient, dispatch]
+    [blog._id, id, commentValue, queryClient, dispatch, user?.name]
   );
 
   return (

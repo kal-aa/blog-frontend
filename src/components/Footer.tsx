@@ -11,7 +11,6 @@ import { auth } from "../config/firebase";
 
 const Footer = () => {
   const navigate = useNavigate();
-
   const handleUpArrow = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
