@@ -14,7 +14,7 @@ import AddBlogPage from "./pages/AddBlogPage";
 import ContactUsPage from "./pages/ContactUsPage";
 import AboutUsPage from "./pages/AboutUsPage";
 // import AccountPage from "./pages/AccountPage";
-// import NotFound from "./components/NotFound";
+import NotFound from "./components/NotFound";
 import { useUser } from "./context/UserContext";
 
 const App = () => {
@@ -42,6 +42,7 @@ const App = () => {
           <Route path="/add-blog" element={<AddBlogPage />} />
           <Route path="/contact-us" element={<ContactUsPage />} />
           <Route path="/about-us" element={<AboutUsPage />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
 
