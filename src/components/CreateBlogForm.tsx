@@ -1,19 +1,24 @@
-import { memo, useEffect, useRef, useState } from "react";
+import {
+  ChangeEvent,
+  FormEvent,
+  memo,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { BeatLoader } from "react-spinners";
 import { AiOutlineCheck } from "react-icons/ai";
-import PropTypes from "prop-types";
+import { CreateBlogFormProps } from "../types/blog";
 
-const CreateBlogForm = ({ hanldeBlogPost }) => {
+const CreateBlogForm = ({ handleBlogPost }: CreateBlogFormProps) => {
   const [isPosting, setIsPosting] = useState(false);
   const [bodyError, setBodyError] = useState(false);
   const [passCheck, setPassCheck] = useState(false);
   const [formData, setFormData] = useState({ title: "", body: "" });
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+    inputRef.current?.focus();
   }, []);
 
   useEffect(() => {
@@ -22,12 +27,14 @@ const CreateBlogForm = ({ hanldeBlogPost }) => {
     else setPassCheck(false);
   }, [formData]);
 
-  const handleChange = (e) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+  ) => {
     const { value, name } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setBodyError(false);
 
@@ -38,7 +45,7 @@ const CreateBlogForm = ({ hanldeBlogPost }) => {
       return;
     }
 
-    hanldeBlogPost(formData, setIsPosting);
+    handleBlogPost({ formData, setIsPosting });
   };
 
   return (
@@ -48,7 +55,7 @@ const CreateBlogForm = ({ hanldeBlogPost }) => {
         <label htmlFor="title">Title:</label>
         <input
           ref={inputRef}
-          type="title"
+          type="text"
           name="title"
           id="title"
           value={formData.title}
@@ -66,8 +73,7 @@ const CreateBlogForm = ({ hanldeBlogPost }) => {
         </label>
         <div className="relative">
           <textarea
-            rows="5"
-            type="body"
+            rows={5}
             name="body"
             id="body"
             value={formData.body}
@@ -97,10 +103,6 @@ const CreateBlogForm = ({ hanldeBlogPost }) => {
       </form>
     </div>
   );
-};
-
-CreateBlogForm.propTypes = {
-  hanldeBlogPost: PropTypes.func,
 };
 
 export default memo(CreateBlogForm);

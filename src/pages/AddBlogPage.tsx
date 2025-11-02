@@ -6,6 +6,8 @@ import { useUser } from "../context/UserContext";
 import { useDispatch } from "react-redux";
 import { setGlobalError } from "../features/errorSlice";
 import { toast } from "react-toastify";
+import { invalidateBlogQueries } from "../utils/InvalidateBlogQueries";
+import { BlogPostParams } from "../types/blog";
 
 const AddBlogPage = () => {
   const navigate = useNavigate();
@@ -15,8 +17,8 @@ const AddBlogPage = () => {
 
   const dispatch = useDispatch();
 
-  const hanldeBlogPost = useCallback(
-    async (formData, setIsPosting) => {
+  const handleBlogPost = useCallback(
+    async ({ formData, setIsPosting }: BlogPostParams) => {
       setIsPosting(true);
 
       const url = `${import.meta.env.VITE_BACKEND_URL}/add-blog/${id}`;
@@ -34,11 +36,13 @@ const AddBlogPage = () => {
 
         toast.success("Blog posted successfully!");
 
-        queryClient.invalidateQueries(["your-blogs"]);
-        queryClient.invalidateQueries(["all-blogs"]);
+        invalidateBlogQueries(queryClient);
         navigate(`/your-blogs`);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error posting a blog", error.message);
+        dispatch(
+          setGlobalError("Something went wrong while posting your blog.")
+        );
       } finally {
         setIsPosting(false);
       }
@@ -46,7 +50,7 @@ const AddBlogPage = () => {
     [id, navigate, queryClient, dispatch]
   );
 
-  return <CreateBlogForm hanldeBlogPost={hanldeBlogPost} />;
+  return <CreateBlogForm handleBlogPost={handleBlogPost} />;
 };
 
 export default AddBlogPage;

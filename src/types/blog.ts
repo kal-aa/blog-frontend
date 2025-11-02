@@ -80,6 +80,7 @@ export interface BlogDetailProps {
   setThumbsUp: (value: boolean) => void;
   updateBtnRef: MutableRefObject<HTMLButtonElement | null>;
 }
+
 // BlogDetailView.tsx
 export interface BlogDetailViewProps {
   blog: Blog;
@@ -110,4 +111,14 @@ export interface BlogDetailViewProps {
   commentRef: MutableRefObject<HTMLDivElement | null>;
   pTagRef: MutableRefObject<HTMLParagraphElement | null>;
   updateBtnRef: MutableRefObject<HTMLButtonElement | null>;
+}
+
+// AddBlogPage.tsx
+export interface BlogPostParams {
+  formData: { title: string; body: string };
+  setIsPosting: Dispatch<SetStateAction<boolean>>;
+}
+
+export interface CreateBlogFormProps {
+  handleBlogPost: (params: BlogPostParams) => void;
 }
