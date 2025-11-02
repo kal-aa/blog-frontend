@@ -11,8 +11,8 @@ import YourBlogsPage from "./pages/YourBlogsPage";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import AddBlogPage from "./pages/AddBlogPage";
-// import ContactUsPage from "./pages/ContactUsPage";
-// import AboutUsPage from "./pages/AboutUsPage";
+import ContactUsPage from "./pages/ContactUsPage";
+import AboutUsPage from "./pages/AboutUsPage";
 // import AccountPage from "./pages/AccountPage";
 // import NotFound from "./components/NotFound";
 import { useUser } from "./context/UserContext";
@@ -40,6 +40,8 @@ const App = () => {
           <Route path="/home" element={<HomePage />} />
           <Route path="/your-blogs" element={<YourBlogsPage />} />
           <Route path="/add-blog" element={<AddBlogPage />} />
+          <Route path="/contact-us" element={<ContactUsPage />} />
+          <Route path="/about-us" element={<AboutUsPage />} />
         </Routes>
       </div>
 

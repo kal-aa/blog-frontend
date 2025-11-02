@@ -6,16 +6,16 @@ const AboutUsPage = () => {
   return (
     <div className="mx-[5%] px-[10%] p-3 flex flex-col shadow-2xl items-center">
       {/* Hero Section */}
-      <section className="mb-2">
+      <section className="mb-2 md:mb-6">
         <p className="md:px-5">
           <span className="text-3xl font-black">Welcome</span> to{" "}
           <strong>Abstruse Co.</strong>, where we are dedicated to delivering
           innovative solutions to transform the way you live and work.
         </p>
-    </section>
+      </section>
 
       {/* Mission and Vision */}
-      <section className="mb-2">
+      <section className="mb-2 md:mb-6">
         <h2 className={headingStyle}>Our Mission</h2>
         <p>
           To empower individuals and businesses with cutting-edge technology and
@@ -29,13 +29,13 @@ const AboutUsPage = () => {
       </section>
 
       {/* Team Section */}
-      <section className="mb-2">
+      <section className="mb-2 md:mb-6">
         <h2 className={`${headingStyle} text-center`}>Meet Our Team</h2>
         <div className="flex flex-col gap-y-5 sm:flex-row sm:gap-x-10">
           <div className="flex flex-col items-center">
             <img
               src={import.meta.env.VITE_PUBLIC_URL + "assets/images/kalab.jpg"}
-              alt="kalab CEO"
+              alt="Kalab Sisay, CEO of Abstruse Co."
               className="w-24 rounded-full "
             />
             <strong>Kalab Sisay</strong>
@@ -44,7 +44,7 @@ const AboutUsPage = () => {
           <div className="flex flex-col items-center">
             <img
               src={import.meta.env.VITE_PUBLIC_URL + "assets/images/khalid.jpg"}
-              alt="khalid CTO"
+              alt="khalid Edris, CTO of Abstruse Co."
               className="w-24 rounded-full "
             />
             <strong>Khalid Endris</strong>
@@ -54,7 +54,7 @@ const AboutUsPage = () => {
       </section>
 
       {/* Achievements */}
-      <section className="mb-2">
+      <section className="mb-2 md:mb-6">
         <h2 className={headingStyle}>Our Achievements</h2>
         <ul>
           <li>Serving over 10,000 satisfied customers worldwide.</li>
@@ -64,7 +64,7 @@ const AboutUsPage = () => {
       </section>
 
       {/* Call to Action */}
-      <section className="mb-2">
+      <section className="mb-2 md:mb-6">
         <h2 className={headingStyle}>Get in Touch</h2>
         <p>
           Have questions or want to work with us?{" "}
