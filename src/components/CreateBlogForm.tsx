@@ -1,0 +1,108 @@
+import {
+  ChangeEvent,
+  FormEvent,
+  memo,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { BeatLoader } from "react-spinners";
+import { AiOutlineCheck } from "react-icons/ai";
+import { CreateBlogFormProps } from "../types/blog";
+
+const CreateBlogForm = ({ handleBlogPost }: CreateBlogFormProps) => {
+  const [isPosting, setIsPosting] = useState(false);
+  const [bodyError, setBodyError] = useState(false);
+  const [passCheck, setPassCheck] = useState(false);
+  const [formData, setFormData] = useState({ title: "", body: "" });
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    if (formData.body.replace(/\s+/g, " ").trim().length >= 100)
+      setPassCheck(true);
+    else setPassCheck(false);
+  }, [formData]);
+
+  const handleChange = (
+    e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+  ) => {
+    const { value, name } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setBodyError(false);
+
+    formData.body = formData.body.replace(/\s+/g, " ").trim();
+    formData.title = formData.title.replace(/\s+/g, " ").trim();
+    if (!passCheck) {
+      setBodyError(true);
+      return;
+    }
+
+    handleBlogPost({ formData, setIsPosting });
+  };
+
+  return (
+    <div className="signup-container">
+      <h1 className="text-3xl font-bold">Share your ideas</h1>
+      <form onSubmit={handleSubmit} className="w-full">
+        <label htmlFor="title">Title:</label>
+        <input
+          ref={inputRef}
+          type="text"
+          name="title"
+          id="title"
+          value={formData.title}
+          onChange={handleChange}
+          required
+          disabled={isPosting}
+          placeholder="Your blog title"
+          className="input-style bg-slate-100"
+        />
+        <label htmlFor="body">
+          Body: {passCheck && <AiOutlineCheck className="inline mb-1" />}
+          {bodyError && (
+            <span className="ml-2 text-red-500">100 characters or more</span>
+          )}
+        </label>
+        <div className="relative">
+          <textarea
+            rows={5}
+            name="body"
+            id="body"
+            value={formData.body}
+            onChange={handleChange}
+            required
+            disabled={isPosting}
+            placeholder="Write a description for your blog (100 characters or more)"
+            className="input-style bg-slate-100"
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={isPosting}
+          className={`w-full rounded-md bg-black text-white py-2 mt-2 ${
+            !isPosting && "hover:scale-95 disabled:hover:scale-100"
+          } transition-all duration-200 ease-out`}
+        >
+          {isPosting ? (
+            <div className="flex items-end justify-center">
+              <span>post</span>
+              <BeatLoader size={5} color="white" className="w-5 mb-1" />
+            </div>
+          ) : (
+            "Post"
+          )}
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default memo(CreateBlogForm);
