@@ -13,7 +13,7 @@ import Footer from "./components/Footer";
 import AddBlogPage from "./pages/AddBlogPage";
 import ContactUsPage from "./pages/ContactUsPage";
 import AboutUsPage from "./pages/AboutUsPage";
-// import AccountPage from "./pages/AccountPage";
+import AccountPage from "./pages/AccountPage";
 import NotFound from "./components/NotFound";
 import { useUser } from "./context/UserContext";
 
@@ -29,25 +29,8 @@ const App = () => {
         <Header />
       )}
 
-      <div className="flex-grow mt-28">
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/log-in" element={<LoginPage />} />
-          <Route path="/sign-up" element={<SignupPage />} />
-          <Route path="/verify-email" element={<VerfyEmail />} />
-          <Route path="/complete-profile" element={<CompleteProfile />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/home" element={<HomePage />} />
-          <Route path="/your-blogs" element={<YourBlogsPage />} />
-          <Route path="/add-blog" element={<AddBlogPage />} />
-          <Route path="/contact-us" element={<ContactUsPage />} />
-          <Route path="/about-us" element={<AboutUsPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </div>
-
       {/* Routes */}
-      {/* <div className="flex-grow mt-28">
+      <div className="flex-grow mt-28">
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/log-in" element={<LoginPage />} />
@@ -71,7 +54,7 @@ const App = () => {
           <Route path="/about-us" element={<AboutUsPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </div> */}
+      </div>
 
       {!noFooterAndHeader.includes(location.pathname) && user?.name && (
         <Footer />

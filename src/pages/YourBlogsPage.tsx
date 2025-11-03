@@ -100,11 +100,7 @@ const YourBlogsPage = () => {
       const { _id: blogId } = blog;
 
       setIsUpdating(true);
-
       const updateCandidate = blogs.find((b) => b._id === blog._id);
-      setBlogs((prev) =>
-        prev.map((b) => (b._id === blog._id ? { ...b, title, body } : b))
-      );
 
       const url = `${
         import.meta.env.VITE_BACKEND_URL
@@ -129,8 +125,11 @@ const YourBlogsPage = () => {
           throw new Error(err.mssg || "An unexpected error occured");
         }
 
-        toast.success("Blog updated successfully!");
+        setBlogs((prev) =>
+          prev.map((b) => (b._id === blog._id ? { ...b, title, body } : b))
+        );
 
+        toast.success("Blog updated successfully!");
         invalidateBlogQueries(queryclient);
 
         originalBodyRef.current = body;

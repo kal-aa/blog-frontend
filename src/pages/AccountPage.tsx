@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { FormEvent, lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { FaLock } from "react-icons/fa";
@@ -17,10 +17,12 @@ import { useUser } from "../context/UserContext";
 import { setGlobalError } from "../features/errorSlice";
 import { useDispatch } from "react-redux";
 import { getErrorMessage } from "../utils/firebaseAuthErrorMap";
+import { AccountFormData, ManageSubmitParams, UserData } from "../types/auth";
+import { invalidateBlogQueries } from "../utils/InvalidateBlogQueries";
 const ManageAccount = lazy(() => import("../components/ManageAccount"));
 
 const AccountPage = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<AccountFormData>({
     name: "",
     email: "",
     currentPassword: "",
@@ -29,17 +31,17 @@ const AccountPage = () => {
     image: null,
     removeImage: false,
   });
-  const [data, setData] = useState({});
+  const [data, setData] = useState<UserData | null>(null);
   const [authPassword, setAuthPassword] = useState("");
-  const [isAuthenticating, setisAuthenticating] = useState(false);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [manageError, setManageError] = useState("");
   const navigate = useNavigate();
-  const authInputRef = useRef(null);
+  const authInputRef = useRef<HTMLInputElement>(null);
   const [originalEmail, setOriginalEmail] = useState("");
   const queryClient = useQueryClient();
   const firebaseUser = auth.currentUser;
-  const [providerId, setProviderId] = useState(null);
+  const [providerId, setProviderId] = useState<string | null>(null);
   const { user } = useUser();
   const id = user?.id;
 
@@ -57,19 +59,17 @@ const AccountPage = () => {
   }, []);
 
   useEffect(() => {
-    if (providerId?.includes("password")) {
-      if (authInputRef.current) {
-        authInputRef.current.focus();
-      }
+    if (providerId && providerId.includes("password")) {
+      authInputRef.current?.focus();
     }
   }, [providerId]);
 
   //  check the mini Authentication's password and fetch the data
-  const handleAuthenticate = async (e) => {
+  const handleAuthenticate = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      setisAuthenticating(true);
+      setIsAuthenticating(true);
 
       if (!firebaseUser || !firebaseUser.email) {
         const message =
@@ -78,7 +78,7 @@ const AccountPage = () => {
         return;
       }
 
-      if (providerId?.includes("password")) {
+      if (providerId && providerId.includes("password")) {
         if (authPassword.length < 8) {
           throw new Error("Must be greater than 8 characters");
         }
@@ -126,44 +126,42 @@ const AccountPage = () => {
       }
 
       setData(userData);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error during re-authentication or data fetch", err);
       const message = getErrorMessage(err, "Authentication failed");
-
       dispatch(setGlobalError(message));
     } finally {
-      setisAuthenticating(false);
+      setIsAuthenticating(false);
       setAuthPassword("");
     }
   };
 
   //  fill the form with the data from db
   useEffect(() => {
-    if (data && (data.name || data.email || data.buffer)) {
+    const { name = "", email = "", buffer, mimetype } = data || {};
+    if (data && (name || email || buffer)) {
       const image =
-        data.buffer && data.mimetype
-          ? `data:${data.mimetype};base64,${data.buffer}`
-          : "";
+        buffer && mimetype ? `data:${mimetype};base64,${buffer}` : null;
       setFormData((prev) => ({
         ...prev,
-        name: data.name || "",
-        email: data.email || "",
+        name: name || "",
+        email: email || "",
         image,
         removeImage: false,
       }));
-      setOriginalEmail(data?.email || "Unknown email");
+      setOriginalEmail(email || "Unknown email");
     }
   }, [data]);
 
   //  update and delete
-  const handleManageSubmit = async (
+  const handleManageSubmit = async ({
     e,
     fullNameRef,
     setIsDeleting,
     setIsUpdating,
-    actionType
-  ) => {
-    e.preventDefault();
+    actionType,
+  }: ManageSubmitParams) => {
+    e?.preventDefault?.();
     setManageError("");
 
     // Delete
@@ -209,6 +207,7 @@ const AccountPage = () => {
       setIsUpdating(true);
       try {
         const user = auth.currentUser;
+        if (!user) throw new Error("User not signed in");
 
         // Re-authenticate if email/password is being changed
         if (formData.currentPassword && formData.email) {
@@ -234,14 +233,14 @@ const AccountPage = () => {
         }
 
         if (formData.newPassword) {
+          if (formData.newPassword !== formData.confirmPassword) {
+            setManageError("New password and confirmation do not match.");
+            return;
+          }
           if (formData.currentPassword === formData.newPassword) {
             setManageError(
               "New password must be different from the current password."
             );
-            return;
-          }
-          if (formData.newPassword !== formData.confirmPassword) {
-            setManageError("New password and confirmation do not match.");
             return;
           }
           await updatePassword(user, formData.newPassword);
@@ -251,7 +250,7 @@ const AccountPage = () => {
         const checkFullName = formData.name.trim().split(" ");
         if (checkFullName.length !== 2) {
           setManageError("Please add your full name: 'John Doe'");
-          fullNameRef.current.click();
+          fullNameRef.current?.click();
           return;
         }
 
@@ -263,7 +262,8 @@ const AccountPage = () => {
 
         const submissionDataWithFile = new FormData();
         Object.keys(updateData).forEach((key) => {
-          submissionDataWithFile.append(key, updateData[key]);
+          const typedKey = key as keyof typeof updateData;
+          submissionDataWithFile.append(typedKey, String(updateData[typedKey]));
         });
 
         if (formData.image instanceof File) {
@@ -292,7 +292,7 @@ const AccountPage = () => {
         }
 
         toast.success("Account updated successfully!");
-        queryClient.invalidateQueries(["all-blogs"]);
+        invalidateBlogQueries(queryClient);
         navigate(`/home`);
       } catch (error) {
         console.error("Error updating client data", error);
@@ -312,7 +312,7 @@ const AccountPage = () => {
             onSubmit={handleAuthenticate}
             className="p-10 bg-black/90 min-w-[400px] shadow-black drop-shadow-xl rounded-xl"
           >
-            {providerId?.includes("password") && (
+            {providerId && providerId.includes("password") && (
               <div>
                 <label htmlFor="auth-password" className="flex text-white">
                   Password:

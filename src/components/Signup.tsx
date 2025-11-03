@@ -3,7 +3,8 @@ import { FaCheck, FaGithub, FaLock } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import ClipLoader from "react-spinners/ClipLoader";
 import { NavLink } from "react-router-dom";
-import { SignupProps } from "../types/auth";
+import { ProvidersData, SignupProps } from "../types/auth";
+import { AuthLoader } from "./AuthLoader";
 
 const Signup = ({ emailSignup, googleSignup, githubSignup }: SignupProps) => {
   const [formData, setFormData] = useState({
@@ -14,7 +15,9 @@ const Signup = ({ emailSignup, googleSignup, githubSignup }: SignupProps) => {
   const [passwordMatched, setPasswordMatched] = useState("");
   const [isPasswordConfirmed, setIsPasswordConfirmed] = useState(false);
   const [isSigning, setIsSigning] = useState(false);
-  const [isSignWithEmail, setIsSignWithEmail] = useState(false);
+  const [signingMethod, setSigningMethod] = useState<
+    "email" | "github" | "google" | null
+  >(null);
   const emailInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -50,26 +53,44 @@ const Signup = ({ emailSignup, googleSignup, githubSignup }: SignupProps) => {
 
     try {
       setIsSigning(true);
-      setIsSignWithEmail(true);
+      setSigningMethod("email");
       await emailSignup(formData);
     } catch (error) {
       console.error(error);
     } finally {
       setIsSigning(false);
-      setIsSignWithEmail(false);
+      setSigningMethod(null);
     }
   };
 
-  const handleLoginWithPopup = async (method: () => Promise<void>) => {
+  const handleSigninWithPopup = async (
+    method: () => Promise<void>,
+    provider: "github" | "google"
+  ) => {
     try {
       setIsSigning(true);
+      setSigningMethod(provider);
       await method();
     } catch (error) {
       console.error(error);
     } finally {
       setIsSigning(false);
+      setSigningMethod(null);
     }
   };
+
+  const providers: ProvidersData[] = [
+    {
+      name: "google",
+      icon: <FcGoogle className="mx-2" size={24} />,
+      method: googleSignup,
+    },
+    {
+      name: "github",
+      icon: <FaGithub className="mx-2" size={24} />,
+      method: githubSignup,
+    },
+  ];
 
   return (
     <div className="relative signup-container">
@@ -132,31 +153,22 @@ const Signup = ({ emailSignup, googleSignup, githubSignup }: SignupProps) => {
           className="sign-btn !w-full bg-black text-white disabled:bg-black/50 mt-5"
         >
           <span>submit</span>
-          {isSigning && isSignWithEmail && (
-            <div>
-              <ClipLoader color="white" size={10} className="ml-1" />
-            </div>
-          )}
+          <AuthLoader active={signingMethod === "email"} />
         </button>
       </form>
 
       {/* Social signup buttons */}
       <div className="flex flex-wrap justify-center w-full gap-4 mt-3">
-        <button
-          disabled={isSigning}
-          onClick={() => handleLoginWithPopup(googleSignup)}
-          className="sign-btn"
-        >
-          Sign up with
-          <FcGoogle className="ml-2" size={24} />
-        </button>
-        <button
-          disabled={isSigning}
-          onClick={() => handleLoginWithPopup(githubSignup)}
-          className="sign-btn"
-        >
-          Sign up with <FaGithub className="ml-2" size={24} />
-        </button>
+        {providers.map((p) => (
+          <button
+            key={p.name}
+            className="sign-btn"
+            onClick={() => handleSigninWithPopup(p.method, p.name)}
+          >
+            Sign up with {p.icon}
+            <AuthLoader active={signingMethod === p.name} color="black" />
+          </button>
+        ))}{" "}
       </div>
       {/* the "OR" option */}
       <div className="flex items-center justify-center w-full mt-6">

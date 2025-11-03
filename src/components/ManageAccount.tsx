@@ -1,30 +1,35 @@
-import PropTypes from "prop-types";
-import { useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 import { BarLoader, BeatLoader } from "react-spinners";
+import { ManageAccountProps } from "../types/auth";
 
-const ManageAccount = (props) => {
-  const {
-    formData,
-    handleManageSubmit,
-    isAuthenticating,
-    manageError,
-    providerId,
-    setFormData,
-  } = props;
+const ManageAccount = ({
+  formData,
+  handleManageSubmit,
+  isAuthenticating,
+  manageError,
+  providerId,
+  setFormData,
+}: ManageAccountProps) => {
   const [preview, setPreview] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [changePassword, setChangePassword] = useState(false);
-  const fullNameRef = useRef(null);
+  const fullNameRef = useRef<HTMLLabelElement>(null);
 
   useEffect(() => {
-    if (fullNameRef.current) {
-      fullNameRef.current.focus();
-    }
+    fullNameRef.current?.focus();
   }, []);
 
-  const handleChange = (e) => {
+  useEffect(() => {
+    if (changePassword) {
+      document
+        .getElementById("newPassword")
+        ?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [changePassword]);
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -32,8 +37,8 @@ const ManageAccount = (props) => {
   const matched = formData.newPassword === formData.confirmPassword;
 
   // hanlde the input image
-  const handleImageUpload = (e) => {
-    const image = e.target.files[0];
+  const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const image = e.target.files?.[0] || null;
     setFormData((prevFormData) => ({
       ...prevFormData,
       removeImage: false,
@@ -42,7 +47,7 @@ const ManageAccount = (props) => {
     if (image) {
       const reader = new FileReader();
       reader.onload = () => {
-        setPreview(reader.result);
+        setPreview(reader.result as string);
       };
       reader.readAsDataURL(image);
     } else {
@@ -52,17 +57,25 @@ const ManageAccount = (props) => {
     }
   };
 
+  const defaultImage = `${
+    import.meta.env.VITE_PUBLIC_URL
+  }assets/images/unknown-user.jpg`;
+
+  const imageSrc =
+    preview ||
+    (typeof formData.image === "string" ? formData.image : defaultImage);
+
   return (
     <form
       className="flex flex-col max-w-xl gap-5 p-10 mt-5 rounded-md bg-stone-50 drop-shadow-2xl"
       onSubmit={(e) =>
-        handleManageSubmit(
+        handleManageSubmit({
           e,
           fullNameRef,
           setIsDeleting,
           setIsUpdating,
-          "update"
-        )
+          actionType: "update",
+        })
       }
     >
       <div className="flex flex-col items-center justify-center gap-2">
@@ -89,18 +102,7 @@ const ManageAccount = (props) => {
               : "Change your Profile Picture"
           }
         >
-          <img
-            src={
-              preview
-                ? preview
-                : formData.image
-                ? formData.image
-                : import.meta.env.VITE_PUBLIC_URL +
-                  "assets/images/unknown-user.jpg"
-            }
-            alt="user"
-            className="w-16 h-16 rounded-lg"
-          />
+          <img src={imageSrc} alt="user" className="w-16 h-16 rounded-lg" />
         </label>
         {formData.image && (
           <button
@@ -139,9 +141,9 @@ const ManageAccount = (props) => {
         />
       </label>
 
-      {providerId?.includes("password") && (
+      {providerId && providerId.includes("password") && (
         <div>
-          {changePassword ? (
+          {changePassword && (
             <div className="flex flex-col gap-5">
               <label
                 htmlFor="newPassword"
@@ -186,18 +188,29 @@ const ManageAccount = (props) => {
                 />
               </label>
             </div>
-          ) : (
-            <div className="md:flex md:justify-end">
-              <button
-                type="button"
-                disabled={isAuthenticating}
-                onClick={() => setChangePassword(true)}
-                className="btn-style md:p-2"
-              >
-                Change Password
-              </button>
-            </div>
           )}
+          <div className="md:flex md:justify-end">
+            <button
+              type="button"
+              disabled={isAuthenticating}
+              onClick={() => {
+                if (
+                  changePassword &&
+                  (formData.confirmPassword || formData.newPassword)
+                ) {
+                  setFormData((prev) => ({
+                    ...prev,
+                    confirmPassword: "",
+                    newPassword: "",
+                  }));
+                }
+                setChangePassword((prev) => !prev);
+              }}
+              className={`btn-style md:p-2 ${changePassword ? "mt-1" : ""}`}
+            >
+              {changePassword ? "Cancel Password Change" : "Change Password"}
+            </button>
+          </div>
         </div>
       )}
       <p className="max-w-xs mx-auto text-sm text-center text-red-500 break-words">
@@ -222,13 +235,13 @@ const ManageAccount = (props) => {
         </button>
         <button
           onClick={(e) =>
-            handleManageSubmit(
+            handleManageSubmit({
               e,
               fullNameRef,
               setIsDeleting,
               setIsUpdating,
-              "delete"
-            )
+              actionType: "delete",
+            })
           }
           name="delete"
           className="manage-acc-btn"
@@ -246,15 +259,6 @@ const ManageAccount = (props) => {
       </div>
     </form>
   );
-};
-
-ManageAccount.propTypes = {
-  formData: PropTypes.object.isRequired,
-  handleManageSubmit: PropTypes.func.isRequired,
-  isAuthenticating: PropTypes.bool,
-  manageError: PropTypes.string,
-  providerId: PropTypes.string,
-  setFormData: PropTypes.func,
 };
 
 export default ManageAccount;

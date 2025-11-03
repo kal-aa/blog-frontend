@@ -3,11 +3,15 @@ import { Link, NavLink } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
 import { FaGithub, FaLock } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
-import { LoginProps } from "../types/auth";
+import { LoginProps, ProvidersData } from "../types/auth";
+import { AuthLoader } from "./AuthLoader";
 
 const Login = ({ emailLogin, googleSignin, githubSignin }: LoginProps) => {
   const [isLogging, setIsLogging] = useState(false);
-  const [isLogWithEmail, setIsLogWithEmail] = useState(false);
+  const [loggingMethod, setLoggingMethod] = useState<
+    "email" | "google" | "github" | null
+  >(null);
+
   const [passwordError, setPasswordError] = useState("");
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
@@ -38,26 +42,44 @@ const Login = ({ emailLogin, googleSignin, githubSignin }: LoginProps) => {
 
     try {
       setIsLogging(true);
-      setIsLogWithEmail(true);
+      setLoggingMethod("email");
       await emailLogin(formData);
     } catch (error) {
       console.error(error);
     } finally {
       setIsLogging(false);
-      setIsLogWithEmail(false);
+      setLoggingMethod(null);
     }
   };
 
-  const handleLoginWithPopup = async (method: () => Promise<void>) => {
+  const handleLoginWithPopup = async (
+    method: () => Promise<void>,
+    provider: "google" | "github"
+  ) => {
     try {
       setIsLogging(true);
+      setLoggingMethod(provider);
       await method();
     } catch (error) {
       console.error(error);
     } finally {
       setIsLogging(false);
+      setLoggingMethod(null);
     }
   };
+
+  const providers: ProvidersData[] = [
+    {
+      name: "google",
+      icon: <FcGoogle className="mx-2" size={24} />,
+      method: googleSignin,
+    },
+    {
+      name: "github",
+      icon: <FaGithub className="mx-2" size={24} />,
+      method: githubSignin,
+    },
+  ];
 
   return (
     <div className="signup-container">
@@ -115,32 +137,23 @@ const Login = ({ emailLogin, googleSignin, githubSignin }: LoginProps) => {
           disabled={isLogging}
           className="!w-full bg-black text-white disabled:bg-black/50 sign-btn mt-3"
         >
-          <span>Submit</span>
-          {isLogging && isLogWithEmail && (
-            <div>
-              <ClipLoader color="white" size={10} className="ml-1" />
-            </div>
-          )}
+          <span className="mr-2">Submit</span>
+          <AuthLoader active={loggingMethod === "email"} />
         </button>
       </form>
 
       {/* Social login buttons */}
       <div className="flex flex-wrap justify-center w-full gap-4 mt-3">
-        <button
-          disabled={isLogging}
-          onClick={() => handleLoginWithPopup(googleSignin)}
-          className="sign-btn"
-        >
-          Log in with
-          <FcGoogle className="ml-2" size={24} />
-        </button>
-        <button
-          disabled={isLogging}
-          onClick={() => handleLoginWithPopup(githubSignin)}
-          className="sign-btn"
-        >
-          Log in with <FaGithub className="ml-2" size={24} />
-        </button>
+        {providers.map((p) => (
+          <button
+            key={p.name}
+            className="sign-btn"
+            onClick={() => handleLoginWithPopup(p.method, p.name)}
+          >
+            Log in with {p.icon}
+            <AuthLoader active={loggingMethod === p.name} color="black" />
+          </button>
+        ))}
       </div>
 
       {/* The "OR" option */}
