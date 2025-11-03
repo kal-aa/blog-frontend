@@ -1,6 +1,5 @@
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import ClipLoader from "react-spinners/ClipLoader";
 import { FaGithub, FaLock } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { LoginProps, ProvidersData } from "../types/auth";
@@ -148,6 +147,7 @@ const Login = ({ emailLogin, googleSignin, githubSignin }: LoginProps) => {
           <button
             key={p.name}
             className="sign-btn"
+            disabled={isLogging}
             onClick={() => handleLoginWithPopup(p.method, p.name)}
           >
             Log in with {p.icon}

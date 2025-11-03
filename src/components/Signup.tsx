@@ -1,7 +1,6 @@
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { FaCheck, FaGithub, FaLock } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
-import ClipLoader from "react-spinners/ClipLoader";
 import { NavLink } from "react-router-dom";
 import { ProvidersData, SignupProps } from "../types/auth";
 import { AuthLoader } from "./AuthLoader";
@@ -163,6 +162,7 @@ const Signup = ({ emailSignup, googleSignup, githubSignup }: SignupProps) => {
           <button
             key={p.name}
             className="sign-btn"
+            disabled={isSigning}
             onClick={() => handleSigninWithPopup(p.method, p.name)}
           >
             Sign up with {p.icon}
