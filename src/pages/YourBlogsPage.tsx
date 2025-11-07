@@ -97,14 +97,14 @@ const YourBlogsPage = () => {
       setEditBodyValue,
       setIsUpdating,
     }: UpdateBlogParams) => {
-      const { _id: blogId } = blog;
-
       setIsUpdating(true);
-      const updateCandidate = blogs.find((b) => b._id === blog._id);
 
+      const { _id: blogId } = blog;
+      const updateCandidate = blogs.find((b) => b._id === blog._id);
       const url = `${
         import.meta.env.VITE_BACKEND_URL
       }/patch-blog/${encodeURIComponent(id!)}`;
+
       try {
         const res = await fetch(url, {
           method: "PATCH",

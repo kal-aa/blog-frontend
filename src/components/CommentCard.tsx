@@ -90,11 +90,12 @@ function CommentCard({
     optimComment.commenterName || user?.name || "Unknown user";
 
   return (
-    <section className="bg-black rounded-xl">
+    <section className="relative bg-black rounded-xl">
       <div className="flex flex-col px-3 py-2 md:items-end md:flex-row md:justify-around">
         <div className="md:w-2/3">
           <div className="flex items-center space-x-1">
             <img
+              title={`more from ${commenterName.toUpperCase()}`}
               onClick={() => {
                 if (isHome && id === optimComment.commenterId) {
                   navigate(`/your-blogs`);
@@ -111,8 +112,8 @@ function CommentCard({
                   : import.meta.env.VITE_PUBLIC_URL +
                     "assets/images/unknown-user.jpg"
               }
-              alt="user"
-              className="w-5 h-5 bg-white rounded-full cursor-pointer"
+              alt={commenterName.toUpperCase()}
+              className="w-5 h-5 text-xs text-white bg-white rounded-full cursor-pointer"
             />
 
             <p className="text-xs text-red-200">
@@ -213,17 +214,6 @@ function CommentCard({
               {formatNumber(replyCount)}
             </p>
           </div>
-          {!isHome && (
-            <FaTrashAlt
-              size={12}
-              className={`hover:animate-pulse ${
-                isDeletingComment && "animate-spin"
-              }`}
-              onClick={() =>
-                handleDeleteComment({ optimComment, setIsDeletingComment })
-              }
-            />
-          )}
         </div>
       </div>
 
@@ -294,6 +284,18 @@ function CommentCard({
           ""
         )}
       </div>
+      {!isHome && (
+        <FaTrashAlt
+          title={isDeletingComment ? "deleting..." : "delete comment"}
+          size={16}
+          className={`hover:text-red-600 text-red-500 absolute top-[15%] md:top-[10%] right-[5%] ${
+            isDeletingComment && "animate-spin"
+          }`}
+          onClick={() =>
+            handleDeleteComment({ optimComment, setIsDeletingComment })
+          }
+        />
+      )}
     </section>
   );
 }

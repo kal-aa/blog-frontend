@@ -34,6 +34,7 @@ function ReplyCard({
             : replierName}
         </p>
         <img
+          title={`more from ${replierName.toUpperCase()}`}
           onClick={() => {
             if (isHome && id === optimReply.replierId) {
               navigate(`/your-blogs`);
@@ -50,8 +51,8 @@ function ReplyCard({
               : import.meta.env.VITE_PUBLIC_URL +
                 "assets/images/unknown-user.jpg"
           }
-          alt="user"
-          className="w-5 h-5 bg-white rounded-full cursor-pointer"
+          alt={replierName.toUpperCase()}
+          className="w-5 h-5 text-xs bg-white rounded-full cursor-pointer"
         />
       </div>
 
@@ -69,8 +70,9 @@ function ReplyCard({
         {/* Delete icon */}
         {!isHome && (
           <FaTrashAlt
+            title={isDeletingReply ? "deleting..." : "delete reply"}
             size={12}
-            className={`hover:animate-pulse mb-1.5 ml-1 ${
+            className={`text-red-300 hover:text-red-400 mb-1.5 ml-1 ${
               isDeletingReply && "animate-spin"
             }`}
             onClick={() =>

@@ -127,6 +127,14 @@ function BlogCard({
       {/* profile pic */}
       {isHome && (
         <img
+          src={
+            blog.buffer && blog.mimetype
+              ? `data:${blog.mimetype};base64,${blog.buffer}`
+              : import.meta.env.VITE_PUBLIC_URL +
+                "assets/images/unknown-user.jpg"
+          }
+          alt={`${blog.author ? blog.author.toUpperCase() : "user pic"}`}
+          title={`more from ${blog.author?.toUpperCase()}`}
           onClick={() => {
             // navigate to the clicked user's blogs
             if (id !== blog.authorId) {
@@ -135,14 +143,7 @@ function BlogCard({
               navigate("/your-blogs");
             }
           }}
-          src={
-            blog.buffer && blog.mimetype
-              ? `data:${blog.mimetype};base64,${blog.buffer}`
-              : import.meta.env.VITE_PUBLIC_URL +
-                "assets/images/unknown-user.jpg"
-          }
-          alt="user pic"
-          className="absolute top-0 left-0 w-10 h-10 cursor-pointer rounded-br-2xl"
+          className="absolute top-0 left-0 w-10 h-10 text-xs cursor-pointer rounded-br-2xl"
         />
       )}
 
@@ -274,6 +275,13 @@ function BlogCard({
           <div className="flex justify-around mt-5">
             {/* update btn */}
             <button
+              title={
+                isUpdating
+                  ? "updating..."
+                  : readyToUpdate
+                  ? "update blog"
+                  : "no changes to update"
+              }
               ref={updateBtnRef}
               onClick={() =>
                 handleUpdateBlog?.({
@@ -295,40 +303,34 @@ function BlogCard({
               }`}
             >
               {isUpdating ? (
-                <div className="flex items-end">
+                <span className="flex items-end">
                   update
                   <BeatLoader
                     size={8}
                     color="white"
                     className="w-5 mb-1 ml-1"
                   />
-                </div>
+                </span>
               ) : (
                 "Update"
               )}
             </button>
             {/* delete btn */}
             <button
+              title={isDeleting ? "deleting..." : "delete blog"}
               onClick={() =>
                 handleDeleteBlog?.({ blogId: blog._id, setIsDeleting })
               }
               disabled={isDeleting}
-              className="px-3 py-1 text-white bg-gray-600 rounded-lg hover:bg-gray-800"
+              className={`px-3 py-1 text-white bg-gray-600 rounded-lg hover:bg-gray-800`}
             >
-              {isDeleting ? (
-                <div>
-                  delete
-                  <FaTrash size={12} className="inline ml-1 animate-spin" />
-                </div>
-              ) : (
-                <div>
-                  Delete
-                  <FaTrash
-                    size={12}
-                    className="inline ml-1 hover:animate-pulse"
-                  />
-                </div>
-              )}
+              <span>Delete</span>
+              <FaTrash
+                size={12}
+                className={`inline ml-1 hover:animate-pulse ${
+                  isDeleting ? "animate-spin" : ""
+                }`}
+              />
             </button>
           </div>
         </div>
