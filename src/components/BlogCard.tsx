@@ -157,7 +157,11 @@ function BlogCard({
           )}
           <div className="space-x-1 w-[60%]">
             {!editTitlePen && (
-              <h3 className="inline text-xl font-bold">{blog.title}</h3>
+              <h3 className="inline text-xl font-bold">
+                {!expand && isHome
+                  ? blog.title.slice(0, 5) + "..."
+                  : blog.title}
+              </h3>
             )}
             {editTitlePen && (
               <input
