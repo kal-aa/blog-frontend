@@ -282,14 +282,6 @@ const AccountPage = () => {
           dispatch(setGlobalError(message));
           return;
         }
-        //  already up-to-date
-        if (res.status === 200) {
-          const message = data.mssg || "Account already up-to-date";
-
-          toast.info(message);
-          setIsUpdating(false);
-          return;
-        }
 
         toast.success("Account updated successfully!");
         invalidateBlogQueries(queryClient);
