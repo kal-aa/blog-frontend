@@ -253,8 +253,8 @@ function CommentList({
           setOptimComments((prev) =>
             [...prev, optimComment].sort(
               (a, b) =>
-                new Date(b.timeStamp).getTime() -
-                new Date(a.timeStamp).getTime()
+                new Date(b.createdAt).getTime() -
+                new Date(a.createdAt).getTime()
             )
           );
           setCommentCount((prev) => prev + 1);
@@ -294,14 +294,14 @@ function CommentList({
         commentId: optimComment._id,
         replierId: id || "temp-id",
         reply: replyValue,
-        timeStamp: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
         replierName: user?.name || "Unknown User",
       };
 
       setOptimReplies((prev) =>
         [...prev, tempReply].sort(
           (a, b) =>
-            new Date(b.timeStamp).getTime() - new Date(a.timeStamp).getTime()
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         )
       );
       setReplyCount((prev) => prev + 1);

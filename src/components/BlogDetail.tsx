@@ -221,7 +221,7 @@ function BlogDetail({
         blogId: blog._id,
         commenterId: id || "temp-id",
         comment: commentValue,
-        timeStamp: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
         likes: [],
         dislikes: [],
         commenterName: user?.name || "Unknown User",

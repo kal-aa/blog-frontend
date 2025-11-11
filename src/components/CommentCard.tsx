@@ -132,7 +132,7 @@ function CommentCard({
           </p>
 
           <p className="mt-1 text-xs text-red-300">
-            {relativeTime(optimComment.timeStamp)}
+            {relativeTime(optimComment.createdAt)}
           </p>
         </div>
 

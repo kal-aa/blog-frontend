@@ -65,7 +65,7 @@ function ReplyCard({
 
       <div className="flex items-center">
         <p className="text-[10px] text-red-300 -mt-1.5">
-          {relativeTime(optimReply.timeStamp)}
+          {relativeTime(optimReply.createdAt)}
         </p>
         {/* Delete icon */}
         {!isHome && (

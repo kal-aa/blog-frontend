@@ -44,8 +44,8 @@ function ReplyList({
           setOptimReplies((prev) =>
             [...prev, optimReply].sort(
               (a, b) =>
-                new Date(b.timeStamp).getTime() -
-                new Date(a.timeStamp).getTime()
+                new Date(b.createdAt).getTime() -
+                new Date(a.createdAt).getTime()
             )
           );
           setReplyCount((prev) => prev + 1);

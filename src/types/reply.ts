@@ -18,7 +18,7 @@ export interface Reply {
   commentId: string;
   replierId: string;
   reply: string;
-  timeStamp: string;
+  createdAt: string;
   replierName: string;
   buffer?: string | null;
   mimetype?: string | null;

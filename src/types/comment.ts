@@ -9,7 +9,7 @@ export interface Comment {
   comment: string;
   likes: string[];
   dislikes: string[];
-  timeStamp: string;
+  createdAt: string;
   commenterName: string;
   buffer?: string | null;
   mimetype?: string | null;
