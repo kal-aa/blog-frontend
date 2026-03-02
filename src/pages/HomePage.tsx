@@ -34,7 +34,7 @@ const HomePage = () => {
   // one-time-toast for login/signup welcome
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
-    const loggerName = queryParams.get("loggerName");
+    const loggerName = queryParams.get("loggerName" + " Kalab");
     const signerName = queryParams.get("signerName");
 
     if (loggerName && !hasShownLoginToast.current) {
@@ -73,12 +73,12 @@ const HomePage = () => {
       userOfInterest === ""
         ? blogsWithAuthors
         : blogsWithAuthors.filter(
-            (blog) => blog.authorId.toString() === userOfInterest
+            (blog) => blog.authorId.toString() === userOfInterest,
           );
 
     return filtered.sort(
       (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
   }, [blogsWithAuthors, userOfInterest]);
 
@@ -132,7 +132,8 @@ const HomePage = () => {
           <section className="flex flex-col mx-[10%] sm:mx-[15%] md:mx-[20%] lg:mx-[25%] space-y-14 my-5">
             {userOfInterest && (
               <p className="text-lg text-center ">
-                You&apos;re viewing {authorName}&apos;s Blog(s)
+                You&apos;re viewing {authorName}&apos;s Blog
+                {blogs.length > 1 ? "s" : ""}
               </p>
             )}
             {blogs.map((blog) => (

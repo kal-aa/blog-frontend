@@ -63,7 +63,7 @@ const Footer = () => {
         <FaArrowUp
           title="scroll to top"
           onClick={handleUpArrow}
-          className="absolute right-4 top-1 text-xl text-yellow-600 md:right-[50%]"
+          className="absolute right-4 top-1 text-xl text-yellow-600 hover:text-yellow-600/80 cursor-pointer md:right-[50%]"
         />
       </div>
       <div className="font-bold text-center md:hidden">
@@ -72,7 +72,7 @@ const Footer = () => {
       <FaSignOutAlt
         title="log out"
         size={18}
-        className="absolute z-10 text-yellow-600 right-4 bottom-1"
+        className="absolute z-10 text-yellow-600 cursor-pointer right-4 bottom-1 hover:text-yellow-600/80"
         onClick={() => {
           signOut(auth);
           navigate("/");

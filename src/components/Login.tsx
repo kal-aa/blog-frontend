@@ -35,7 +35,7 @@ const Login = ({ emailLogin, googleSignin, githubSignin }: LoginProps) => {
     setError("");
 
     if (formData.password.length < 8) {
-      setPasswordError("Password must be greater than 8 characters");
+      setPasswordError("Password must be greater than 8 characterss");
       return;
     }
 
@@ -53,7 +53,7 @@ const Login = ({ emailLogin, googleSignin, githubSignin }: LoginProps) => {
 
   const handleLoginWithPopup = async (
     method: () => Promise<void>,
-    provider: "google" | "github"
+    provider: "google" | "github",
   ) => {
     try {
       setIsLogging(true);
@@ -163,7 +163,10 @@ const Login = ({ emailLogin, googleSignin, githubSignin }: LoginProps) => {
         <span className="flex-grow mx-4 border-t border-black"></span>
       </div>
 
-      <NavLink to="/sign-up" className="text-lg hover:underline">
+      <NavLink
+        to={isLogging ? "" : "/sign-up"}
+        className="text-lg text-blue-900/80 hover:underline"
+      >
         sign up
       </NavLink>
     </div>

@@ -64,7 +64,7 @@ const Signup = ({ emailSignup, googleSignup, githubSignup }: SignupProps) => {
 
   const handleSigninWithPopup = async (
     method: () => Promise<void>,
-    provider: "github" | "google"
+    provider: "github" | "google",
   ) => {
     try {
       setIsSigning(true);
@@ -176,7 +176,10 @@ const Signup = ({ emailSignup, googleSignup, githubSignup }: SignupProps) => {
         <span className="text-sm">OR</span>
         <span className="flex-grow mx-4 border-t border-black"></span>
       </div>
-      <NavLink to="/log-in" className="hover:underline">
+      <NavLink
+        to={isSigning ? "" : "/log-in"}
+        className="hover:underline text-blue-900/80"
+      >
         Log in
       </NavLink>
     </div>
