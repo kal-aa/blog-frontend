@@ -8,11 +8,41 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { FaArrowUp } from "react-icons/fa";
 import { signOut } from "firebase/auth";
 import { auth } from "../config/firebase";
+import { useEffect, useState } from "react";
 
 const Footer = () => {
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const isScrollable =
+        document.documentElement.scrollHeight > window.innerHeight;
+
+      setShowScrollTop(isScrollable && window.scrollY > 0);
+    };
+
+    handleScroll();
+
+    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
+  }, []);
+
   const handleUpArrow = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const logOut = () => {
+    const confirm = window.confirm("Are you sure you want to log out?");
+    if (!confirm) return;
+
+    signOut(auth);
+    navigate("/");
   };
 
   return (
@@ -60,11 +90,13 @@ const Footer = () => {
             </NavLink>
           </div>
         </div>
-        <FaArrowUp
-          title="scroll to top"
-          onClick={handleUpArrow}
-          className="absolute right-4 top-1 text-xl text-yellow-600 hover:text-yellow-600/80 cursor-pointer md:right-[50%]"
-        />
+        {showScrollTop && (
+          <FaArrowUp
+            title="scroll to top"
+            onClick={handleUpArrow}
+            className="absolute right-4 top-1 text-xl text-yellow-600 hover:text-yellow-600/80 cursor-pointer md:right-[50%]"
+          />
+        )}
       </div>
       <div className="font-bold text-center md:hidden">
         © 2024 Kalab. All rights reserved.
@@ -73,10 +105,7 @@ const Footer = () => {
         title="log out"
         size={18}
         className="absolute z-10 text-yellow-600 cursor-pointer right-4 bottom-1 hover:text-yellow-600/80"
-        onClick={() => {
-          signOut(auth);
-          navigate("/");
-        }}
+        onClick={logOut}
       />
     </footer>
   );
