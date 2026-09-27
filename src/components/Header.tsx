@@ -7,15 +7,7 @@ const Header = () => {
   const [elipsisClicked, setElipsisClicked] = useState(true);
   const navigate = useNavigate();
 
-  const handleImgClick = () => {
-    const confirmed = window.confirm(
-      "You are about to navigate to the landing page"
-    );
-    if (confirmed) {
-      auth.signOut();
-      navigate("/");
-    }
-  };
+  
 
   const isActive = ({ isActive }: { isActive: boolean }) =>
     `header-hover py-1 px-2 ${
@@ -27,7 +19,7 @@ const Header = () => {
       {/* Lef section of the header */}
       <div className="flex items-center ml-1">
         <img
-          onClick={handleImgClick}
+          onClick={() => navigate("/home")}
           title="Return to landing page"
           src={import.meta.env.VITE_PUBLIC_URL + "assets/images/blog.jpeg"}
           alt="blog.jpeg"
@@ -44,11 +36,11 @@ const Header = () => {
             !elipsisClicked ? "hidden" : ""
           }`}
         >
-          <div>
+          {/* <div>
             <NavLink to="/home" className={isActive}>
               Home
             </NavLink>
-          </div>
+          </div> */}
           <div>
             <NavLink to="/add-blog" className={isActive}>
               Add blog
