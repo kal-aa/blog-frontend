@@ -39,6 +39,6 @@ export const handleOAuthSign = async (
     : "User";
 
   navigate(
-    `/home?${purpose === "Sign-up" ? "signerName" : "loggerName"}=${firstName}`
+    `/blogs?${purpose === "Sign-up" ? "signerName" : "loggerName"}=${firstName}`
   );
 };

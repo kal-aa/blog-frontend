@@ -9,7 +9,7 @@ const NotFound = () => {
   const description = user?.id
     ? "The page you are looking for doesn't exist or has been moved."
     : "The page you are looking for not found or needs authorization.";
-  const homeLink = user?.id ? "/home" : "/";
+  const homeLink = user?.id ? "/blogs" : "/";
 
   return (
     <div className="flex flex-col items-center justify-center h-full px-4 text-center">

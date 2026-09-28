@@ -42,7 +42,7 @@ function ReplyCard({
               dispatch(setUserOfInterest(optimReply.replierId));
             } else {
               dispatch(setUserOfInterest(optimReply.replierId));
-              navigate("/home");
+              navigate("/blogs");
             }
           }}
           src={

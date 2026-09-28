@@ -46,7 +46,7 @@ const LoginPage = () => {
       const trim = name.trim().split(" ")[0];
       const firstName = trim.charAt(0).toUpperCase() + trim.slice(1) || "User";
 
-      navigate(`/home?loggerName=${firstName}`);
+      navigate(`/blogs?loggerName=${firstName}`);
     } catch (error: any) {
       console.error("Could not log-in", error);
 

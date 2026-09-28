@@ -103,7 +103,7 @@ function CommentCard({
                   dispatch(setUserOfInterest(optimComment.commenterId));
                 } else if (!isHome && id !== optimComment.commenterId) {
                   dispatch(setUserOfInterest(optimComment.commenterId));
-                  navigate("/home");
+                  navigate("/blogs");
                 }
               }}
               src={

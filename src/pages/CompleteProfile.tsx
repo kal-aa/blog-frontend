@@ -107,7 +107,7 @@ const CompleteProfile = () => {
       const trim = name2.trim().split(" ")[0];
       const firstName = trim.charAt(0).toUpperCase() + trim.slice(1) || "User";
 
-      navigate(`/home?signerName=${firstName}`);
+      navigate(`/blogs?signerName=${firstName}`);
     } catch (err: any) {
       console.error("Error completing profile:", err);
       setError(err.message || "Unexpected error");

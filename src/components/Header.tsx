@@ -19,7 +19,7 @@ const Header = () => {
       {/* Lef section of the header */}
       <div className="flex items-center ml-1">
         <img
-          onClick={() => navigate("/home")}
+          onClick={() => navigate("/blogs")}
           title="Return to landing page"
           src={import.meta.env.VITE_PUBLIC_URL + "assets/images/blog.jpeg"}
           alt="blog.jpeg"
@@ -37,7 +37,7 @@ const Header = () => {
           }`}
         >
           {/* <div>
-            <NavLink to="/home" className={isActive}>
+            <NavLink to="/blogs" className={isActive}>
               Home
             </NavLink>
           </div> */}

@@ -25,6 +25,7 @@ function BlogCard({
   blog,
   handleDeleteBlog, // !isHome
   handleUpdateBlog, // !isHome
+  userofInterest, // isHome
 }: BlogCardProps) {
   const [thumbsUp, setThumbsUp] = useState(false);
   const [thumbsDown, setThumbsDown] = useState(false);

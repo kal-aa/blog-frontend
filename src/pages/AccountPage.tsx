@@ -285,7 +285,7 @@ const AccountPage = () => {
 
         toast.success("Account updated successfully!");
         invalidateBlogQueries(queryClient);
-        navigate(`/home`);
+        navigate(`/blogs`);
       } catch (error) {
         console.error("Error updating client data", error);
       } finally {
