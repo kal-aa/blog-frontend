@@ -1,13 +1,13 @@
 import { FaEllipsisV } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { auth } from "../config/firebase";
+import { setUserOfInterest } from "../features/blogSlice";
+import { useDispatch } from "react-redux";
 
 const Header = () => {
   const [elipsisClicked, setElipsisClicked] = useState(true);
   const navigate = useNavigate();
-
-  
+  const dispatch = useDispatch();
 
   const isActive = ({ isActive }: { isActive: boolean }) =>
     `header-hover py-1 px-2 ${
@@ -19,7 +19,10 @@ const Header = () => {
       {/* Lef section of the header */}
       <div className="flex items-center ml-1">
         <img
-          onClick={() => navigate("/blogs")}
+          onClick={() => {
+            dispatch(setUserOfInterest(""));
+            navigate("/blogs");
+          }}
           title="Return to landing page"
           src={import.meta.env.VITE_PUBLIC_URL + "assets/images/blog.jpeg"}
           alt="blog.jpeg"

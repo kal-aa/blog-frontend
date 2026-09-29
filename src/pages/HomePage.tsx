@@ -66,6 +66,8 @@ const HomePage = () => {
     placeholderData: (prev) => prev,
   });
 
+  // ...
+
   const { blogsWithAuthors = [], totalPages = 0 } = blogData || {};
 
   const blogs = useMemo(() => {
@@ -138,27 +140,28 @@ const HomePage = () => {
 
                 <div className="flex justify-center items-center my-5 rounded-full overflow-hidden w-[200px] h-[200px] mx-auto">
                   <img
-                  src={
-                    blogs[0].buffer && blogs[0].mimetype
-                      ? `data:${blogs[0].mimetype};base64,${blogs[0].buffer}`
-                      : import.meta.env.VITE_PUBLIC_URL +
-                        "assets/images/unknown-user.jpg"
-                  }
-                  alt={authorName}
-                />
+                    src={
+                      blogs[0].buffer && blogs[0].mimetype
+                        ? `data:${blogs[0].mimetype};base64,${blogs[0].buffer}`
+                        : import.meta.env.VITE_PUBLIC_URL +
+                          "assets/images/unknown-user.jpg"
+                    }
+                    alt={authorName}
+                  />
                 </div>
               </div>
             )}
             {blogs.map((blog) => (
-              <div key={blog._id}>
-                <BlogCard blog={blog} userofInterest={userOfInterest} />
-              </div>
+              <BlogCard key={blog._id} blog={blog} />
             ))}
           </section>
           {/* Link to go back to view all blogs when the user is viewing a single user's blog(s)*/}
           {userOfInterest && (
             <p
-              onClick={() => dispatch(setUserOfInterest(""))}
+              onClick={() => {
+                dispatch(setUserOfInterest(""));
+                navigate("/blogs");
+              }}
               className="mb-5 text-center cursor-pointer"
             >
               <span className="mr-1 font-bold text-blue-800 hover:text-blue-600">

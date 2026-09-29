@@ -25,7 +25,6 @@ function BlogCard({
   blog,
   handleDeleteBlog, // !isHome
   handleUpdateBlog, // !isHome
-  userofInterest, // isHome
 }: BlogCardProps) {
   const [thumbsUp, setThumbsUp] = useState(false);
   const [thumbsDown, setThumbsDown] = useState(false);
@@ -49,6 +48,8 @@ function BlogCard({
   const id = user?.id;
   const isHome = useSelector((state: RootState) => state.blog.isHome);
   const dispatch = useDispatch();
+
+  const { userOfInterest } = useSelector((state: RootState) => state.blog);
 
   useEffect(() => {
     setViewCount(blog.views?.length ?? 0);
@@ -126,7 +127,7 @@ function BlogCard({
   return (
     <section className="blog-container">
       {/* profile pic */}
-      {isHome && !userofInterest && (
+      {isHome && !userOfInterest && (
         <img
           src={
             blog.buffer && blog.mimetype
@@ -140,6 +141,7 @@ function BlogCard({
             // navigate to the clicked user's blogs
             if (id !== blog.authorId) {
               dispatch(setUserOfInterest(blog.authorId));
+              navigate(`/blogs?user=${blog.authorId}`);
             } else {
               navigate("/your-blogs");
             }
@@ -244,13 +246,13 @@ function BlogCard({
             onClick={() => setExpand(false)}
             className="inline ml-3 text-blue-800 cursor-pointer hover:text-blue-600"
           >
-            {expand && "Less"}
+            {expand && "Show less"}
           </span>
           <span
             onClick={handleSeeMore}
             className="text-blue-800 cursor-pointer hover:text-blue-600"
           >
-            {!expand && "See more"}
+            {!expand && "Show more"}
           </span>
           {expand ? (
             <MdExpandLess
@@ -284,8 +286,8 @@ function BlogCard({
                 isUpdating
                   ? "updating..."
                   : readyToUpdate
-                  ? "update blog"
-                  : "no changes to update"
+                    ? "update blog"
+                    : "no changes to update"
               }
               ref={updateBtnRef}
               onClick={() =>

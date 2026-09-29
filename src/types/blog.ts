@@ -63,7 +63,6 @@ export interface BlogCardProps {
   blog: Blog;
   handleDeleteBlog?: (params: DeleteBlogParams) => void;
   handleUpdateBlog?: (params: UpdateBlogParams) => void;
-  userofInterest?: string;
 }
 
 // BlogDetail.tsx
