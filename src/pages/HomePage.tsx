@@ -131,36 +131,27 @@ const HomePage = () => {
           {/* render blogs if available */}
           <section className="flex flex-col mx-[10%] sm:mx-[15%] md:mx-[20%] lg:mx-[25%] space-y-14 my-5">
             {userOfInterest && (
-            <div>
-               <p className="text-lg text-center ">
-                You&apos;re viewing {authorName}&apos;s Blog
-                {blogs.length > 1 ? "s" : ""}
-              </p>
+              <div>
+                <p className="text-lg text-center text-gray-700">
+                  {authorName}&apos;s Blogs
+                </p>
 
-
-
-              
-              <img 
-
-               src={
-            blogs[0].buffer && blogs[0].mimetype
-              ? `data:${blogs[0].mimetype};base64,${blogs[0].buffer}`
-              : import.meta.env.VITE_PUBLIC_URL +
-                "assets/images/unknown-user.jpg"
-          }
-              alt={authorName} />
-
-
-{/* reomve the image from the blogs if we have user of interest */}
-
-
-
-
-            </div>
+                <div className="flex justify-center items-center my-5 rounded-full overflow-hidden w-[200px] h-[200px] mx-auto">
+                  <img
+                  src={
+                    blogs[0].buffer && blogs[0].mimetype
+                      ? `data:${blogs[0].mimetype};base64,${blogs[0].buffer}`
+                      : import.meta.env.VITE_PUBLIC_URL +
+                        "assets/images/unknown-user.jpg"
+                  }
+                  alt={authorName}
+                />
+                </div>
+              </div>
             )}
             {blogs.map((blog) => (
               <div key={blog._id}>
-                <BlogCard blog={blog} userofInterest={userOfInterest}  />
+                <BlogCard blog={blog} userofInterest={userOfInterest} />
               </div>
             ))}
           </section>

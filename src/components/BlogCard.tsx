@@ -126,7 +126,7 @@ function BlogCard({
   return (
     <section className="blog-container">
       {/* profile pic */}
-      {isHome && (
+      {isHome && !userofInterest && (
         <img
           src={
             blog.buffer && blog.mimetype
