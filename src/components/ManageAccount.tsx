@@ -52,14 +52,12 @@ const ManageAccount = ({
       reader.readAsDataURL(image);
     } else {
       setPreview(
-        import.meta.env.VITE_PUBLIC_URL + "assets/images/unknown-user.jpg"
+        "/assets/images/unknown-user.jpg"
       );
     }
   };
 
-  const defaultImage = `${
-    import.meta.env.VITE_PUBLIC_URL
-  }assets/images/unknown-user.jpg`;
+  const defaultImage = `/assets/images/unknown-user.jpg`;
 
   const imageSrc =
     preview ||

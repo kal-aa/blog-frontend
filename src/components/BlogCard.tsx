@@ -132,8 +132,7 @@ function BlogCard({
           src={
             blog.buffer && blog.mimetype
               ? `data:${blog.mimetype};base64,${blog.buffer}`
-              : import.meta.env.VITE_PUBLIC_URL +
-                "assets/images/unknown-user.jpg"
+              : "/assets/images/unknown-user.jpg"
           }
           alt={`${blog.author ? blog.author.toUpperCase() : "user pic"}`}
           title={`more from ${blog.author?.toUpperCase()}`}

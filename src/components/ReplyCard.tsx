@@ -48,8 +48,7 @@ function ReplyCard({
           src={
             optimReply.buffer && optimReply.mimetype
               ? `data:${optimReply.mimetype};base64,${optimReply.buffer}`
-              : import.meta.env.VITE_PUBLIC_URL +
-                "assets/images/unknown-user.jpg"
+              : "/assets/images/unknown-user.jpg"
           }
           alt={replierName.toUpperCase()}
           className="w-5 h-5 text-xs bg-white rounded-full cursor-pointer"

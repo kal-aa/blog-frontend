@@ -133,8 +133,7 @@ const CompleteProfile = () => {
             <img
               src={
                 preview ||
-                import.meta.env.VITE_PUBLIC_URL +
-                  "assets/images/unknown-user.jpg"
+                "/assets/images/unknown-user.jpg"
               }
               alt="user"
               className="inline w-20 h-20 border border-red-300 rounded-full cursor-pointer"

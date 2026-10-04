@@ -109,8 +109,7 @@ function CommentCard({
               src={
                 optimComment.buffer && optimComment.mimetype
                   ? `data:${optimComment.mimetype};base64,${optimComment.buffer}`
-                  : import.meta.env.VITE_PUBLIC_URL +
-                    "assets/images/unknown-user.jpg"
+                  : "/assets/images/unknown-user.jpg"
               }
               alt={commenterName.toUpperCase()}
               className="w-5 h-5 text-xs text-white bg-white rounded-full cursor-pointer"

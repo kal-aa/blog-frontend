@@ -143,8 +143,7 @@ const HomePage = () => {
                     src={
                       blogs[0].buffer && blogs[0].mimetype
                         ? `data:${blogs[0].mimetype};base64,${blogs[0].buffer}`
-                        : import.meta.env.VITE_PUBLIC_URL +
-                          "assets/images/unknown-user.jpg"
+                        : "/assets/images/unknown-user.jpg"
                     }
                     alt={authorName}
                   />

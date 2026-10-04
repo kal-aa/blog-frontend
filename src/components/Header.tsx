@@ -24,7 +24,7 @@ const Header = () => {
             navigate("/blogs");
           }}
           title="Return to landing page"
-          src={import.meta.env.VITE_PUBLIC_URL + "assets/images/blog.jpeg"}
+          src={"/assets/images/blog.jpeg"}
           alt="blog.jpeg"
           className="w-16 cursor-pointer"
         />

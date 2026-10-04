@@ -34,7 +34,7 @@ const AboutUsPage = () => {
         <div className="flex flex-col gap-y-5 sm:flex-row sm:gap-x-10">
           <div className="flex flex-col items-center">
             <img
-              src={import.meta.env.VITE_PUBLIC_URL + "assets/images/kalab.jpg"}
+              src={"/assets/images/kalab.jpg"}
               alt="Kalab Sisay, CEO of Abstruse Co."
               className="w-24 rounded-full "
             />
@@ -43,7 +43,7 @@ const AboutUsPage = () => {
           </div>
           <div className="flex flex-col items-center">
             <img
-              src={import.meta.env.VITE_PUBLIC_URL + "assets/images/khalid.jpg"}
+              src={"/assets/images/khalid.jpg"}
               alt="khalid Edris, CTO of Abstruse Co."
               className="w-24 rounded-full "
             />
