@@ -5,7 +5,7 @@ import { setUserOfInterest } from "../features/blogSlice";
 import { useDispatch } from "react-redux";
 
 const Header = () => {
-  const [elipsisClicked, setElipsisClicked] = useState(true);
+  const [elipsisClicked, setElipsisClicked] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
