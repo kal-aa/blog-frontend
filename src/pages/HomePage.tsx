@@ -66,8 +66,6 @@ const HomePage = () => {
     placeholderData: (prev) => prev,
   });
 
-  // ...
-
   const { blogsWithAuthors = [], totalPages = 0 } = blogData || {};
 
   const blogs = useMemo(() => {
@@ -105,9 +103,8 @@ const HomePage = () => {
           <p>please wait...</p>
         </div>
       ) : blogs.length === 0 ? (
-        // check if no blogs are available
         userOfInterest ? (
-          <p className="text-xl text-center">
+          <div className="text-xl text-center">
             This user has no blogs yet, go
             <button
               onClick={() => dispatch(setUserOfInterest(""))}
@@ -115,9 +112,9 @@ const HomePage = () => {
             >
               back
             </button>
-          </p>
+          </div>
         ) : (
-          <p className="text-xl text-center">
+          <div className="text-xl text-center">
             No Blogs Available yet, be the
             <NavLink
               to="/add-blog"
@@ -126,49 +123,48 @@ const HomePage = () => {
               First
             </NavLink>
             One
-          </p>
+          </div>
         )
       ) : (
         <div>
           {/* render blogs if available */}
-          <section className="flex flex-col mx-[10%] sm:mx-[15%] md:mx-[20%] lg:mx-[25%] space-y-14 my-5">
-            {userOfInterest && (
-              <div>
-                <p className="text-lg text-center text-gray-700">
-                  {authorName}&apos;s Blogs
-                </p>
-
-                <div className="flex justify-center items-center my-5 rounded-full overflow-hidden w-[200px] h-[200px] mx-auto">
-                  <img
-                    src={
-                      blogs[0].buffer && blogs[0].mimetype
-                        ? `data:${blogs[0].mimetype};base64,${blogs[0].buffer}`
-                        : "/assets/images/unknown-user.jpg"
-                    }
-                    alt={authorName}
-                  />
+          <div>
+            <section className="flex flex-col mx-[10%] sm:mx-[15%] md:mx-[20%] lg:mx-[25%] space-y-14 my-5">
+              {userOfInterest && (
+                <div className="text-lg text-center text-gray-700">
+                    {authorName}&apos;s Blogs
+                  <div className="flex justify-center items-center my-5 rounded-full overflow-hidden w-[200px] h-[200px] mx-auto">
+                    <img
+                      src={
+                        blogs[0].buffer && blogs[0].mimetype
+                          ? `data:${blogs[0].mimetype};base64,${blogs[0].buffer}`
+                          : "/assets/images/unknown-user.jpg"
+                      }
+                      alt={authorName}
+                    />
+                  </div>
                 </div>
+              )}
+              {blogs.map((blog) => (
+                <BlogCard key={blog._id} blog={blog} />
+              ))}
+            </section>
+            {/* Link to go back to view all blogs when the user is viewing a single user's blog(s)*/}
+            {userOfInterest && (
+              <div
+                onClick={() => {
+                  dispatch(setUserOfInterest(""));
+                  navigate("/blogs");
+                }}
+                className="mb-5 text-center cursor-pointer"
+              >
+                <span className="mr-1 font-bold text-blue-800 hover:text-blue-600">
+                  Go back
+                </span>
+                and view all
               </div>
             )}
-            {blogs.map((blog) => (
-              <BlogCard key={blog._id} blog={blog} />
-            ))}
-          </section>
-          {/* Link to go back to view all blogs when the user is viewing a single user's blog(s)*/}
-          {userOfInterest && (
-            <p
-              onClick={() => {
-                dispatch(setUserOfInterest(""));
-                navigate("/blogs");
-              }}
-              className="mb-5 text-center cursor-pointer"
-            >
-              <span className="mr-1 font-bold text-blue-800 hover:text-blue-600">
-                Go back
-              </span>
-              and view all
-            </p>
-          )}
+          </div>
           {/* Pagination */}
           <Pagination
             limit={limit}
