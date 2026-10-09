@@ -10,6 +10,7 @@ import { useDispatch } from "react-redux";
 import { invalidateBlogQueries } from "../utils/InvalidateBlogQueries";
 import { BlogDetailProps } from "../types/blog";
 import { Comment } from "../types/comment";
+import { queryKeys } from "../utils/queryKeys";
 
 function BlogDetail({
   blog,
@@ -44,7 +45,7 @@ function BlogDetail({
     isSuccess,
     // refetch,
   } = useQuery({
-    queryKey: ["comments", { route: `blogs/${blog._id}/comments` }],
+    queryKey: queryKeys.comments(blog._id),
     queryFn: fetchData<Comment[]>,
     enabled: isObjectId(blog._id),
     staleTime: 1000 * 60 * 5,

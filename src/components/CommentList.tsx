@@ -1,6 +1,5 @@
 import { memo, useCallback } from "react";
 import axios from "axios";
-import CommentCard from "./CommentCard";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUser } from "../context/UserContext";
 import { setGlobalError } from "../features/errorSlice";
@@ -16,6 +15,8 @@ import {
 } from "../types/comment";
 import { handleSendReplyParams, Reply } from "../types/reply";
 import { invalidateBlogQueries } from "../utils/InvalidateBlogQueries";
+import { queryKeys } from "../utils/queryKeys";
+import CommentCard from "./CommentCard";
 
 function CommentList({
   blog,
@@ -28,13 +29,13 @@ function CommentList({
   const id = user?.id;
   const dispatch = useDispatch();
 
-  const updateComment = async (optimComment: Comment, action: string) => {
+  const updateComment = async (optimComment_id: string, action: string) => {
     await axios.patch(
-      `${import.meta.env.VITE_BACKEND_URL}/interaction/${optimComment._id}`,
+      `${import.meta.env.VITE_BACKEND_URL}/interaction/${optimComment_id}`,
       {
         action,
         userId: id,
-      }
+      },
     );
   };
 
@@ -62,28 +63,31 @@ function CommentList({
       try {
         // Remove dislike first
         if (thumbsDown)
-          await updateComment(optimComment, "removeCommentDislike");
+          await updateComment(optimComment._id, "removeCommentDislike");
 
         //Add like
-        await updateComment(optimComment, "addCommentLike");
+        await updateComment(optimComment._id, "addCommentLike");
         queryClient.setQueryData<Comment[]>(
-          ["comments", { route: `blogs/${blog._id}/comments` }],
+          queryKeys.comments(blog._id),
+
+
+          // Use this format on the other handlers
           (old) => {
             if (!old) return old;
-            return old.map((c) =>
-              c._id === optimComment._id
-                ? {
-                    ...c,
-                    likes: c.likes.includes(id!)
-                      ? c.likes
-                      : id
-                      ? [...c.likes, id]
-                      : c.likes,
-                    dislikes: c.dislikes.filter((d) => d !== id),
-                  }
-                : c
-            );
-          }
+            return old.map((c) => {
+              if (c._id !== optimComment._id) return c;
+
+              return {
+                ...c,
+                likes: id && !c.likes.includes(id) ? [...c.likes, id] : c.likes,
+                dislikes: c.dislikes.filter((d) => d !== id),
+              };
+            });
+          },
+
+
+
+          
         );
       } catch (error) {
         console.error("Error removing dislike and or adding like:", error);
@@ -93,7 +97,7 @@ function CommentList({
         setDislikeCount(prevDislikeCount);
       }
     },
-    [id, queryClient, blog._id]
+    [id, queryClient, blog._id],
   );
 
   //  setThumbsUp(false) remove like
@@ -103,9 +107,9 @@ function CommentList({
       setLikeCount((prev) => prev - 1);
 
       try {
-        await updateComment(optimComment, "removeCommentLike");
+        await updateComment(optimComment._id, "removeCommentLike");
         queryClient.setQueryData<Comment[]>(
-          ["comments", { route: `blogs/${blog._id}/comments` }],
+          queryKeys.comments(blog._id),
           (old) => {
             if (!old) return old;
             return old.map((c) =>
@@ -114,9 +118,9 @@ function CommentList({
                     ...c,
                     likes: c.likes.filter((l) => l !== id),
                   }
-                : c
+                : c,
             );
-          }
+          },
         );
       } catch (error) {
         console.error("Error removing like:", error);
@@ -124,7 +128,7 @@ function CommentList({
         setLikeCount((prev) => prev + 1);
       }
     },
-    [id, queryClient, blog._id]
+    [id, queryClient, blog._id],
   );
 
   //  setThumbsDown(true) add dislike
@@ -151,12 +155,13 @@ function CommentList({
 
       try {
         // remove like first
-        if (thumbsUp) await updateComment(optimComment, "removeCommentLike");
+        if (thumbsUp)
+          await updateComment(optimComment._id, "removeCommentLike");
 
         // add dislike
-        await updateComment(optimComment, "addCommentDislike");
+        await updateComment(optimComment._id, "addCommentDislike");
         queryClient.setQueryData<Comment[]>(
-          ["comments", { route: `blogs/${blog._id}/comments` }],
+          queryKeys.comments(blog._id),
           (old) => {
             if (!old) return old;
             return old.map((c) =>
@@ -167,12 +172,12 @@ function CommentList({
                     dislikes: c.dislikes.includes(id!)
                       ? c.dislikes
                       : id
-                      ? [...c.dislikes, id]
-                      : c.dislikes,
+                        ? [...c.dislikes, id]
+                        : c.dislikes,
                   }
-                : c
+                : c,
             );
-          }
+          },
         );
       } catch (error) {
         console.log("Error adding dislike and or removing like:", error);
@@ -182,7 +187,7 @@ function CommentList({
         setLikeCount(prevLikeCount);
       }
     },
-    [id, queryClient, blog._id]
+    [id, queryClient, blog._id],
   );
 
   //  setThumbsDown(false)  remove dislike
@@ -196,9 +201,9 @@ function CommentList({
       setDislikeCount((prev) => prev - 1);
 
       try {
-        await updateComment(optimComment, "removeCommentDislike");
+        await updateComment(optimComment._id, "removeCommentDislike");
         queryClient.setQueryData<Comment[]>(
-          ["comments", { route: `blogs/${blog._id}/comments` }],
+          queryKeys.comments(blog._id),
           (old) => {
             if (!old) return old;
             return old.map((c) =>
@@ -207,9 +212,9 @@ function CommentList({
                     ...c,
                     dislikes: c.dislikes.filter((d) => d !== id),
                   }
-                : c
+                : c,
             );
-          }
+          },
         );
       } catch (error) {
         console.error("Error removing dislike:", error);
@@ -217,7 +222,7 @@ function CommentList({
         setDislikeCount((prev) => prev + 1);
       }
     },
-    [id, queryClient, blog._id]
+    [id, queryClient, blog._id],
   );
 
   // !isHome
@@ -229,7 +234,7 @@ function CommentList({
       setIsDeletingComment(true);
 
       setOptimComments((prev) =>
-        prev.filter((c) => c._id !== optimComment._id)
+        prev.filter((c) => c._id !== optimComment._id),
       );
       setCommentCount((prev) => prev - 1);
 
@@ -240,11 +245,11 @@ function CommentList({
       try {
         await axios.delete(delUrl);
         queryClient.setQueryData<Comment[]>(
-          ["comments", { route: `blogs/${blog._id}/comments` }],
+          queryKeys.comments(blog._id),
           (old) => {
             if (!old) return old;
             return old.filter((c) => c._id !== optimComment._id);
-          }
+          },
         );
       } catch (error) {
         console.error("Error deleting comment", error);
@@ -254,8 +259,8 @@ function CommentList({
             [...prev, optimComment].sort(
               (a, b) =>
                 new Date(b.createdAt).getTime() -
-                new Date(a.createdAt).getTime()
-            )
+                new Date(a.createdAt).getTime(),
+            ),
           );
           setCommentCount((prev) => prev + 1);
         }
@@ -263,7 +268,7 @@ function CommentList({
         setIsDeletingComment(false);
       }
     },
-    [setCommentCount, setOptimComments, queryClient, blog._id]
+    [setCommentCount, setOptimComments, queryClient, blog._id],
   );
 
   const handleSendReply = useCallback(
@@ -301,8 +306,8 @@ function CommentList({
       setOptimReplies((prev) =>
         [...prev, tempReply].sort(
           (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        )
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        ),
       );
       setReplyCount((prev) => prev + 1);
       setShowReplies(true);
@@ -334,11 +339,11 @@ function CommentList({
         if (!newReply) throw new Error("No new reply returned");
 
         queryClient.setQueryData<Reply[]>(
-          ["replies", { route: `comments/${optimComment._id}/replies` }],
+          queryKeys.replies(optimComment._id),
           (old) => {
             if (!old) return [newReply];
             return [newReply, ...(old?.filter((r) => r._id !== tempId) || [])];
-          }
+          },
         );
 
         invalidateBlogQueries(queryClient);
@@ -352,7 +357,7 @@ function CommentList({
         setReplyValue("");
       }
     },
-    [id, queryClient, blog._id, dispatch, user?.name]
+    [id, queryClient, blog._id, dispatch, user?.name],
   );
 
   return (

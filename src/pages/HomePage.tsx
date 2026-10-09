@@ -14,6 +14,7 @@ import { setIsHome, setUserOfInterest } from "../features/blogSlice";
 import { setGlobalError } from "../features/errorSlice";
 import { RootState } from "../store/store";
 import { BlogsResponse } from "../types/blog";
+import { queryKeys } from "../utils/queryKeys";
 
 const HomePage = () => {
   const [limit, setLimit] = useState(0);
@@ -59,7 +60,7 @@ const HomePage = () => {
     isError,
     refetch,
   } = useQuery({
-    queryKey: ["all-blogs", { route: `blogs/${id}?page=${limit}` }],
+    queryKey: queryKeys.allBlogs(id ?? "", limit),
     queryFn: fetchData<BlogsResponse>,
     enabled: !!id && isObjectId(id),
     staleTime: 1000 * 60 * 5,

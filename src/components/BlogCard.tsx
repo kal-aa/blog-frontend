@@ -152,8 +152,7 @@ function BlogCard({
       {/* Top right section */}
       <p className="date-style">{relativeTime(blog.createdAt)}</p>
 
-      <div className="flex justify-between mx-3 ml-5">
-        <div className="flex flex-col capitalize">
+        <div className="flex flex-col capitalize mx-3 ml-5">
           {isHome && !expand && (
             <p className="text-xs capitalize md:text-sm">by: {blog.author}</p>
           )}
@@ -179,6 +178,7 @@ function BlogCard({
                 }}
               />
             )}
+
             {!isHome &&
               (editTitlePen ? (
                 readyToUpdate ? (
@@ -205,6 +205,7 @@ function BlogCard({
                 />
               ))}
           </div>
+
           {isHome ? (
             expand && (
               <p className="capitalize text-xs md:text-sm ml-1.5">
@@ -218,7 +219,6 @@ function BlogCard({
             </p>
           )}
         </div>
-      </div>
 
       {/* sample body */}
       <p className="mt-2 ml-3 leading-4 break-words">
@@ -277,7 +277,6 @@ function BlogCard({
 
       {/* Update and Delete btns, along with update Error */}
       {!isHome && (
-        <div>
           <div className="flex justify-around mt-5">
             {/* update btn */}
             <button
@@ -304,22 +303,16 @@ function BlogCard({
                 })
               }
               disabled={!readyToUpdate || isUpdating}
-              className={`text-white px-3 py-1 rounded-lg ${
+              className={`flex items-end text-white px-3 py-1 rounded-lg ${
                 readyToUpdate ? "bg-gray-600 hover:bg-gray-800" : "bg-gray-400"
               }`}
             >
-              {isUpdating ? (
-                <span className="flex items-end">
-                  update
-                  <BeatLoader
-                    size={8}
-                    color="white"
-                    className="w-5 mb-1 ml-1"
-                  />
-                </span>
-              ) : (
-                "Update"
-              )}
+              Update
+              {isUpdating && <BeatLoader
+                size={8}
+                color="white"
+                className="flex w-5 mb-1 ml-1"
+              />}
             </button>
             {/* delete btn */}
             <button
@@ -330,7 +323,7 @@ function BlogCard({
               disabled={isDeleting}
               className={`px-3 py-1 text-white bg-gray-600 rounded-lg hover:bg-gray-800`}
             >
-              <span>Delete</span>
+              Delete
               <FaTrash
                 size={12}
                 className={`inline ml-1 hover:animate-pulse ${
@@ -339,7 +332,6 @@ function BlogCard({
               />
             </button>
           </div>
-        </div>
       )}
     </section>
   );
