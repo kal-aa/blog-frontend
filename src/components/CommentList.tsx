@@ -70,8 +70,6 @@ function CommentList({
         queryClient.setQueryData<Comment[]>(
           queryKeys.comments(blog._id),
 
-
-          // Use this format on the other handlers
           (old) => {
             if (!old) return old;
             return old.map((c) => {
@@ -84,10 +82,6 @@ function CommentList({
               };
             });
           },
-
-
-
-          
         );
       } catch (error) {
         console.error("Error removing dislike and or adding like:", error);
@@ -112,14 +106,14 @@ function CommentList({
           queryKeys.comments(blog._id),
           (old) => {
             if (!old) return old;
-            return old.map((c) =>
-              c._id === optimComment._id
-                ? {
-                    ...c,
-                    likes: c.likes.filter((l) => l !== id),
-                  }
-                : c,
-            );
+            return old.map((c) => {
+              if (c._id !== optimComment._id) return c;
+
+              return {
+                ...c,
+                likes: c.likes.filter((l) => l !== id),
+              };
+            });
           },
         );
       } catch (error) {
@@ -164,19 +158,18 @@ function CommentList({
           queryKeys.comments(blog._id),
           (old) => {
             if (!old) return old;
-            return old.map((c) =>
-              c._id === optimComment._id
-                ? {
-                    ...c,
-                    likes: c.likes.filter((l) => l !== id),
-                    dislikes: c.dislikes.includes(id!)
-                      ? c.dislikes
-                      : id
-                        ? [...c.dislikes, id]
-                        : c.dislikes,
-                  }
-                : c,
-            );
+            return old.map((c) => {
+              if (c._id !== optimComment._id) return c;
+
+              return {
+                ...c,
+                likes: c.likes.filter((l) => l !== id),
+                dislikes:
+                  id && !c.dislikes.includes(id)
+                    ? [...c.dislikes, id]
+                    : c.dislikes,
+              };
+            });
           },
         );
       } catch (error) {
@@ -206,14 +199,14 @@ function CommentList({
           queryKeys.comments(blog._id),
           (old) => {
             if (!old) return old;
-            return old.map((c) =>
-              c._id === optimComment._id
-                ? {
-                    ...c,
-                    dislikes: c.dislikes.filter((d) => d !== id),
-                  }
-                : c,
-            );
+            return old.map((c) => {
+              if (c._id !== optimComment._id) return c;
+
+              return {
+                ...c,
+                dislikes: c.dislikes.filter((d) => d !== id),
+              };
+            });
           },
         );
       } catch (error) {
@@ -337,6 +330,10 @@ function CommentList({
 
         const { newReply } = await res.json();
         if (!newReply) throw new Error("No new reply returned");
+
+        setOptimReplies((prev) =>
+          prev.map((r) => (r._id === tempId ? newReply : r)),
+        );
 
         queryClient.setQueryData<Reply[]>(
           queryKeys.replies(optimComment._id),

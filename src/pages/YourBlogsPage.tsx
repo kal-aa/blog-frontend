@@ -42,19 +42,19 @@ const YourBlogsPage = () => {
     placeholderData: (prev) => prev,
   });
 
-  const { blogs: paginatedBlogs = [], totalPages = 0 } = data || {};
+  const totalPages = data?.totalPages ?? 0;
 
   useEffect(() => {
-    if (paginatedBlogs) {
-      setBlogs(paginatedBlogs);
+    if (data) {
+      setBlogs(data.blogs ?? []);
     }
-  }, [paginatedBlogs]);
+  }, [data]);
 
   // Delete blog
   const handleDeleteBlog = useCallback(
     async ({ blogId, setIsDeleting }: DeleteBlogParams) => {
       const confirm = window.confirm(
-        "Are you sure you want to delete this blog?"
+        "Are you sure you want to delete this blog?",
       );
       if (!confirm) return;
 
@@ -67,7 +67,7 @@ const YourBlogsPage = () => {
         const url = `${
           import.meta.env.VITE_BACKEND_URL
         }/delete-blog/${encodeURIComponent(id!)}?blogId=${encodeURIComponent(
-          blogId
+          blogId,
         )}`;
         await fetch(url, { method: "DELETE" });
 
@@ -80,7 +80,7 @@ const YourBlogsPage = () => {
         setIsDeleting(false);
       }
     },
-    [id, queryclient]
+    [id, queryclient],
   );
 
   // Update blog
@@ -126,7 +126,7 @@ const YourBlogsPage = () => {
         }
 
         setBlogs((prev) =>
-          prev.map((b) => (b._id === blog._id ? { ...b, title, body } : b))
+          prev.map((b) => (b._id === blog._id ? { ...b, title, body } : b)),
         );
 
         toast.success("Blog updated successfully!");
@@ -138,7 +138,7 @@ const YourBlogsPage = () => {
         console.error("Error updating blog", error);
         if (updateCandidate) {
           setBlogs((prev) =>
-            prev.map((b) => (b._id === blogId ? updateCandidate : b))
+            prev.map((b) => (b._id === blogId ? updateCandidate : b)),
           );
         }
       } finally {
@@ -147,7 +147,7 @@ const YourBlogsPage = () => {
         setEditBodyPen(false);
       }
     },
-    [id, queryclient, dispatch]
+    [id, queryclient, dispatch],
   );
 
   useEffect(() => {

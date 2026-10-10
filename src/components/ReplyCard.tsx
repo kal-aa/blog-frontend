@@ -55,12 +55,13 @@ function ReplyCard({
         />
       </div>
 
-      <p
-        onClick={() => setIsFullReply((prev) => !prev)}
-        className="mb-1 text-sm text-center"
-      >
-        <SeeMore value={replyValue} isFull={isFullReply} />
-      </p>
+      <div className="mb-1 text-sm text-center break-words w-4/5">
+        <SeeMore
+          setIsFullValue={setIsFullReply}
+          value={replyValue}
+          isFull={isFullReply}
+        />
+      </div>
 
       <div className="flex items-center">
         <p className="text-[10px] text-red-300 -mt-1.5">

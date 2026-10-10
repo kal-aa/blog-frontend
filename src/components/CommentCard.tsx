@@ -21,6 +21,7 @@ import { setUserOfInterest } from "../features/blogSlice";
 import { RootState } from "../store/store";
 import { Reply } from "../types/reply";
 import { CommentCardProps } from "../types/comment";
+import { queryKeys } from "../utils/queryKeys";
 const ReplyList = lazy(() => import("./ReplyList"));
 
 function CommentCard({
@@ -34,7 +35,7 @@ function CommentCard({
   handleLike,
 }: CommentCardProps) {
   const [optimReplies, setOptimReplies] = useState<Reply[]>([]);
-  const [ShowReplyForm, setShowReplyForm] = useState(false);
+  const [showReplyForm, setShowReplyForm] = useState(false);
   const [thumbsUp, setThumbsUp] = useState(false);
   const [thumbsDown, setThumbsDown] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
@@ -59,7 +60,7 @@ function CommentCard({
     // isSuccess,
     // refetch,
   } = useQuery({
-    queryKey: ["replies", { route: `comments/${optimComment._id}/replies` }],
+    queryKey: queryKeys.replies(optimComment._id),
     queryFn: fetchData<Reply[]>,
     enabled: isObjectId(optimComment._id),
     staleTime: 1000 * 60 * 5,
@@ -83,8 +84,8 @@ function CommentCard({
 
   // reply input focus
   useEffect(() => {
-    if (ShowReplyForm && inputRef.current) inputRef.current.focus();
-  }, [ShowReplyForm]);
+    if (showReplyForm && inputRef.current) inputRef.current.focus();
+  }, [showReplyForm]);
 
   const commenterName =
     optimComment.commenterName || user?.name || "Unknown user";
@@ -93,7 +94,7 @@ function CommentCard({
     <section className="relative bg-black rounded-xl">
       <div className="flex flex-col px-3 py-2 md:items-end md:flex-row md:justify-around">
         <div className="md:w-2/3">
-          <div className="flex items-center space-x-1">
+          <div className="flex items-center space-x-1 text-xs text-red-200">
             <img
               title={`more from ${commenterName.toUpperCase()}`}
               onClick={() => {
@@ -112,23 +113,22 @@ function CommentCard({
                   : "/assets/images/unknown-user.jpg"
               }
               alt={commenterName.toUpperCase()}
-              className="w-5 h-5 text-xs text-white bg-white rounded-full cursor-pointer"
+              className="w-5 h-5 mr-1 text-xs text-white bg-white rounded-full cursor-pointer"
             />
 
-            <p className="text-xs text-red-200">
-              {authorId === optimComment.commenterId
-                ? commenterName.split(" ")[0] + " (Author)"
-                : commenterName}
-            </p>
+            {authorId === optimComment.commenterId
+              ? commenterName.split(" ")[0] + " (Author)"
+              : commenterName}
           </div>
 
           {/* make the comment shorter (...) */}
-          <p
-            onClick={() => setIsFullComment((prev) => !prev)}
-            className="mt-1 text-sm indent-1 "
-          >
-            <SeeMore value={commentValue} isFull={isFullComment} />
-          </p>
+          <div className="mt-1 text-sm indent-1">
+            <SeeMore
+              setIsFullValue={setIsFullComment}
+              value={commentValue}
+              isFull={isFullComment}
+            />
+          </div>
 
           <p className="mt-1 text-xs text-red-300">
             {relativeTime(optimComment.createdAt)}
@@ -204,7 +204,7 @@ function CommentCard({
             <FaReply
               size={12}
               className="cursor-pointer hover:text-slate-400"
-              onClick={() => setShowReplyForm(!ShowReplyForm)}
+              onClick={() => setShowReplyForm(!showReplyForm)}
             />
             <p
               onClick={() => setShowReplies((prev) => !prev)}
@@ -217,7 +217,7 @@ function CommentCard({
       </div>
 
       {/* Reply form section */}
-      {ShowReplyForm && (
+      {showReplyForm && (
         <div className="flex flex-col items-center mx-[10%]">
           <form
             onSubmit={(e) =>
@@ -265,8 +265,8 @@ function CommentCard({
 
       {/* Replies */}
       <div className="flex flex-col space-y-4">
-        {showReplies ? (
-          optimReplies.length === 0 ? (
+        {showReplies &&
+          (optimReplies.length === 0 ? (
             <p className="text-sm text-center text-red-300">No replies</p>
           ) : (
             <Suspense fallback={<SuspenseFallback />}>
@@ -278,10 +278,7 @@ function CommentCard({
                 setReplyCount={setReplyCount}
               />
             </Suspense>
-          )
-        ) : (
-          ""
-        )}
+          ))}
       </div>
       {!isHome && (
         <FaTrashAlt
