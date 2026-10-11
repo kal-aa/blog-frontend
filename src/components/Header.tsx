@@ -5,7 +5,7 @@ import { setUserOfInterest } from "../features/blogSlice";
 import { useDispatch } from "react-redux";
 
 const Header = () => {
-  const [elipsisClicked, setElipsisClicked] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -30,13 +30,13 @@ const Header = () => {
         />
         <FaEllipsisV
           onClick={() => {
-            setElipsisClicked((prev) => !prev);
+            setIsMenuOpen((prev) => !prev);
           }}
           className="h-5 mr-2 text-yellow-700 hover:text-yellow-600 sm:hidden"
         />
         <div
           className={`space-y-1 sm:flex sm:flex-row sm:space-x-4 sm:items-center sm:ml-2 ${
-            !elipsisClicked ? "hidden" : ""
+            !isMenuOpen ? "hidden" : ""
           }`}
         >
           {/* <div>

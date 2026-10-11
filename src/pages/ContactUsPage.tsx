@@ -1,112 +1,148 @@
-import {
-  FaPhone,
-  FaEnvelope,
-  FaLinkedin,
-  FaMapMarker,
-  FaTelegramPlane,
-  FaWhatsapp,
-  FaFacebook,
-} from "react-icons/fa";
-import { MdFindInPage } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
-const ContactUs = () => {
-  const socialMediaStyle = "hover:text-blue-600 inline";
+const ContactUsPage = () => {
+  const phoneNumber = "+971 52 176 8664";
+  const email = "kalabmuhamed@gmail.com";
+  const portfolioUrl = "https://kal-portfolio-lime.vercel.app/";
 
   return (
-    <div className="mt-5 mx-[5%] px-[5%] md:text-center shadow-2xl">
-      <div>
-        <h1 className="-ml-1 text-2xl">Contact us</h1>
-        <p>
-          We’re here to help! Feel free to reach out to us using any of the
-          methods below.
-        </p>
-      </div>
-      <section className="border-b-4 pb-2 my-6 md:inline-block md:mr-[3%]">
-        <h2 className="text-xl md:mr-2">Phone:</h2>
-        <a href="tel: +251968350741">
-          <FaPhone className="inline mb-1 mr-2 text-green-500" />
-          <span className="inline hover:text-neutral-500">+251 968350741</span>
-        </a>
-        <p>Available: Monday to Monday, 9:00 AM - 5:00 PM</p>
-      </section>
-      <section className="border-b-4 pb-2 md:inline-block md:ml-[3%]">
-        <div>
-          <h2 className="text-xl md:mr-2">Email:</h2>
-          <a href="mailto: sadkalshayee@gmail.com">
-            <FaEnvelope className="inline mb-1 mr-2 text-blue-800" />
-            <span className="inline hover:text-neutral-500">
-              sadkalshayee@gmail.com
-            </span>
-          </a>
-          <p>We aim to respond within 24 hours</p>
-        </div>
-      </section>
-      <section className="pb-2 my-6 border-b-4">
-        <h2 className="text-xl">Address:</h2>
-        <FaMapMarker className="inline mb-1 mr-2 text-red-500" />
-        <p className="inline">
-          Ethiopia, Qobo<span className="text-xs">(for the time being)</span>
-        </p>
-      </section>
-      <section className="pb-2 my-6 border-b-4">
-        <h2 className="text-xl">Website:</h2>
-        <MdFindInPage className="inline mb-1 mr-2 text-red-500" />
-        <a
-          href="https://kal-portfolio-lime.vercel.app"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-900 underline hover:underline-offset-2"
-          aria-label="Personal Profile of Kalab Sisay"
-        >
-          Portfolio app
-        </a>
-      </section>
+    <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+      <div className="overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-slate-200">
+        {/* Hero Section */}
+        <section className="bg-slate-900 px-6 py-12 text-white sm:px-10 sm:py-16">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-blue-300">
+            Contact Us
+          </p>
 
-      <section>
-        <h2 className="text-xl">Social Media</h2>
-        <p>Follow us on social media for the latest updates</p>
-        <div className="flex flex-col gap-1 pl-5 mt-2 md:flex-row md:gap-4 md:items-center md:justify-center">
-          <a
-            href="https://web.facebook.com/profile.php?id=61572989257505"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Facebook profile"
+          <h1 className="mb-5 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">
+            Let's Talk
+          </h1>
+
+          <p className="max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
+            Have a question, an idea, or a project in mind? Get in touch. We'd
+            love to hear from you.
+          </p>
+        </section>
+
+        <div className="grid gap-10 px-6 py-10 sm:px-10 sm:py-12 lg:grid-cols-2 lg:gap-12">
+          {/* Contact Information */}
+          <section aria-labelledby="contact-info-heading">
+            <h2
+              id="contact-info-heading"
+              className="mb-3 text-2xl font-bold tracking-tight text-slate-800"
+            >
+              Get in Touch
+            </h2>
+
+            <p className="mb-8 leading-7 text-slate-600">
+              Choose whichever contact method works best for you. I'm happy to
+              connect.
+            </p>
+
+            <div className="space-y-4">
+              {/* Phone */}
+              <div className="rounded-xl border border-slate-200 p-5 transition-shadow hover:shadow-md">
+                <h3 className="mb-2 font-semibold text-slate-800">Phone</h3>
+
+                <a
+                  href="tel:+971521768664"
+                  className="break-words text-blue-900 hover:text-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-700"
+                >
+                  {phoneNumber}
+                </a>
+              </div>
+
+              {/* Email */}
+              <div className="rounded-xl border border-slate-200 p-5 transition-shadow hover:shadow-md">
+                <h3 className="mb-2 font-semibold text-slate-800">Email</h3>
+
+                <a
+                  href={`mailto:${email}`}
+                  className="break-words text-blue-900 hover:text-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-700"
+                >
+                  {email}
+                </a>
+              </div>
+
+              {/* Location */}
+              <div className="rounded-xl border border-slate-200 p-5">
+                <h3 className="mb-2 font-semibold text-slate-800">Location</h3>
+
+                <p className="text-slate-600">Dubai, United Arab Emirates</p>
+              </div>
+
+              {/* Portfolio */}
+              <div className="rounded-xl border border-slate-200 p-5 transition-shadow hover:shadow-md">
+                <h3 className="mb-2 font-semibold text-slate-800">Portfolio</h3>
+
+                <a
+                  href={portfolioUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="break-words text-blue-900 hover:text-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-700"
+                >
+                  View My Portfolio
+                </a>
+              </div>
+            </div>
+
+            {/* WhatsApp */}
+            <a
+              href="https://wa.me/971521768664"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 inline-flex w-full items-center justify-center rounded-lg bg-green-700 px-6 py-3 font-semibold text-white transition-colors hover:bg-green-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-700 focus-visible:ring-offset-2 sm:w-auto"
+            >
+              Contact on WhatsApp
+            </a>
+          </section>
+
+          {/* Additional Links */}
+          <section
+            aria-labelledby="contact-options-heading"
+            className="flex flex-col justify-center rounded-xl bg-blue-50 p-6 sm:p-8"
           >
-            <span className={socialMediaStyle}>Facebook </span>
-            <FaFacebook color="#0088CC" className="inline" />
-          </a>
-          <a
-            href="https://www.linkedin.com/in/kalab-muhamed-881139351"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Linkedin profile"
-          >
-            <span className={socialMediaStyle}>Linkedin </span>
-            <FaLinkedin color="#0088CC" className="inline" />
-          </a>
-          <a
-            href="https://t.me/Silent7951"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Telegram profile"
-          >
-            <span className={socialMediaStyle}>Telegram </span>
-            <FaTelegramPlane color="#0088CC" className="inline" />
-          </a>
-          <a
-            href="https://wa.me/+251968350741"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="WhatsApp chat"
-          >
-            <span className={socialMediaStyle}>WhatsApp </span>
-            <FaWhatsapp color="#25D366" className="inline" />
-          </a>
+            <h2
+              id="contact-options-heading"
+              className="mb-4 text-2xl font-bold tracking-tight text-slate-800"
+            >
+              Let's Connect
+            </h2>
+
+            <p className="mb-6 leading-7 text-slate-600">
+              Whether you have a question, want to discuss a project, or simply
+              want to connect, feel free to reach out.
+            </p>
+
+            <div className="flex flex-col gap-3">
+              <a
+                href={`mailto:${email}?subject=${encodeURIComponent("Website Inquiry")}`}
+                className="inline-flex items-center justify-center rounded-lg bg-blue-900 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-700 focus-visible:ring-offset-2"
+              >
+                Send an Email
+              </a>
+
+              <a
+                href={portfolioUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-6 py-3 font-semibold text-slate-800 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-700 focus-visible:ring-offset-2"
+              >
+                Explore My Portfolio
+              </a>
+
+              <NavLink
+                to="/about-us"
+                className="inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-6 py-3 font-semibold text-slate-800 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-700 focus-visible:ring-offset-2"
+              >
+                About Us
+              </NavLink>
+            </div>
+          </section>
         </div>
-      </section>
-    </div>
+      </div>
+    </main>
   );
 };
 
-export default ContactUs;
+export default ContactUsPage;

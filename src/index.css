@@ -1,13 +1,14 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
-  font-family: mono;
+  font-family: "Manrope", sans-serif;
 }
 
-button,
-a,
+button a,
 select,
 input {
   @apply cursor-pointer transition-all duration-200 ease-in-out disabled:cursor-not-allowed;

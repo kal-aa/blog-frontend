@@ -28,7 +28,7 @@ const CreateBlogForm = ({ handleBlogPost }: CreateBlogFormProps) => {
   }, [formData]);
 
   const handleChange = (
-    e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+    e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
   ) => {
     const { value, name } = e.target;
     setFormData({ ...formData, [name]: value });

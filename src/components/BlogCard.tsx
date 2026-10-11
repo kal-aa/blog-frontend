@@ -152,73 +152,71 @@ function BlogCard({
       {/* Top right section */}
       <p className="date-style">{relativeTime(blog.createdAt)}</p>
 
-        <div className="flex flex-col capitalize mx-3 ml-5">
-          {isHome && !expand && (
-            <p className="text-xs capitalize md:text-sm">by: {blog.author}</p>
+      <div className="flex flex-col capitalize mx-3 ml-5">
+        {isHome && !expand && (
+          <p className="text-xs capitalize md:text-sm">by: {blog.author}</p>
+        )}
+        <div className="space-x-1 w-[60%]">
+          {!editTitlePen && (
+            <h3 className="inline text-xl font-bold">
+              {!expand && isHome ? blog.title.slice(0, 5) + "..." : blog.title}
+            </h3>
           )}
-          <div className="space-x-1 w-[60%]">
-            {!editTitlePen && (
-              <h3 className="inline text-xl font-bold">
-                {!expand && isHome
-                  ? blog.title.slice(0, 5) + "..."
-                  : blog.title}
-              </h3>
-            )}
-            {editTitlePen && (
-              <input
-                ref={titleInpRef}
-                value={editTitleValue}
-                onChange={(e) => setEditTitleValue(e.target.value)}
-                placeholder="Title"
-                className="w-[80%] px-2 rounded-md outline-none ring-2 hover:rounded-lg focus:bg-gray-100"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && readyToUpdate) {
+          {editTitlePen && (
+            <input
+              ref={titleInpRef}
+              value={editTitleValue}
+              onChange={(e) => setEditTitleValue(e.target.value)}
+              placeholder="Title"
+              className="w-[80%] px-2 rounded-md outline-none ring-2 hover:rounded-lg focus:bg-gray-100"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && readyToUpdate) {
+                  if (readyToUpdate) updateBtnRef.current?.click();
+                }
+              }}
+            />
+          )}
+
+          {!isHome &&
+            (editTitlePen ? (
+              readyToUpdate ? (
+                <FaCheckCircle
+                  onClick={() => {
                     if (readyToUpdate) updateBtnRef.current?.click();
-                  }
-                }}
-              />
-            )}
-
-            {!isHome &&
-              (editTitlePen ? (
-                readyToUpdate ? (
-                  <FaCheckCircle
-                    onClick={() => {
-                      if (readyToUpdate) updateBtnRef.current?.click();
-                    }}
-                    size={18}
-                    className="inline text-red-600/60 hover:text-red-600/50"
-                  />
-                ) : (
-                  <FaTimesCircle
-                    onClick={() => setEditTitlePen(false)}
-                    size={18}
-                    className="inline text-red-600/60 hover:text-red-600/50"
-                  />
-                )
-              ) : (
-                <FaRegEdit
-                  title="Edit the title"
-                  size={16}
-                  onClick={() => setEditTitlePen((prev) => !prev)}
-                  className="inline mb-1 text-red-600 hover:text-red-600/80"
+                  }}
+                  size={18}
+                  className="inline text-red-600/60 hover:text-red-600/50"
                 />
-              ))}
-          </div>
-
-          {isHome ? (
-            expand && (
-              <p className="capitalize text-xs md:text-sm ml-1.5">
-                by: {blog.author}
-              </p>
-            )
-          ) : (
-            <p className="text-sm">
-              {formatNumber(viewCount)}
-              {viewCount !== 1 ? " Views" : " View"}
-            </p>
-          )}
+              ) : (
+                <FaTimesCircle
+                  onClick={() => setEditTitlePen(false)}
+                  size={18}
+                  className="inline text-red-600/60 hover:text-red-600/50"
+                />
+              )
+            ) : (
+              <FaRegEdit
+                title="Edit the title"
+                size={16}
+                onClick={() => setEditTitlePen((prev) => !prev)}
+                className="inline mb-1 text-red-600 hover:text-red-600/80"
+              />
+            ))}
         </div>
+
+        {isHome ? (
+          expand && (
+            <p className="capitalize text-xs md:text-sm ml-1.5">
+              by: {blog.author}
+            </p>
+          )
+        ) : (
+          <p className="text-sm">
+            {formatNumber(viewCount)}
+            {viewCount !== 1 ? " Views" : " View"}
+          </p>
+        )}
+      </div>
 
       {/* sample body */}
       <p className="mt-2 ml-3 leading-4 break-words">
@@ -277,61 +275,63 @@ function BlogCard({
 
       {/* Update and Delete btns, along with update Error */}
       {!isHome && (
-          <div className="flex justify-around mt-5">
-            {/* update btn */}
-            <button
-              title={
-                isUpdating
-                  ? "updating..."
-                  : readyToUpdate
-                    ? "update blog"
-                    : "no changes to update"
-              }
-              ref={updateBtnRef}
-              onClick={() =>
-                handleUpdateBlog?.({
-                  blog,
-                  editTitleValue,
-                  editBodyValue,
-                  originalBodyRef,
-                  originalTitleRef,
-                  setEditTitlePen,
-                  setEditBodyPen,
-                  setEditTitleValue,
-                  setEditBodyValue,
-                  setIsUpdating,
-                })
-              }
-              disabled={!readyToUpdate || isUpdating}
-              className={`flex items-end text-white px-3 py-1 rounded-lg ${
-                readyToUpdate ? "bg-gray-600 hover:bg-gray-800" : "bg-gray-400"
-              }`}
-            >
-              Update
-              {isUpdating && <BeatLoader
+        <div className="flex justify-around mt-5">
+          {/* update btn */}
+          <button
+            title={
+              isUpdating
+                ? "updating..."
+                : readyToUpdate
+                  ? "update blog"
+                  : "no changes to update"
+            }
+            ref={updateBtnRef}
+            onClick={() =>
+              handleUpdateBlog?.({
+                blog,
+                editTitleValue,
+                editBodyValue,
+                originalBodyRef,
+                originalTitleRef,
+                setEditTitlePen,
+                setEditBodyPen,
+                setEditTitleValue,
+                setEditBodyValue,
+                setIsUpdating,
+              })
+            }
+            disabled={!readyToUpdate || isUpdating}
+            className={`flex items-end text-white px-3 py-1 rounded-lg ${
+              readyToUpdate ? "bg-gray-600 hover:bg-gray-800" : "bg-gray-400"
+            }`}
+          >
+            Update
+            {isUpdating && (
+              <BeatLoader
                 size={8}
                 color="white"
                 className="flex w-5 mb-1 ml-1"
-              />}
-            </button>
-            {/* delete btn */}
-            <button
-              title={isDeleting ? "deleting..." : "delete blog"}
-              onClick={() =>
-                handleDeleteBlog?.({ blogId: blog._id, setIsDeleting })
-              }
-              disabled={isDeleting}
-              className={`px-3 py-1 text-white bg-gray-600 rounded-lg hover:bg-gray-800`}
-            >
-              Delete
-              <FaTrash
-                size={12}
-                className={`inline ml-1 hover:animate-pulse ${
-                  isDeleting ? "animate-spin" : ""
-                }`}
               />
-            </button>
-          </div>
+            )}
+          </button>
+          {/* delete btn */}
+          <button
+            title={isDeleting ? "deleting..." : "delete blog"}
+            onClick={() =>
+              handleDeleteBlog?.({ blogId: blog._id, setIsDeleting })
+            }
+            disabled={isDeleting}
+            className={`px-3 py-1 text-white bg-gray-600 rounded-lg hover:bg-gray-800`}
+          >
+            Delete
+            <FaTrash
+              size={12}
+              className={`inline ml-1 hover:animate-pulse ${
+                isDeleting ? "animate-spin" : ""
+              }`}
+            />
+          </button>
+        </div>
       )}
     </section>
   );

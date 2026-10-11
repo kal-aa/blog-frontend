@@ -3,9 +3,10 @@ import {
   FaPhone,
   FaSignOutAlt,
   FaTelegramPlane,
+  FaArrowUp,
+  FaGlobe,
 } from "react-icons/fa";
 import { NavLink, useNavigate } from "react-router-dom";
-import { FaArrowUp } from "react-icons/fa";
 import { signOut } from "firebase/auth";
 import { auth } from "../config/firebase";
 import { useEffect, useState } from "react";
@@ -13,6 +14,10 @@ import { useEffect, useState } from "react";
 const Footer = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const navigate = useNavigate();
+
+  const phoneNumber = "+971521768664";
+  const email = "kalabmuhamed@gmail.com";
+  const portfolioUrl = "https://kal-portfolio-lime.vercel.app/";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,7 +29,7 @@ const Footer = () => {
 
     handleScroll();
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("resize", handleScroll);
 
     return () => {
@@ -33,80 +38,143 @@ const Footer = () => {
     };
   }, []);
 
-  const handleUpArrow = () => {
+  const handleScrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const logOut = () => {
-    const confirm = window.confirm("Are you sure you want to log out?");
-    if (!confirm) return;
+  const handleLogout = async () => {
+    const confirmed = window.confirm("Are you sure you want to log out?");
 
-    signOut(auth);
-    navigate("/");
+    if (!confirmed) return;
+
+    try {
+      await signOut(auth);
+      navigate("/");
+    } catch (error) {
+      console.error("Failed to log out:", error);
+      window.alert("Unable to log out. Please try again.");
+    }
   };
 
   return (
-    <footer className="relative flex flex-col justify-center bg-blue-800 text-slate-300 h-[140px] mt-10 font-serif  z-10">
-      <div className="relative flex items-center justify-around text-sm font-bold md:py-4 md:flex-row-reverse">
-        <div className="flex flex-col items-center space-y-2">
+    <footer className="relative z-10 mt-10 bg-blue-900 px-5 py-8 text-slate-200">
+      <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3">
+        {/* Contact Information */}
+        <div className="flex flex-col items-center gap-4 sm:items-start">
+          <h2 className="text-base font-bold text-white">Get in Touch</h2>
+
+          <a
+            href={`mailto:${email}`}
+            className="flex items-center gap-3 transition-colors hover:text-white"
+          >
+            <FaEnvelope
+              size={18}
+              aria-hidden="true"
+              className="text-blue-300"
+            />
+            <span>{email}</span>
+          </a>
+
+          <a
+            href={`tel:${phoneNumber}`}
+            className="flex items-center gap-3 transition-colors hover:text-white"
+          >
+            <FaPhone size={17} aria-hidden="true" className="text-green-400" />
+            <span>+971 52 176 8664</span>
+          </a>
+
+          <a
+            href="https://t.me/Silent7951"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 transition-colors hover:text-white"
+          >
+            <FaTelegramPlane size={20} aria-hidden="true" />
+            <span>Telegram</span>
+          </a>
+
+          <a
+            href="https://wa.me/971521768664"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 transition-colors hover:text-white"
+          >
+            <FaPhone size={17} aria-hidden="true" className="text-green-400" />
+            <span>WhatsApp</span>
+          </a>
+        </div>
+
+        {/* Navigation */}
+        <nav
+          aria-label="Footer navigation"
+          className="flex flex-col items-center gap-4"
+        >
+          <h2 className="text-base font-bold text-white">Quick Links</h2>
+
+          <NavLink
+            to="/about-us"
+            className="transition-colors hover:text-white"
+          >
+            About Us
+          </NavLink>
+
+          <NavLink
+            to="/contact-us"
+            className="transition-colors hover:text-white"
+          >
+            Contact Us
+          </NavLink>
+
           <NavLink
             to="/manage-account"
-            className="mt-2 hover:text-blue-400 sm:hidden"
+            className="transition-colors hover:text-white"
           >
-            Manage your account
+            Manage Your Account
           </NavLink>
+
           <a
-            href="mailto:sadkalshayee@gmail.com"
-            className="flex items-center space-x-2"
+            href={portfolioUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 transition-colors hover:text-white"
           >
-            <FaEnvelope size={20} style={{ color: "darkBlue" }} />
-            <p className="footer-icons">Email</p>
+            <FaGlobe size={16} aria-hidden="true" />
+            My Portfolio
           </a>
-          <a href="tel: +251968350741" className="flex items-center space-x-2">
-            <FaPhone size={20} style={{ color: "green" }} />
-            <p className="footer-icons">Phone</p>
-          </a>
-          <a
-            href="tg://resolve?domain=Silent7951"
-            className="flex items-center space-x-2"
+        </nav>
+
+        {/* Account Actions */}
+        <div className="flex flex-col items-center gap-4 sm:col-span-2 md:col-span-1">
+          <h2 className="text-base font-bold text-white">Account</h2>
+
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="flex items-center gap-2 rounded-lg border border-slate-500 px-4 py-2 transition-colors hover:border-white hover:bg-blue-800 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
           >
-            <FaTelegramPlane size={24} />
-            <p className="footer-icons">Telegram</p>
-          </a>
+            <FaSignOutAlt size={16} aria-hidden="true" />
+            Log Out
+          </button>
         </div>
-        <div className="hidden font-bold text-center md:block">
-          © 2024 Kalab. All rights reserved.
-        </div>
-        <div className="hidden sm:block">
-          <div className="flex flex-col items-center space-y-2 sm:mt-2">
-            <NavLink to="/manage-account" className="hover:text-blue-400">
-              Manage your account
-            </NavLink>
-            <NavLink to="/about-us" className="hover:text-blue-400">
-              About us
-            </NavLink>
-            <NavLink to="/contact-us" className="hover:text-blue-400">
-              contact us
-            </NavLink>
-          </div>
-        </div>
-        {showScrollTop && (
-          <FaArrowUp
-            title="scroll to top"
-            onClick={handleUpArrow}
-            className="absolute right-4 top-1 text-xl text-yellow-600 hover:text-yellow-600/80 cursor-pointer md:right-[50%]"
-          />
-        )}
       </div>
-      <div className="font-bold text-center md:hidden">
-        © 2024 Kalab. All rights reserved.
+
+      {/* Copyright */}
+      <div className="mx-auto mt-8 max-w-6xl border-t border-blue-700 pt-5 text-center text-sm text-slate-300">
+        © {new Date().getFullYear()} Kalab. All rights reserved.
       </div>
-      <FaSignOutAlt
-        title="log out"
-        size={18}
-        className="absolute z-10 text-yellow-600 cursor-pointer right-4 bottom-1 hover:text-yellow-600/80"
-        onClick={logOut}
-      />
+
+      {/* Scroll to Top */}
+      {showScrollTop && (
+        <button
+          type="button"
+          onClick={handleScrollToTop}
+          aria-label="Scroll to top"
+          title="Scroll to top"
+          className="fixed bottom-6 right-5 z-50 rounded-full bg-black p-3 text-white-950 shadow-lg transition-colors hover:bg-black/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white sm:right-8"
+        >
+          <FaArrowUp size={18} aria-hidden="true" />
+        </button>
+      )}
     </footer>
   );
 };
