@@ -19,12 +19,13 @@ import {
   YourBlogsResponse,
 } from "../types/blog";
 import { invalidateBlogQueries } from "../utils/InvalidateBlogQueries";
+import { queryKeys } from "../utils/queryKeys";
 
 const YourBlogsPage = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   // const [updateError, setUpdateError] = useState("");
   const [limit, setLimit] = useState(0);
-  const queryclient = useQueryClient();
+  const queryClient = useQueryClient();
   const { user } = useUser();
   const id = user?.id;
 
@@ -35,7 +36,7 @@ const YourBlogsPage = () => {
   }, [dispatch]);
 
   const { data, isFetching, isRefetching, isError, refetch } = useQuery({
-    queryKey: ["your-blogs", { route: `your-blogs/${id}?page=${limit}` }],
+    queryKey: queryKeys.yourBlogs(id, limit),
     queryFn: fetchData<YourBlogsResponse>,
     enabled: !!id && isObjectId(id),
     staleTime: 1000 * 60 * 5,
@@ -71,7 +72,7 @@ const YourBlogsPage = () => {
         )}`;
         await fetch(url, { method: "DELETE" });
 
-        invalidateBlogQueries(queryclient);
+        invalidateBlogQueries(queryClient);
         toast.success("Blog deleted successfully!");
       } catch (error) {
         console.error("Error deleting blog", error);
@@ -80,7 +81,7 @@ const YourBlogsPage = () => {
         setIsDeleting(false);
       }
     },
-    [id, queryclient],
+    [id, queryClient],
   );
 
   // Update blog
@@ -130,7 +131,7 @@ const YourBlogsPage = () => {
         );
 
         toast.success("Blog updated successfully!");
-        invalidateBlogQueries(queryclient);
+        invalidateBlogQueries(queryClient);
 
         originalBodyRef.current = body;
         originalTitleRef.current = title;
@@ -147,7 +148,7 @@ const YourBlogsPage = () => {
         setEditBodyPen(false);
       }
     },
-    [id, queryclient, dispatch],
+    [id, queryClient, dispatch],
   );
 
   useEffect(() => {
