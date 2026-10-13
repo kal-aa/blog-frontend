@@ -23,7 +23,7 @@ function ReplyCard({
   const dispatch = useDispatch();
 
   const replyValue = optimReply.reply;
-  const replierName = optimReply.replierName || user?.name || "Unkonwn user";
+  const replierName = optimReply.replierName || "Unkonwn user";
 
   return (
     <section className="flex flex-col items-center px-10">

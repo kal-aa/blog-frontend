@@ -238,7 +238,7 @@ const AboutUsPage = () => {
             <h3 className="mb-2 font-semibold text-slate-800">Portfolio</h3>
 
             <a
-              href="https://kal-portfolio-lime.vercel.app/"
+              href="https://kal-portfolio-site.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
               className="break-words text-blue-900 hover:text-blue-700"

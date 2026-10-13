@@ -17,7 +17,7 @@ const Footer = () => {
 
   const phoneNumber = "+971521768664";
   const email = "kalabmuhamed@gmail.com";
-  const portfolioUrl = "https://kal-portfolio-lime.vercel.app/";
+  const portfolioUrl = "https://kal-portfolio-site.vercel.app/";
 
   useEffect(() => {
     const handleScroll = () => {

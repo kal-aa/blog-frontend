@@ -87,8 +87,7 @@ function CommentCard({
     if (showReplyForm && inputRef.current) inputRef.current.focus();
   }, [showReplyForm]);
 
-  const commenterName =
-    optimComment.commenterName || user?.name || "Unknown user";
+  const commenterName = optimComment.commenterName || "Unknown user";
 
   return (
     <section className="relative bg-black rounded-xl">

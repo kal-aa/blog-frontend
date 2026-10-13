@@ -173,7 +173,6 @@ function CommentList({
           },
         );
       } catch (error) {
-        console.log("Error adding dislike and or removing like:", error);
         setThumbsDown(false);
         setDislikeCount((prev) => prev - 1);
         setThumbsUp(prevThumbsUp);

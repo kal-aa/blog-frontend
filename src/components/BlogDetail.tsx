@@ -266,7 +266,7 @@ function BlogDetail({
               newComment,
               ...(old?.filter((c) => c._id !== tempId) || []),
             ];
-          }
+          },
         );
 
         invalidateBlogQueries(queryClient);
@@ -280,7 +280,7 @@ function BlogDetail({
         setCommentValue("");
       }
     },
-    [blog._id, id, commentValue, queryClient, dispatch, user?.name]
+    [blog._id, id, commentValue, queryClient, dispatch, user?.name],
   );
 
   return (
